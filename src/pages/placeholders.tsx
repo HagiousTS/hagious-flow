@@ -39,12 +39,6 @@ export const TasksPage = () => (
     description="Kanban full screen com drag & drop. Filtros por projeto, prioridade, assignee."
   />
 )
-export const CapacityPage = () => (
-  <PlaceholderPage
-    title="Capacity Planner"
-    description="Heatmap de carga por pessoa × semana. Skill matrix. Bloqueio de over-allocation."
-  />
-)
 export const TeamPage = () => (
   <PlaceholderPage
     title="Equipe"

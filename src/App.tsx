@@ -7,8 +7,9 @@ import { LoginPage } from '@/pages/Login'
 import { DashboardPage } from '@/pages/Dashboard'
 import { InboxPage } from '@/pages/Inbox'
 import { FocusPage } from '@/pages/Focus'
+import { CapacityPage } from '@/pages/Capacity'
 import {
-  ProjectsPage, ProjectDetailPage, TasksPage, CapacityPage,
+  ProjectsPage, ProjectDetailPage, TasksPage,
   TeamPage, ClientsPage, AICopilotPage, ReportsPage,
 } from '@/pages/placeholders'
 

@@ -230,6 +230,24 @@ export interface FocusSession {
 
 export type AckUrgency = 'urgent' | 'can_wait' | 'normal' | null
 
+export type SkillProficiency = 'aprendiz' | 'pleno' | 'senior' | 'especialista'
+
+export interface Skill {
+  id: string
+  workspace_id: string
+  name: string
+  category: string | null
+}
+
+export interface MemberSkill {
+  member_id: string
+  skill_id: string
+  proficiency: SkillProficiency
+  is_certified: boolean
+  // joined
+  skill?: Skill
+}
+
 export interface AcknowledgmentQueueItem {
   id: string
   workspace_id: string
