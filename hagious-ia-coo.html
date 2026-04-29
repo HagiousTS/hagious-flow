@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hagious Flow — IA COO</title>
+<script>window.process = { env: { NODE_ENV: "production" } };</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        bg:      'var(--bg)',
+        panel:   'var(--panel)',
+        panel2:  'var(--panel-2)',
+        border:  'var(--border)',
+        text:    'var(--text)',
+        muted:   'var(--muted)',
+        brand:   'var(--brand)',
+        brand2:  'var(--brand-2)',
+        ok:      'var(--ok)',
+        warn:    'var(--warn)',
+        danger:  'var(--danger)',
+      },
+      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+    }
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background:#0B0D12; color:#E6E8EE; }
+  .scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar::-webkit-scrollbar-thumb { background: #1F2430; border-radius: 4px; }
+  .scrollbar::-webkit-scrollbar-thumb:hover { background: #2a3142; }
+
+  .grad-brand { background: linear-gradient(135deg, #7C5CFF 0%, #5B8DEF 100%); }
+  .grad-text { background: linear-gradient(135deg, #7C5CFF 0%, #5B8DEF 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grad-border { position: relative; }
+  .grad-border::before {
+    content:''; position:absolute; inset:0; border-radius:inherit; padding:1px;
+    background: linear-gradient(135deg, rgba(124,92,255,.5), rgba(91,141,239,.2));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events:none;
+  }
+
+  .nav-item.active { background: linear-gradient(90deg, rgba(124,92,255,.18), transparent); border-left-color:#7C5CFF; color:#fff;}
+
+  .chip { display:inline-flex; align-items:center; gap:6px; font-size:11px; padding:3px 8px; border-radius:6px; font-weight:600;}
+  .tag-priority-high { background: rgba(239,68,68,.12); color:#FCA5A5; }
+  .tag-priority-mid  { background: rgba(245,158,11,.12); color:#FCD34D; }
+  .tag-priority-low  { background: rgba(34,197,94,.12); color:#86EFAC; }
+  .tag-status-doing  { background: rgba(91,141,239,.15); color:#93C5FD; }
+  .tag-status-done   { background: rgba(34,197,94,.12); color:#86EFAC; }
+  .tag-status-block  { background: rgba(239,68,68,.12); color:#FCA5A5; }
+  .tag-status-todo   { background: rgba(138,147,166,.12); color:#CBD5E1; }
+  .tag-status-review { background: rgba(168,85,247,.15); color:#D8B4FE; }
+  .tag-info          { background: rgba(91,141,239,.15); color:#93C5FD; }
+
+  .card { background:#11141B; border:1px solid #1F2430; border-radius:14px; }
+  .card-hover:hover { border-color:#2a3142; }
+  .progress-bar { height:6px; background:#1F2430; border-radius:6px; overflow:hidden; }
+  .progress-fill { height:100%; background: linear-gradient(90deg, #7C5CFF, #5B8DEF); border-radius:6px; }
+
+  .pulse-dot { position: relative; }
+  .pulse-dot::after {
+    content:''; position:absolute; inset:-4px; border-radius:9999px;
+    border:2px solid currentColor; opacity:.4; animation: ping 1.6s cubic-bezier(0,0,.2,1) infinite;
+  }
+  @keyframes ping { 0% {transform:scale(.9); opacity:.6} 80%,100% {transform:scale(1.6); opacity:0} }
+
+  .typing span { display:inline-block; width:6px; height:6px; margin:0 1px; border-radius:50%; background:#8A93A6; animation: typing 1.2s infinite; }
+  .typing span:nth-child(2){ animation-delay: .2s; }
+  .typing span:nth-child(3){ animation-delay: .4s; }
+  @keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity:.4; } 30% { transform: translateY(-3px); opacity:1; } }
+
+  .ai-shimmer {
+    background: linear-gradient(90deg, rgba(124,92,255,.0) 0%, rgba(124,92,255,.18) 50%, rgba(124,92,255,.0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer { 0%{background-position: 200% 0} 100%{background-position: -200% 0} }
+
+  /* Halo animado no avatar IA */
+  .ai-halo {
+    background: conic-gradient(from 0deg, #7C5CFF, #5B8DEF, #22C55E, #7C5CFF);
+    animation: spin 6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .cmd-key { font-family: 'JetBrains Mono', monospace; font-size:10px; padding:1px 5px; background:#1F2430; border:1px solid #2a3142; border-radius:4px; color:#CBD5E1; }
+
+  .citation { display:inline-flex; align-items:center; gap:3px; font-size:10px; padding:1px 5px; border-radius:4px;
+              background: rgba(124,92,255,.12); color:#C4B5FD; border:1px solid rgba(124,92,255,.25); cursor:pointer;}
+  .citation:hover { background: rgba(124,92,255,.22); }
+
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display:none; }
+
+  .glow { box-shadow: 0 0 0 1px rgba(124,92,255,0.2), 0 12px 40px rgba(124,92,255,0.12); }
+
+  .reveal { animation: reveal .5s ease both; }
+  @keyframes reveal { from { opacity:0; transform: translateY(4px);} to {opacity:1; transform:none;} }
+</style>
+<style>
+/* ================================================================
+ * HAGIOUS FLOW · DESIGN SYSTEM · TOKENS DE COR
+ * ================================================================
+ * 3 temas suportados:
+ *   - sankhya-light  → padrão claro inspirado no site sankhya.com.br
+ *   - sankhya-dark   → escuro corporativo com mesmas cores de marca
+ *   - hagious-purple → tema original (roxo/azul, dark only)
+ *
+ * Os tokens são CSS Custom Properties.
+ * Tailwind usa essas variáveis via `theme.colors` no config inline.
+ * O usuário troca tema com data-theme no <html>, persistido em localStorage.
+ * ================================================================ */
+
+/* ============ TEMA: SANKHYA LIGHT (default) ============ */
+:root, [data-theme="sankhya-light"] {
+  /* Marca Sankhya */
+  --brand:        #009A4E;   /* verde corporativo */
+  --brand-hover:  #007D3F;
+  --brand-2:      #7AC143;   /* verde-lima de acento */
+  --brand-3:      #FF6B00;   /* laranja de destaque (CTAs especiais) */
+
+  /* Superfícies */
+  --bg:           #F5F7F4;   /* fundo geral, branco esverdeado sutil */
+  --panel:        #FFFFFF;
+  --panel-2:      #F0F3EE;
+  --border:       #E2E7DD;
+  --border-2:     #D0D7C9;
+
+  /* Texto */
+  --text:         #1A2B22;   /* verde quase preto */
+  --text-2:       #3D4F45;
+  --muted:        #6B7A70;
+
+  /* Estados */
+  --ok:           #009A4E;
+  --warn:         #F59E0B;
+  --danger:       #DC2626;
+  --info:         #2563EB;
+
+  /* Sombras (tema claro precisa de sombras mais visíveis) */
+  --shadow-sm:    0 1px 2px rgba(26, 43, 34, 0.06);
+  --shadow-md:    0 4px 12px rgba(26, 43, 34, 0.08);
+  --shadow-lg:    0 12px 32px rgba(26, 43, 34, 0.12);
+  --glow:         0 0 0 1px rgba(0, 154, 78, 0.15), 0 8px 28px rgba(0, 154, 78, 0.10);
+
+  /* Gradientes */
+  --grad-brand:   linear-gradient(135deg, #009A4E 0%, #7AC143 100%);
+  --grad-text:    linear-gradient(135deg, #009A4E 0%, #007D3F 100%);
+
+  /* Tags */
+  --tag-prio-high-bg:   rgba(220, 38, 38, 0.10);
+  --tag-prio-high-fg:   #B91C1C;
+  --tag-prio-mid-bg:    rgba(245, 158, 11, 0.12);
+  --tag-prio-mid-fg:    #B45309;
+  --tag-prio-low-bg:    rgba(0, 154, 78, 0.10);
+  --tag-prio-low-fg:    #007D3F;
+  --tag-doing-bg:       rgba(37, 99, 235, 0.10);
+  --tag-doing-fg:       #1D4ED8;
+  --tag-done-bg:        rgba(0, 154, 78, 0.10);
+  --tag-done-fg:        #007D3F;
+  --tag-block-bg:       rgba(220, 38, 38, 0.10);
+  --tag-block-fg:       #B91C1C;
+  --tag-todo-bg:        rgba(107, 122, 112, 0.12);
+  --tag-todo-fg:        #3D4F45;
+  --tag-review-bg:      rgba(122, 193, 67, 0.16);
+  --tag-review-fg:      #4D7A2C;
+  --tag-info-bg:        rgba(37, 99, 235, 0.10);
+  --tag-info-fg:        #1D4ED8;
+  --tag-focus-bg:       rgba(0, 154, 78, 0.12);
+  --tag-focus-fg:       #007D3F;
+}
+
+/* ============ TEMA: SANKHYA DARK ============ */
+[data-theme="sankhya-dark"] {
+  /* Marca Sankhya (mesmas cores, mas verde mais luminoso pro dark) */
+  --brand:        #22C55E;   /* verde mais brilhante pra contraste no dark */
+  --brand-hover:  #16A34A;
+  --brand-2:      #84CC16;   /* lima */
+  --brand-3:      #FB923C;
+
+  /* Superfícies */
+  --bg:           #0A1410;   /* preto esverdeado */
+  --panel:        #0F1B16;
+  --panel-2:      #15241D;
+  --border:       #1F302A;
+  --border-2:     #2A413A;
+
+  /* Texto */
+  --text:         #E8F0EA;
+  --text-2:       #C0CDC4;
+  --muted:        #7A8A82;
+
+  /* Estados */
+  --ok:           #22C55E;
+  --warn:         #F59E0B;
+  --danger:       #EF4444;
+  --info:         #5B8DEF;
+
+  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-md:    0 4px 12px rgba(0, 0, 0, 0.40);
+  --shadow-lg:    0 12px 32px rgba(0, 0, 0, 0.50);
+  --glow:         0 0 0 1px rgba(34, 197, 94, 0.20), 0 8px 30px rgba(34, 197, 94, 0.10);
+
+  --grad-brand:   linear-gradient(135deg, #22C55E 0%, #84CC16 100%);
+  --grad-text:    linear-gradient(135deg, #22C55E 0%, #84CC16 100%);
+
+  --tag-prio-high-bg:   rgba(239, 68, 68, 0.12);
+  --tag-prio-high-fg:   #FCA5A5;
+  --tag-prio-mid-bg:    rgba(245, 158, 11, 0.12);
+  --tag-prio-mid-fg:    #FCD34D;
+  --tag-prio-low-bg:    rgba(34, 197, 94, 0.12);
+  --tag-prio-low-fg:    #86EFAC;
+  --tag-doing-bg:       rgba(91, 141, 239, 0.15);
+  --tag-doing-fg:       #93C5FD;
+  --tag-done-bg:        rgba(34, 197, 94, 0.12);
+  --tag-done-fg:        #86EFAC;
+  --tag-block-bg:       rgba(239, 68, 68, 0.12);
+  --tag-block-fg:       #FCA5A5;
+  --tag-todo-bg:        rgba(138, 147, 166, 0.12);
+  --tag-todo-fg:        #CBD5E1;
+  --tag-review-bg:      rgba(132, 204, 22, 0.18);
+  --tag-review-fg:      #BEF264;
+  --tag-info-bg:        rgba(91, 141, 239, 0.15);
+  --tag-info-fg:        #93C5FD;
+  --tag-focus-bg:       rgba(34, 197, 94, 0.15);
+  --tag-focus-fg:       #86EFAC;
+}
+
+/* ============ TEMA: HAGIOUS PURPLE (original) ============ */
+[data-theme="hagious-purple"] {
+  --brand:        #7C5CFF;
+  --brand-hover:  #6D4FE0;
+  --brand-2:      #5B8DEF;
+  --brand-3:      #C4B5FD;
+
+  --bg:           #0B0D12;
+  --panel:        #11141B;
+  --panel-2:      #171B25;
+  --border:       #1F2430;
+  --border-2:     #2A3142;
+
+  --text:         #E6E8EE;
+  --text-2:       #CBD5E1;
+  --muted:        #8A93A6;
+
+  --ok:           #22C55E;
+  --warn:         #F59E0B;
+  --danger:       #EF4444;
+  --info:         #5B8DEF;
+
+  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-md:    0 4px 12px rgba(0, 0, 0, 0.40);
+  --shadow-lg:    0 12px 32px rgba(0, 0, 0, 0.50);
+  --glow:         0 0 0 1px rgba(124, 92, 255, 0.18), 0 8px 30px rgba(124, 92, 255, 0.10);
+
+  --grad-brand:   linear-gradient(135deg, #7C5CFF 0%, #5B8DEF 100%);
+  --grad-text:    linear-gradient(135deg, #7C5CFF 0%, #5B8DEF 100%);
+
+  --tag-prio-high-bg:   rgba(239, 68, 68, 0.12);
+  --tag-prio-high-fg:   #FCA5A5;
+  --tag-prio-mid-bg:    rgba(245, 158, 11, 0.12);
+  --tag-prio-mid-fg:    #FCD34D;
+  --tag-prio-low-bg:    rgba(34, 197, 94, 0.12);
+  --tag-prio-low-fg:    #86EFAC;
+  --tag-doing-bg:       rgba(91, 141, 239, 0.15);
+  --tag-doing-fg:       #93C5FD;
+  --tag-done-bg:        rgba(34, 197, 94, 0.12);
+  --tag-done-fg:        #86EFAC;
+  --tag-block-bg:       rgba(239, 68, 68, 0.12);
+  --tag-block-fg:       #FCA5A5;
+  --tag-todo-bg:        rgba(138, 147, 166, 0.12);
+  --tag-todo-fg:        #CBD5E1;
+  --tag-review-bg:      rgba(168, 85, 247, 0.15);
+  --tag-review-fg:      #D8B4FE;
+  --tag-info-bg:        rgba(91, 141, 239, 0.15);
+  --tag-info-fg:        #93C5FD;
+  --tag-focus-bg:       rgba(124, 92, 255, 0.15);
+  --tag-focus-fg:       #C4B5FD;
+}
+
+/* ================================================================
+ * BASE
+ * ================================================================ */
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Tudo que era hardcoded vira variável */
+.bg-bg       { background-color: var(--bg) !important; }
+.bg-panel    { background-color: var(--panel) !important; }
+.bg-panel2   { background-color: var(--panel-2) !important; }
+.text-text   { color: var(--text) !important; }
+.text-muted  { color: var(--muted) !important; }
+.text-brand  { color: var(--brand) !important; }
+.text-brand2 { color: var(--brand-2) !important; }
+.text-ok     { color: var(--ok) !important; }
+.text-warn   { color: var(--warn) !important; }
+.text-danger { color: var(--danger) !important; }
+.border-border { border-color: var(--border) !important; }
+
+.bg-ok { background-color: var(--ok) !important; }
+.bg-warn { background-color: var(--warn) !important; }
+.bg-danger { background-color: var(--danger) !important; }
+.bg-brand { background-color: var(--brand) !important; }
+.bg-brand2 { background-color: var(--brand-2) !important; }
+
+.grad-brand { background: var(--grad-brand) !important; }
+.grad-text {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+
+.glow { box-shadow: var(--glow); }
+
+/* Cards */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.card-hover:hover {
+  border-color: var(--border-2);
+}
+
+/* Tags / chips - sobrescreve o que tinha hardcoded */
+.tag-priority-high { background: var(--tag-prio-high-bg) !important; color: var(--tag-prio-high-fg) !important; }
+.tag-priority-mid  { background: var(--tag-prio-mid-bg)  !important; color: var(--tag-prio-mid-fg)  !important; }
+.tag-priority-low  { background: var(--tag-prio-low-bg)  !important; color: var(--tag-prio-low-fg)  !important; }
+.tag-status-doing  { background: var(--tag-doing-bg)     !important; color: var(--tag-doing-fg)     !important; }
+.tag-status-done   { background: var(--tag-done-bg)      !important; color: var(--tag-done-fg)      !important; }
+.tag-status-block  { background: var(--tag-block-bg)     !important; color: var(--tag-block-fg)     !important; }
+.tag-status-todo   { background: var(--tag-todo-bg)      !important; color: var(--tag-todo-fg)      !important; }
+.tag-status-review { background: var(--tag-review-bg)    !important; color: var(--tag-review-fg)    !important; }
+.tag-info          { background: var(--tag-info-bg)      !important; color: var(--tag-info-fg)      !important; }
+.tag-focus         { background: var(--tag-focus-bg)     !important; color: var(--tag-focus-fg)     !important; }
+.tag-warn          { background: var(--tag-prio-mid-bg)  !important; color: var(--tag-prio-mid-fg)  !important; }
+
+/* Progress bars */
+.progress-bar {
+  height: 6px;
+  background: var(--panel-2);
+  border-radius: 6px;
+  overflow: hidden;
+}
+[data-theme="sankhya-light"] .progress-bar {
+  background: #E2E7DD;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--grad-brand);
+  border-radius: 6px;
+}
+
+/* Scrollbar */
+.scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+.scrollbar::-webkit-scrollbar-track { background: transparent; }
+.scrollbar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.scrollbar::-webkit-scrollbar-thumb:hover { background: var(--border-2); }
+
+/* Inputs em tema claro precisam de fundo distinto */
+[data-theme="sankhya-light"] input,
+[data-theme="sankhya-light"] textarea {
+  background-color: var(--panel) !important;
+  color: var(--text) !important;
+}
+[data-theme="sankhya-light"] input::placeholder,
+[data-theme="sankhya-light"] textarea::placeholder {
+  color: var(--muted) !important;
+}
+
+/* Active nav item: usa brand */
+.nav-item.active {
+  background: linear-gradient(90deg, var(--tag-focus-bg), transparent);
+  border-left-color: var(--brand) !important;
+  color: var(--text) !important;
+}
+
+/* ================================================================
+ * AJUSTES ESPECÍFICOS DE TEMA CLARO
+ * Corrige hardcodes que ficam ruins quando o fundo é claro
+ * ================================================================ */
+
+/* No tema claro, hover-text-white precisa virar texto escuro */
+[data-theme="sankhya-light"] .hover\:text-white:hover {
+  color: var(--text) !important;
+}
+
+/* text-white solto no tema claro vira texto escuro... */
+[data-theme="sankhya-light"] .text-white {
+  color: var(--text) !important;
+}
+
+/* ...EXCETO dentro de elementos com fundo brand/colorido */
+[data-theme="sankhya-light"] .grad-brand,
+[data-theme="sankhya-light"] .grad-brand .text-white,
+[data-theme="sankhya-light"] button.grad-brand,
+[data-theme="sankhya-light"] a.grad-brand,
+[data-theme="sankhya-light"] .bg-brand .text-white,
+[data-theme="sankhya-light"] [class*="bg-emerald-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-blue-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-purple-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-pink-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-rose-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-amber-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-cyan-500"] .text-white {
+  color: white !important;
+}
+
+/* Botões grad-brand: texto fica branco SEMPRE */
+[data-theme="sankhya-light"] .grad-brand {
+  color: white !important;
+}
+
+/* No tema claro, IA shimmer fica fraco - reforçar com tom verde */
+[data-theme="sankhya-light"] .ai-shimmer {
+  background: linear-gradient(90deg, rgba(0,154,78,0) 0%, rgba(0,154,78,0.10) 50%, rgba(0,154,78,0) 100%) !important;
+  background-size: 200% 100% !important;
+}
+
+/* Hover de cards no tema claro: borda verde + sombra suave */
+[data-theme="sankhya-light"] .card-hover:hover {
+  border-color: var(--brand) !important;
+  box-shadow: var(--shadow-md);
+}
+
+/* Topbar com backdrop-blur: fundo claro semi-transparente */
+[data-theme="sankhya-light"] [class*="bg-bg/85"],
+[data-theme="sankhya-light"] [class*="bg-bg/60"] {
+  background-color: rgba(245, 247, 244, 0.88) !important;
+}
+
+/* Sidebar e painéis com transparência */
+[data-theme="sankhya-light"] [class*="bg-panel/60"],
+[data-theme="sankhya-light"] [class*="bg-panel/40"],
+[data-theme="sankhya-light"] [class*="bg-panel/30"] {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* Hover panel-2 funciona em qualquer tema */
+[data-theme="sankhya-light"] [class*="hover:bg-panel2"]:hover {
+  background-color: var(--panel-2) !important;
+}
+
+/* Borders quentes/coloridas em cards de risco */
+[data-theme="sankhya-light"] [class*="border-warn"] {
+  border-color: var(--warn) !important;
+}
+[data-theme="sankhya-light"] [class*="border-danger"] {
+  border-color: var(--danger) !important;
+}
+
+/* ================================================================
+ * THEME SWITCHER · canto inferior direito · colapsável
+ * Não conflita com sino, avatares ou conteúdo do topo.
+ * ================================================================ */
+.theme-switcher {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-lg);
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow: hidden;
+  transition: gap .25s ease, padding .25s ease, max-width .25s ease;
+  max-width: 44px;
+}
+.theme-switcher.is-open {
+  gap: 6px;
+  padding: 5px 10px 5px 12px;
+  max-width: 280px;
+}
+
+/* Toggle (a "bolinha" sempre visível) */
+.theme-switcher-toggle {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color .15s ease, transform .15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+.theme-switcher-toggle:hover { color: var(--brand); transform: scale(1.05); }
+.theme-switcher-toggle svg { width: 18px; height: 18px; }
+
+/* Label e botões: escondidos quando fechado, visíveis quando aberto */
+.theme-switcher-label,
+.theme-switcher-btn {
+  opacity: 0;
+  transform: translateX(8px);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.theme-switcher.is-open .theme-switcher-label,
+.theme-switcher.is-open .theme-switcher-btn {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.theme-switcher-label {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 9px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.theme-switcher-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform .15s ease, border-color .15s ease, opacity .2s ease;
+  flex-shrink: 0;
+}
+.theme-switcher-btn:hover { transform: scale(1.12); }
+.theme-switcher-btn[data-active="true"] {
+  border-color: var(--text);
+  box-shadow: 0 0 0 2px var(--panel), 0 0 0 3px var(--text);
+}
+.theme-switcher-btn[data-theme="sankhya-light"]  { background: linear-gradient(135deg, #009A4E 0%, #7AC143 100%); }
+.theme-switcher-btn[data-theme="sankhya-dark"]   { background: linear-gradient(135deg, #0F1B16 0%, #22C55E 100%); }
+.theme-switcher-btn[data-theme="hagious-purple"] { background: linear-gradient(135deg, #7C5CFF 0%, #5B8DEF 100%); }
+
+/* Em telas mobile/estreitas, encolhe um pouco */
+@media (max-width: 480px) {
+  .theme-switcher { bottom: 12px; right: 12px; }
+}
+
+</style>
+<script>
+/* ================================================================
+ * HAGIOUS FLOW · THEME SWITCHER · v2 (canto inferior · colapsável)
+ * ================================================================ */
+(function(){
+  const THEMES = [
+    { id: 'sankhya-light',  label: 'Sankhya Light' },
+    { id: 'sankhya-dark',   label: 'Sankhya Dark' },
+    { id: 'hagious-purple', label: 'Hagious Purple' }
+  ];
+  const KEY = 'hagious-flow-theme';
+  const DEFAULT = 'sankhya-light';
+
+  function apply(themeId){
+    document.documentElement.setAttribute('data-theme', themeId);
+    try { localStorage.setItem(KEY, themeId); } catch(e){}
+    document.querySelectorAll('.theme-switcher-btn').forEach(btn => {
+      btn.setAttribute('data-active', btn.dataset.theme === themeId ? 'true' : 'false');
+    });
+  }
+
+  function getInitial(){
+    try {
+      const saved = localStorage.getItem(KEY);
+      if (saved && THEMES.some(t => t.id === saved)) return saved;
+    } catch(e){}
+    return DEFAULT;
+  }
+
+  // Aplica antes do DOM montar (evita flash)
+  apply(getInitial());
+
+  // SVG do ícone de paleta (lucide "palette")
+  const ICON_PALETTE = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+      <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+      <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+      <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
+    </svg>`;
+
+  function injectUI(){
+    if (document.querySelector('.theme-switcher')) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'theme-switcher';
+    wrap.setAttribute('aria-label', 'Seletor de tema');
+    wrap.innerHTML = `
+      <button type="button" class="theme-switcher-toggle" aria-label="Alternar seletor de tema" title="Tema">
+        ${ICON_PALETTE}
+      </button>
+      <span class="theme-switcher-label">Tema</span>
+      ${THEMES.map(t => `
+        <button type="button" class="theme-switcher-btn" data-theme="${t.id}" title="${t.label}" aria-label="Tema ${t.label}"></button>
+      `).join('')}
+    `;
+    document.body.appendChild(wrap);
+
+    const toggle = wrap.querySelector('.theme-switcher-toggle');
+
+    function closeSwitcher(){ wrap.classList.remove('is-open'); }
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      wrap.classList.toggle('is-open');
+    });
+
+    wrap.querySelectorAll('.theme-switcher-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        apply(btn.dataset.theme);
+      });
+    });
+
+    // Fecha ao clicar fora
+    document.addEventListener('click', (e) => {
+      if (!wrap.contains(e.target)) closeSwitcher();
+    });
+
+    // Fecha ao apertar Esc
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSwitcher();
+    });
+
+    // Re-marcar ativo agora que os botões existem
+    apply(document.documentElement.getAttribute('data-theme') || DEFAULT);
+  }
+
+  if (document.body) {
+    injectUI();
+  } else {
+    document.addEventListener('DOMContentLoaded', injectUI);
+  }
+})();
+
+</script>
+</head>
+<body class="min-h-screen">
+
+<div class="flex min-h-screen">
+
+  <!-- ============ SIDEBAR (compact) ============ -->
+  <aside class="w-[240px] shrink-0 border-r border-border bg-panel/60 backdrop-blur sticky top-0 h-screen flex flex-col">
+    <div class="px-5 py-5 border-b border-border flex items-center gap-2">
+      <div class="w-9 h-9 rounded-xl grad-brand flex items-center justify-center font-bold text-white">H</div>
+      <div>
+        <div class="font-bold tracking-tight text-[15px]">Hagious <span class="grad-text">Flow</span></div>
+        <div class="text-[10px] text-muted -mt-0.5">v1.0 · Beta</div>
+      </div>
+    </div>
+
+    <div class="px-3 py-3 border-b border-border">
+      <button class="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-panel2 hover:bg-[#1d2230] transition text-left">
+        <div class="w-7 h-7 rounded-md bg-gradient-to-br from-fuchsia-500 to-rose-500 flex items-center justify-center text-[11px] font-bold">SA</div>
+        <div class="flex-1">
+          <div class="text-xs text-muted">Workspace</div>
+          <div class="text-sm font-semibold leading-tight">Sankhya ABC</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg>
+      </button>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto scrollbar py-3">
+      <div class="px-4 text-[10px] tracking-wider text-muted font-semibold uppercase mb-2">Operação</div>
+      <a href="hagious-flow.html" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </a>
+      <a href="hagious-projeto.html" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg>
+        Projetos <span class="ml-auto text-[10px] bg-panel2 px-1.5 py-0.5 rounded">12</span>
+      </a>
+      <a href="#" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="6" height="16" rx="1"/><rect x="11" y="4" width="6" height="10" rx="1"/><rect x="19" y="4" width="2" height="6" rx="1"/></svg>
+        Tasks <span class="ml-auto text-[10px] bg-panel2 px-1.5 py-0.5 rounded">87</span>
+      </a>
+      <a href="#" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Equipe
+      </a>
+      <a href="#" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Clientes
+      </a>
+
+      <div class="px-4 text-[10px] tracking-wider text-muted font-semibold uppercase mt-5 mb-2">Inteligência</div>
+      <a href="#" class="nav-item active flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 5 5.6.8-4 4 1 5.6L12 14.8 6.9 17.4l1-5.6-4-4 5.6-.8z"/></svg>
+        IA COO
+      </a>
+      <a href="#" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
+        Relatórios
+      </a>
+    </nav>
+
+    <div class="border-t border-border p-3">
+      <div class="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-panel2 cursor-pointer">
+        <div class="w-8 h-8 rounded-full grad-brand flex items-center justify-center text-[12px] font-bold">GF</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-semibold truncate">Gusttavo Fróes</div>
+          <div class="text-[11px] text-muted truncate">Coord. Desenvolvimento</div>
+        </div>
+        <span class="w-2 h-2 rounded-full bg-ok pulse-dot text-ok"></span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="flex-1 min-w-0 flex flex-col h-screen">
+
+    <!-- TOPBAR -->
+    <header class="sticky top-0 z-20 bg-bg/85 backdrop-blur border-b border-border">
+      <div class="px-8 h-16 flex items-center gap-4">
+        <div class="flex items-center gap-3">
+          <div class="relative w-10 h-10">
+            <div class="absolute inset-0 rounded-full ai-halo opacity-70 blur-[2px]"></div>
+            <div class="absolute inset-[2px] rounded-full bg-bg flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2l2.4 5 5.6.8-4 4 1 5.6L12 14.8 6.9 17.4l1-5.6-4-4 5.6-.8z"/></svg>
+            </div>
+          </div>
+          <div>
+            <div class="text-[15px] font-bold tracking-tight flex items-center gap-2">
+              IA COO <span class="chip tag-status-doing">Online</span>
+            </div>
+            <div class="text-[11px] text-muted">Seu chefe operacional. Sempre observando.</div>
+          </div>
+        </div>
+
+        <div class="flex-1"></div>
+
+        <div class="flex items-center gap-2 text-xs text-muted">
+          <span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+          <span>Contexto: Sankhya ABC · 12 projetos · 87 tasks · 5 pessoas</span>
+        </div>
+
+        <button class="text-xs bg-panel border border-border px-3 py-1.5 rounded-lg hover:border-brand/40 transition flex items-center gap-1.5">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12c0 4.97-4.03 9-9 9-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9 2.5 0 4.76 1.02 6.39 2.66"/><path d="M21 3v6h-6"/></svg>
+          Nova conversa
+        </button>
+      </div>
+    </header>
+
+    <!-- BODY: 2 colunas -->
+    <div class="flex-1 grid grid-cols-12 gap-0 min-h-0">
+
+      <!-- ESQUERDA: Conversa -->
+      <section class="col-span-8 flex flex-col border-r border-border min-h-0">
+
+        <!-- Conversation list area -->
+        <div class="flex-1 overflow-y-auto scrollbar p-8 space-y-6">
+
+          <!-- Briefing de abertura -->
+          <div class="reveal">
+            <div class="flex items-center gap-2 text-[11px] text-muted mb-2">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              Hoje · 08:14 · Briefing automático da manhã
+            </div>
+
+            <div class="card grad-border ai-shimmer p-5 glow">
+              <div class="flex items-start gap-3">
+                <div class="shrink-0 w-9 h-9 rounded-xl grad-brand flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2l2.4 5 5.6.8-4 4 1 5.6L12 14.8 6.9 17.4l1-5.6-4-4 5.6-.8z"/></svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="font-bold text-sm">Bom dia, Gusttavo.</span>
+                    <span class="chip tag-status-review">Briefing executivo</span>
+                  </div>
+                  <p class="text-sm text-text/90 leading-relaxed">Analisei o que aconteceu desde ontem 18h. <strong class="text-warn">3 frentes precisam de você hoje</strong>, em ordem de impacto financeiro:</p>
+
+                  <div class="mt-4 space-y-3">
+
+                    <div class="bg-panel2/60 border border-danger/30 rounded-xl p-3">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="flex items-center gap-2 mb-1">
+                            <span class="chip tag-priority-high">CRÍTICO</span>
+                            <span class="text-[11px] text-muted">Impacto: <strong class="text-text">R$ 28.400</strong> · Risco contratual</span>
+                          </div>
+                          <h4 class="font-semibold text-sm">Implantação Distribuidora Ômega · entrega 06/05</h4>
+                          <p class="text-[12px] text-muted mt-1">Cliente reabriu chamado P1 ontem 23h. Letícia bloqueada há 2 dias por falta de credenciais Itaú. Sem ação até hoje 14h, a entrega do dia 06 entra em risco e dispara cláusula de multa contratual.</p>
+                        </div>
+                      </div>
+                      <div class="flex flex-wrap gap-2 mt-3">
+                        <button class="text-[11px] bg-brand/15 border border-brand/30 px-2.5 py-1 rounded-lg hover:bg-brand/25">⚡ Aplicar plano (3 ações)</button>
+                        <button class="text-[11px] bg-panel border border-border px-2.5 py-1 rounded-lg hover:border-brand/40">Ver projeto</button>
+                      </div>
+                    </div>
+
+                    <div class="bg-panel2/60 border border-warn/30 rounded-xl p-3">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="flex items-center gap-2 mb-1">
+                            <span class="chip tag-priority-mid">ATENÇÃO</span>
+                            <span class="text-[11px] text-muted">Impacto: <strong class="text-text">R$ 1.850</strong> · Margem em queda</span>
+                          </div>
+                          <h4 class="font-semibold text-sm">Sustentação Apolo · 65% das horas em 50% do mês</h4>
+                          <p class="text-[12px] text-muted mt-1">Detectei retrabalho em customização NF-e feita por Patrícia em março. 6,2h queimadas em chamados que nasceram do mesmo bug. Recuperável via cobrança contratual.</p>
+                        </div>
+                      </div>
+                      <div class="flex flex-wrap gap-2 mt-3">
+                        <button class="text-[11px] bg-brand/15 border border-brand/30 px-2.5 py-1 rounded-lg hover:bg-brand/25">⚡ Criar task de correção</button>
+                        <button class="text-[11px] bg-panel border border-border px-2.5 py-1 rounded-lg hover:border-brand/40">Ver evidências</button>
+                      </div>
+                    </div>
+
+                    <div class="bg-panel2/60 border border-brand/30 rounded-xl p-3">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="flex items-center gap-2 mb-1">
+                            <span class="chip tag-info">OPORTUNIDADE</span>
+                            <span class="text-[11px] text-muted">Camila com 42% de carga · QA</span>
+                          </div>
+                          <h4 class="font-semibold text-sm">Capacidade ociosa pode acelerar Vetor</h4>
+                          <p class="text-[12px] text-muted mt-1">Camila tem 22h livres na semana. O upgrade da Vetor (84% concluído) pode ganhar testes paralelos e antecipar entrega para 12/05, liberando equipe pro próximo projeto.</p>
+                        </div>
+                      </div>
+                      <div class="flex flex-wrap gap-2 mt-3">
+                        <button class="text-[11px] bg-brand/15 border border-brand/30 px-2.5 py-1 rounded-lg hover:bg-brand/25">⚡ Realocar Camila</button>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <details class="mt-4">
+                    <summary class="text-[11px] text-muted hover:text-white flex items-center gap-1">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                      Ver fontes que analisei (12)
+                    </summary>
+                    <div class="mt-2 flex flex-wrap gap-1.5">
+                      <span class="citation">📋 DO-142</span>
+                      <span class="citation">📋 DO-138</span>
+                      <span class="citation">💬 Slack #ômega-impl</span>
+                      <span class="citation">📧 cliente@omega.com.br</span>
+                      <span class="citation">⏱ Apontamento horas Apolo</span>
+                      <span class="citation">📋 AP-198 a AP-203</span>
+                      <span class="citation">📞 Chamado #4471</span>
+                      <span class="citation">📞 Chamado #4468</span>
+                      <span class="citation">👤 Carga Camila</span>
+                      <span class="citation">📊 Burndown Vetor</span>
+                      <span class="citation">📜 Contrato Apolo · Cláusula 4.2</span>
+                      <span class="citation">📜 Contrato Ômega · Cláusula 8.1</span>
+                    </div>
+                  </details>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- User msg -->
+          <div class="flex gap-3 justify-end reveal">
+            <div class="max-w-[75%]">
+              <div class="grad-brand text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm">
+                Aplicar plano da Ômega. Mas antes me mostra o que você vai fazer exatamente.
+              </div>
+              <div class="text-[10px] text-muted mt-1 text-right">você · 08:16</div>
+            </div>
+            <div class="w-9 h-9 shrink-0 rounded-full grad-brand flex items-center justify-center text-[12px] font-bold">GF</div>
+          </div>
+
+          <!-- IA response: plano -->
+          <div class="flex gap-3 reveal">
+            <div class="w-9 h-9 shrink-0 rounded-xl grad-brand flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2l2.4 5 5.6.8-4 4 1 5.6L12 14.8 6.9 17.4l1-5.6-4-4 5.6-.8z"/></svg>
+            </div>
+            <div class="flex-1 max-w-[88%]">
+              <div class="card p-4">
+                <p class="text-sm">Bora. Plano de 3 ações pra desbloquear a Ômega <strong class="text-warn">antes de hoje 14h</strong>:</p>
+
+                <div class="mt-4 space-y-2">
+                  <div class="border border-border rounded-xl p-3 hover:border-brand/40 transition">
+                    <div class="flex items-start gap-3">
+                      <div class="w-7 h-7 rounded-lg bg-brand/15 text-brand flex items-center justify-center text-[12px] font-bold shrink-0">1</div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <div class="font-semibold text-sm">Email pro cliente cobrando credenciais Itaú</div>
+                          <span class="chip tag-info">~2 min</span>
+                        </div>
+                        <p class="text-[12px] text-muted mt-1">Para: <strong class="text-text">marcelo@omega.com.br</strong> · CC: <strong class="text-text">contas@omega.com.br</strong> — Tom: firme com prazo de 4h, citando cláusula 8.1 do contrato.</p>
+                        <details class="mt-2">
+                          <summary class="text-[11px] text-brand hover:underline">📄 Ver rascunho do email</summary>
+                          <div class="mt-2 bg-bg/60 border border-border rounded-lg p-3 text-[12px] text-muted leading-relaxed">
+                            <strong class="text-text">Assunto:</strong> Pendência crítica · Implantação Sankhya · Credenciais Itaú homologação<br><br>
+                            Olá Marcelo, tudo bem?<br><br>
+                            Estamos parados há 2 dias úteis aguardando as credenciais de homologação do banco Itaú para concluir a integração financeira. Sem essa informação <strong class="text-text">até hoje (29/04) às 12h</strong>, a entrega prevista para 06/05 fica comprometida.<br><br>
+                            Como acordado em contrato (cláusula 8.1), pendências de cliente que ultrapassem 48h impactam o cronograma e podem gerar reagendamento da janela de go-live.<br><br>
+                            Aguardo retorno.<br><br>
+                            <strong class="text-text">— Gusttavo Fróes · Sankhya ABC</strong>
+                          </div>
+                        </details>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="border border-border rounded-xl p-3 hover:border-brand/40 transition">
+                    <div class="flex items-start gap-3">
+                      <div class="w-7 h-7 rounded-lg bg-brand/15 text-brand flex items-center justify-center text-[12px] font-bold shrink-0">2</div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <div class="font-semibold text-sm">Realocar Letícia em uma frente paralela</div>
+                          <span class="chip tag-info">~1 min</span>
+                        </div>
+                        <p class="text-[12px] text-muted mt-1">Enquanto o cliente não responde, mover Letícia para a task <span class="chip tag-priority-mid">DO-145</span> — <em>Configuração de filiais e CFOPs</em>. 6h de trabalho independente da integração bancária. Recupera o tempo perdido.</p>
+                        <div class="mt-2 flex items-center gap-2 text-[11px]">
+                          <span class="text-muted">Carga atual: 92%</span>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                          <span class="text-ok">após realoc: 88% (foco mudou)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="border border-border rounded-xl p-3 hover:border-brand/40 transition">
+                    <div class="flex items-start gap-3">
+                      <div class="w-7 h-7 rounded-lg bg-brand/15 text-brand flex items-center justify-center text-[12px] font-bold shrink-0">3</div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <div class="font-semibold text-sm">Registrar risco no projeto e notificar stakeholders</div>
+                          <span class="chip tag-info">automático</span>
+                        </div>
+                        <p class="text-[12px] text-muted mt-1">Crio o registro de risco "<strong class="text-text">Pendência cliente · Credenciais Itaú</strong>" com severidade alta, owner Cliente, prazo 12h. Notifico Júlia e Rafael (impacto downstream) e o sponsor interno.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-border flex items-center justify-between">
+                  <div class="flex items-center gap-3 text-[12px]">
+                    <span class="text-muted">Impacto estimado:</span>
+                    <span class="text-ok font-semibold">+ R$ 28.400 protegidos</span>
+                    <span class="text-muted">·</span>
+                    <span class="text-ok font-semibold">−2 dias de risco</span>
+                  </div>
+                  <div class="flex gap-2">
+                    <button class="text-xs bg-panel2 border border-border px-3 py-1.5 rounded-lg hover:border-brand/40">Editar plano</button>
+                    <button class="text-xs grad-brand text-white px-4 py-1.5 rounded-lg hover:opacity-90 font-semibold">⚡ Executar 3 ações</button>
+                  </div>
+                </div>
+              </div>
+              <div class="text-[10px] text-muted mt-1">IA COO · 08:16 · gerou em 1.4s · usou 8 fontes</div>
+            </div>
+          </div>
+
+          <!-- User msg -->
+          <div class="flex gap-3 justify-end reveal">
+            <div class="max-w-[75%]">
+              <div class="grad-brand text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm">
+                Executar. E me lembre às 11h se o cliente não responder.
+              </div>
+              <div class="text-[10px] text-muted mt-1 text-right">você · 08:17</div>
+            </div>
+            <div class="w-9 h-9 shrink-0 rounded-full grad-brand flex items-center justify-center text-[12px] font-bold">GF</div>
+          </div>
+
+          <!-- IA: confirmação de execução -->
+          <div class="flex gap-3 reveal">
+            <div class="w-9 h-9 shrink-0 rounded-xl grad-brand flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2l2.4 5 5.6.8-4 4 1 5.6L12 14.8 6.9 17.4l1-5.6-4-4 5.6-.8z"/></svg>
+            </div>
+            <div class="flex-1 max-w-[88%]">
+              <div class="card p-4 border-ok/30">
+                <div class="flex items-center gap-2 mb-3">
+                  <div class="w-6 h-6 rounded-full bg-ok/20 text-ok flex items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                  </div>
+                  <span class="font-semibold text-sm">3 ações executadas</span>
+                </div>
+                <ul class="text-[13px] space-y-1.5 text-muted">
+                  <li class="flex items-center gap-2"><span class="text-ok">✓</span> Email enviado · <strong class="text-text">marcelo@omega.com.br</strong> · status: lido às 08:18</li>
+                  <li class="flex items-center gap-2"><span class="text-ok">✓</span> Letícia realocada · <strong class="text-text">DO-145</strong> · notificada no Slack</li>
+                  <li class="flex items-center gap-2"><span class="text-ok">✓</span> Risco registrado · <strong class="text-text">RISK-Ω-001</strong> · severidade alta</li>
+                  <li class="flex items-center gap-2"><span class="text-ok">✓</span> Lembrete agendado · hoje <strong class="text-text">11:00</strong> · monitoramento ativo</li>
+                </ul>
+                <div class="mt-3 pt-3 border-t border-border text-[11px] text-muted">
+                  📊 Estado do projeto Ômega após ações: <span class="text-warn font-semibold">Risco mantido</span>, mas com plano de mitigação ativo. Vou voltar a falar contigo às 11h.
+                </div>
+              </div>
+              <div class="text-[10px] text-muted mt-1">IA COO · 08:17 · executou em 12s</div>
+            </div>
+          </div>
+
+          <!-- Typing indicator -->
+          <div class="flex gap-3">
+            <div class="w-9 h-9 shrink-0 rounded-xl grad-brand flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2l2.4 5 5.6.8-4 4 1 5.6L12 14.8 6.9 17.4l1-5.6-4-4 5.6-.8z"/></svg>
+            </div>
+            <div class="card px-4 py-3 typing">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Composer -->
+        <div class="border-t border-border bg-panel/40 backdrop-blur p-4">
+          <div class="max-w-3xl mx-auto">
+            <!-- Slash commands hint -->
+            <div class="flex items-center gap-1.5 mb-2 text-[11px] text-muted overflow-x-auto scrollbar pb-1">
+              <span class="font-semibold">Comandos:</span>
+              <span class="cmd-key">/planejar</span>
+              <span class="cmd-key">/cobrar</span>
+              <span class="cmd-key">/encerrar</span>
+              <span class="cmd-key">/risco</span>
+              <span class="cmd-key">/projeto</span>
+              <span class="cmd-key">/equipe</span>
+              <span class="cmd-key">/cliente</span>
+              <span class="cmd-key">/horas</span>
+              <span class="cmd-key">/relatorio</span>
+            </div>
+            <div class="card p-3 grad-border">
+              <textarea rows="2" class="w-full bg-transparent text-sm placeholder:text-muted focus:outline-none resize-none" placeholder="Pergunte algo, dê uma ordem ou digite / para usar comandos..."></textarea>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t border-border">
+                <div class="flex items-center gap-2">
+                  <button class="text-muted hover:text-white p-1.5 rounded hover:bg-panel2" title="Anexar contexto">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                  </button>
+                  <button class="text-muted hover:text-white p-1.5 rounded hover:bg-panel2" title="Anexar projeto">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg>
+                  </button>
+                  <button class="text-muted hover:text-white p-1.5 rounded hover:bg-panel2" title="Voz">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+                  </button>
+                  <span class="text-[10px] text-muted">·</span>
+                  <span class="text-[10px] text-muted">Modo: <span class="text-brand font-semibold">COO</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] text-muted">⌘ + Enter para enviar</span>
+                  <button class="grad-brand text-white text-sm font-semibold px-4 py-1.5 rounded-lg hover:opacity-90 flex items-center gap-1.5">
+                    Enviar
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DIREITA: Painel de contexto -->
+      <aside class="col-span-4 flex flex-col bg-panel/30 min-h-0">
+        <div class="overflow-y-auto scrollbar p-5 space-y-5">
+
+          <!-- MODO -->
+          <div>
+            <div class="text-[10px] tracking-wider text-muted font-semibold uppercase mb-2">Modo de operação</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button class="card p-3 text-left grad-border bg-brand/10">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+                  <span class="text-xs font-semibold">COO</span>
+                </div>
+                <p class="text-[10px] text-muted leading-tight">Cobra, prioriza, decide.</p>
+              </button>
+              <button class="card p-3 text-left card-hover">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-muted"></span>
+                  <span class="text-xs font-semibold">CEO</span>
+                </div>
+                <p class="text-[10px] text-muted leading-tight">Pensa receita e estratégia.</p>
+              </button>
+              <button class="card p-3 text-left card-hover">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-muted"></span>
+                  <span class="text-xs font-semibold">Foco total</span>
+                </div>
+                <p class="text-[10px] text-muted leading-tight">Bloqueia ruído, 1 task só.</p>
+              </button>
+              <button class="card p-3 text-left card-hover">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-muted"></span>
+                  <span class="text-xs font-semibold">Coach</span>
+                </div>
+                <p class="text-[10px] text-muted leading-tight">Te questiona, não decide.</p>
+              </button>
+            </div>
+          </div>
+
+          <!-- AÇÕES IA HOJE -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-[10px] tracking-wider text-muted font-semibold uppercase">Ações da IA hoje</div>
+              <span class="text-[10px] text-muted">7 hoje</span>
+            </div>
+            <div class="card divide-y divide-border">
+              <div class="p-3 flex items-start gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-ok/20 text-ok flex items-center justify-center shrink-0 mt-0.5">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div class="flex-1">
+                  <div class="text-[12px] font-medium">Email enviado · Ômega</div>
+                  <div class="text-[10px] text-muted">08:17 · ação aprovada por você</div>
+                </div>
+              </div>
+              <div class="p-3 flex items-start gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-ok/20 text-ok flex items-center justify-center shrink-0 mt-0.5">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div class="flex-1">
+                  <div class="text-[12px] font-medium">Letícia realocada · DO-145</div>
+                  <div class="text-[10px] text-muted">08:17 · ação aprovada por você</div>
+                </div>
+              </div>
+              <div class="p-3 flex items-start gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-brand/20 text-brand flex items-center justify-center shrink-0 mt-0.5">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </div>
+                <div class="flex-1">
+                  <div class="text-[12px] font-medium">Lembrete agendado · 11:00</div>
+                  <div class="text-[10px] text-muted">Monitorar resposta de Marcelo</div>
+                </div>
+              </div>
+              <div class="p-3 flex items-start gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-warn/20 text-warn flex items-center justify-center shrink-0 mt-0.5">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                </div>
+                <div class="flex-1">
+                  <div class="text-[12px] font-medium">Risco registrado · RISK-Ω-001</div>
+                  <div class="text-[10px] text-muted">Severidade alta · automático</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- O QUE EU TÔ MONITORANDO -->
+          <div>
+            <div class="text-[10px] tracking-wider text-muted font-semibold uppercase mb-2">O que estou monitorando</div>
+            <div class="card p-3 space-y-2.5">
+              <div class="flex items-center gap-2 text-[12px]">
+                <span class="w-1.5 h-1.5 rounded-full bg-danger pulse-dot text-danger"></span>
+                <span class="flex-1">Resposta do cliente Ômega</span>
+                <span class="text-[10px] text-muted">até 12:00</span>
+              </div>
+              <div class="flex items-center gap-2 text-[12px]">
+                <span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+                <span class="flex-1">Consumo horas Apolo</span>
+                <span class="text-[10px] text-muted">21h/32h</span>
+              </div>
+              <div class="flex items-center gap-2 text-[12px]">
+                <span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+                <span class="flex-1">Carga Letícia &gt; 90%</span>
+                <span class="text-[10px] text-muted">há 4 dias</span>
+              </div>
+              <div class="flex items-center gap-2 text-[12px]">
+                <span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                <span class="flex-1">PR #142 sem revisão</span>
+                <span class="text-[10px] text-muted">há 18h</span>
+              </div>
+              <div class="flex items-center gap-2 text-[12px]">
+                <span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                <span class="flex-1">Burndown sprint Hagious</span>
+                <span class="text-[10px] text-muted">no ritmo</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- HISTÓRICO -->
+          <div>
+            <div class="text-[10px] tracking-wider text-muted font-semibold uppercase mb-2">Conversas recentes</div>
+            <div class="space-y-1">
+              <button class="w-full card p-3 text-left card-hover">
+                <div class="text-[12px] font-medium">Briefing diário · 29/04</div>
+                <div class="text-[10px] text-muted truncate">3 frentes críticas · Ômega, Apolo, Camila ociosa...</div>
+              </button>
+              <button class="w-full card p-3 text-left card-hover">
+                <div class="text-[12px] font-medium">Encerramento · 28/04</div>
+                <div class="text-[10px] text-muted truncate">12 tasks done, 2 atrasadas, foco amanhã...</div>
+              </button>
+              <button class="w-full card p-3 text-left card-hover">
+                <div class="text-[12px] font-medium">Análise margem Apolo · 28/04</div>
+                <div class="text-[10px] text-muted truncate">Detectado retrabalho NF-e em 6,2h queimadas...</div>
+              </button>
+              <button class="w-full card p-3 text-left card-hover">
+                <div class="text-[12px] font-medium">Plano sprint 03 · 27/04</div>
+                <div class="text-[10px] text-muted truncate">Hagious Flow · 14 stories priorizadas...</div>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

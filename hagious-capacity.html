@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hagious Flow — Capacity Planner</title>
+<script>window.process = { env: { NODE_ENV: "production" } };</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        bg:      'var(--bg)',
+        panel:   'var(--panel)',
+        panel2:  'var(--panel-2)',
+        border:  'var(--border)',
+        text:    'var(--text)',
+        muted:   'var(--muted)',
+        brand:   'var(--brand)',
+        brand2:  'var(--brand-2)',
+        ok:      'var(--ok)',
+        warn:    'var(--warn)',
+        danger:  'var(--danger)',
+      },
+      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+    }
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background:#0B0D12; color:#E6E8EE; }
+  .scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar::-webkit-scrollbar-thumb { background: #1F2430; border-radius: 4px; }
+
+  .grad-brand { background: linear-gradient(135deg, #7C5CFF 0%, #5B8DEF 100%); }
+  .grad-text { background: linear-gradient(135deg, #7C5CFF 0%, #5B8DEF 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .nav-item.active { background: linear-gradient(90deg, rgba(124,92,255,.18), transparent); border-left-color:#7C5CFF; color:#fff;}
+
+  .chip { display:inline-flex; align-items:center; gap:6px; font-size:11px; padding:3px 8px; border-radius:6px; font-weight:600;}
+  .tag-priority-high { background: rgba(239,68,68,.12); color:#FCA5A5; }
+  .tag-priority-mid  { background: rgba(245,158,11,.12); color:#FCD34D; }
+  .tag-priority-low  { background: rgba(34,197,94,.12); color:#86EFAC; }
+  .tag-status-doing  { background: rgba(91,141,239,.15); color:#93C5FD; }
+  .tag-status-done   { background: rgba(34,197,94,.12); color:#86EFAC; }
+  .tag-status-block  { background: rgba(239,68,68,.12); color:#FCA5A5; }
+  .tag-info          { background: rgba(91,141,239,.15); color:#93C5FD; }
+
+  .card { background:#11141B; border:1px solid #1F2430; border-radius:14px; }
+  .progress-bar { height:6px; background:#1F2430; border-radius:6px; overflow:hidden; }
+  .progress-fill { height:100%; background: linear-gradient(90deg, #7C5CFF, #5B8DEF); border-radius:6px; }
+
+  .pulse-dot { position: relative; }
+  .pulse-dot::after { content:''; position:absolute; inset:-4px; border-radius:9999px; border:2px solid currentColor; opacity:.4; animation: ping 1.6s cubic-bezier(0,0,.2,1) infinite;}
+  @keyframes ping { 0% {transform:scale(.9); opacity:.6} 80%,100% {transform:scale(1.6); opacity:0} }
+
+  /* Heatmap cells */
+  .cell {
+    height: 56px; border-radius: 8px; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; font-size: 11px; font-weight: 600; color: white; cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease; position: relative;
+  }
+  .cell:hover { transform: scale(1.04); box-shadow: 0 4px 12px rgba(0,0,0,.3); z-index: 5; }
+  .cell-under     { background: linear-gradient(180deg, #2a3142 0%, #1d2230 100%); color: #93C5FD; }
+  .cell-healthy   { background: linear-gradient(180deg, #15803d 0%, #166534 100%);}
+  .cell-busy      { background: linear-gradient(180deg, #ca8a04 0%, #a16207 100%);}
+  .cell-overload  { background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);}
+  .cell-overload::before {
+    content: '⚠';
+    position: absolute; top: 4px; right: 6px; font-size: 11px;
+  }
+  .cell-focus::after {
+    content: '🎯';
+    position: absolute; top: 3px; left: 5px; font-size: 10px;
+  }
+  .cell-empty { background: transparent; border: 1px dashed #1F2430; color: #475569; height: 56px; border-radius: 8px;}
+
+  .ai-shimmer {
+    background: linear-gradient(90deg, rgba(124,92,255,.0) 0%, rgba(124,92,255,.18) 50%, rgba(124,92,255,.0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer { 0%{background-position: 200% 0} 100%{background-position: -200% 0} }
+
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display:none; }
+</style>
+<style>
+/* ================================================================
+ * HAGIOUS FLOW · DESIGN SYSTEM · TOKENS DE COR
+ * ================================================================
+ * 3 temas suportados:
+ *   - sankhya-light  → padrão claro inspirado no site sankhya.com.br
+ *   - sankhya-dark   → escuro corporativo com mesmas cores de marca
+ *   - hagious-purple → tema original (roxo/azul, dark only)
+ *
+ * Os tokens são CSS Custom Properties.
+ * Tailwind usa essas variáveis via `theme.colors` no config inline.
+ * O usuário troca tema com data-theme no <html>, persistido em localStorage.
+ * ================================================================ */
+
+/* ============ TEMA: SANKHYA LIGHT (default) ============ */
+:root, [data-theme="sankhya-light"] {
+  /* Marca Sankhya */
+  --brand:        #009A4E;   /* verde corporativo */
+  --brand-hover:  #007D3F;
+  --brand-2:      #7AC143;   /* verde-lima de acento */
+  --brand-3:      #FF6B00;   /* laranja de destaque (CTAs especiais) */
+
+  /* Superfícies */
+  --bg:           #F5F7F4;   /* fundo geral, branco esverdeado sutil */
+  --panel:        #FFFFFF;
+  --panel-2:      #F0F3EE;
+  --border:       #E2E7DD;
+  --border-2:     #D0D7C9;
+
+  /* Texto */
+  --text:         #1A2B22;   /* verde quase preto */
+  --text-2:       #3D4F45;
+  --muted:        #6B7A70;
+
+  /* Estados */
+  --ok:           #009A4E;
+  --warn:         #F59E0B;
+  --danger:       #DC2626;
+  --info:         #2563EB;
+
+  /* Sombras (tema claro precisa de sombras mais visíveis) */
+  --shadow-sm:    0 1px 2px rgba(26, 43, 34, 0.06);
+  --shadow-md:    0 4px 12px rgba(26, 43, 34, 0.08);
+  --shadow-lg:    0 12px 32px rgba(26, 43, 34, 0.12);
+  --glow:         0 0 0 1px rgba(0, 154, 78, 0.15), 0 8px 28px rgba(0, 154, 78, 0.10);
+
+  /* Gradientes */
+  --grad-brand:   linear-gradient(135deg, #009A4E 0%, #7AC143 100%);
+  --grad-text:    linear-gradient(135deg, #009A4E 0%, #007D3F 100%);
+
+  /* Tags */
+  --tag-prio-high-bg:   rgba(220, 38, 38, 0.10);
+  --tag-prio-high-fg:   #B91C1C;
+  --tag-prio-mid-bg:    rgba(245, 158, 11, 0.12);
+  --tag-prio-mid-fg:    #B45309;
+  --tag-prio-low-bg:    rgba(0, 154, 78, 0.10);
+  --tag-prio-low-fg:    #007D3F;
+  --tag-doing-bg:       rgba(37, 99, 235, 0.10);
+  --tag-doing-fg:       #1D4ED8;
+  --tag-done-bg:        rgba(0, 154, 78, 0.10);
+  --tag-done-fg:        #007D3F;
+  --tag-block-bg:       rgba(220, 38, 38, 0.10);
+  --tag-block-fg:       #B91C1C;
+  --tag-todo-bg:        rgba(107, 122, 112, 0.12);
+  --tag-todo-fg:        #3D4F45;
+  --tag-review-bg:      rgba(122, 193, 67, 0.16);
+  --tag-review-fg:      #4D7A2C;
+  --tag-info-bg:        rgba(37, 99, 235, 0.10);
+  --tag-info-fg:        #1D4ED8;
+  --tag-focus-bg:       rgba(0, 154, 78, 0.12);
+  --tag-focus-fg:       #007D3F;
+}
+
+/* ============ TEMA: SANKHYA DARK ============ */
+[data-theme="sankhya-dark"] {
+  /* Marca Sankhya (mesmas cores, mas verde mais luminoso pro dark) */
+  --brand:        #22C55E;   /* verde mais brilhante pra contraste no dark */
+  --brand-hover:  #16A34A;
+  --brand-2:      #84CC16;   /* lima */
+  --brand-3:      #FB923C;
+
+  /* Superfícies */
+  --bg:           #0A1410;   /* preto esverdeado */
+  --panel:        #0F1B16;
+  --panel-2:      #15241D;
+  --border:       #1F302A;
+  --border-2:     #2A413A;
+
+  /* Texto */
+  --text:         #E8F0EA;
+  --text-2:       #C0CDC4;
+  --muted:        #7A8A82;
+
+  /* Estados */
+  --ok:           #22C55E;
+  --warn:         #F59E0B;
+  --danger:       #EF4444;
+  --info:         #5B8DEF;
+
+  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-md:    0 4px 12px rgba(0, 0, 0, 0.40);
+  --shadow-lg:    0 12px 32px rgba(0, 0, 0, 0.50);
+  --glow:         0 0 0 1px rgba(34, 197, 94, 0.20), 0 8px 30px rgba(34, 197, 94, 0.10);
+
+  --grad-brand:   linear-gradient(135deg, #22C55E 0%, #84CC16 100%);
+  --grad-text:    linear-gradient(135deg, #22C55E 0%, #84CC16 100%);
+
+  --tag-prio-high-bg:   rgba(239, 68, 68, 0.12);
+  --tag-prio-high-fg:   #FCA5A5;
+  --tag-prio-mid-bg:    rgba(245, 158, 11, 0.12);
+  --tag-prio-mid-fg:    #FCD34D;
+  --tag-prio-low-bg:    rgba(34, 197, 94, 0.12);
+  --tag-prio-low-fg:    #86EFAC;
+  --tag-doing-bg:       rgba(91, 141, 239, 0.15);
+  --tag-doing-fg:       #93C5FD;
+  --tag-done-bg:        rgba(34, 197, 94, 0.12);
+  --tag-done-fg:        #86EFAC;
+  --tag-block-bg:       rgba(239, 68, 68, 0.12);
+  --tag-block-fg:       #FCA5A5;
+  --tag-todo-bg:        rgba(138, 147, 166, 0.12);
+  --tag-todo-fg:        #CBD5E1;
+  --tag-review-bg:      rgba(132, 204, 22, 0.18);
+  --tag-review-fg:      #BEF264;
+  --tag-info-bg:        rgba(91, 141, 239, 0.15);
+  --tag-info-fg:        #93C5FD;
+  --tag-focus-bg:       rgba(34, 197, 94, 0.15);
+  --tag-focus-fg:       #86EFAC;
+}
+
+/* ============ TEMA: HAGIOUS PURPLE (original) ============ */
+[data-theme="hagious-purple"] {
+  --brand:        #7C5CFF;
+  --brand-hover:  #6D4FE0;
+  --brand-2:      #5B8DEF;
+  --brand-3:      #C4B5FD;
+
+  --bg:           #0B0D12;
+  --panel:        #11141B;
+  --panel-2:      #171B25;
+  --border:       #1F2430;
+  --border-2:     #2A3142;
+
+  --text:         #E6E8EE;
+  --text-2:       #CBD5E1;
+  --muted:        #8A93A6;
+
+  --ok:           #22C55E;
+  --warn:         #F59E0B;
+  --danger:       #EF4444;
+  --info:         #5B8DEF;
+
+  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-md:    0 4px 12px rgba(0, 0, 0, 0.40);
+  --shadow-lg:    0 12px 32px rgba(0, 0, 0, 0.50);
+  --glow:         0 0 0 1px rgba(124, 92, 255, 0.18), 0 8px 30px rgba(124, 92, 255, 0.10);
+
+  --grad-brand:   linear-gradient(135deg, #7C5CFF 0%, #5B8DEF 100%);
+  --grad-text:    linear-gradient(135deg, #7C5CFF 0%, #5B8DEF 100%);
+
+  --tag-prio-high-bg:   rgba(239, 68, 68, 0.12);
+  --tag-prio-high-fg:   #FCA5A5;
+  --tag-prio-mid-bg:    rgba(245, 158, 11, 0.12);
+  --tag-prio-mid-fg:    #FCD34D;
+  --tag-prio-low-bg:    rgba(34, 197, 94, 0.12);
+  --tag-prio-low-fg:    #86EFAC;
+  --tag-doing-bg:       rgba(91, 141, 239, 0.15);
+  --tag-doing-fg:       #93C5FD;
+  --tag-done-bg:        rgba(34, 197, 94, 0.12);
+  --tag-done-fg:        #86EFAC;
+  --tag-block-bg:       rgba(239, 68, 68, 0.12);
+  --tag-block-fg:       #FCA5A5;
+  --tag-todo-bg:        rgba(138, 147, 166, 0.12);
+  --tag-todo-fg:        #CBD5E1;
+  --tag-review-bg:      rgba(168, 85, 247, 0.15);
+  --tag-review-fg:      #D8B4FE;
+  --tag-info-bg:        rgba(91, 141, 239, 0.15);
+  --tag-info-fg:        #93C5FD;
+  --tag-focus-bg:       rgba(124, 92, 255, 0.15);
+  --tag-focus-fg:       #C4B5FD;
+}
+
+/* ================================================================
+ * BASE
+ * ================================================================ */
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Tudo que era hardcoded vira variável */
+.bg-bg       { background-color: var(--bg) !important; }
+.bg-panel    { background-color: var(--panel) !important; }
+.bg-panel2   { background-color: var(--panel-2) !important; }
+.text-text   { color: var(--text) !important; }
+.text-muted  { color: var(--muted) !important; }
+.text-brand  { color: var(--brand) !important; }
+.text-brand2 { color: var(--brand-2) !important; }
+.text-ok     { color: var(--ok) !important; }
+.text-warn   { color: var(--warn) !important; }
+.text-danger { color: var(--danger) !important; }
+.border-border { border-color: var(--border) !important; }
+
+.bg-ok { background-color: var(--ok) !important; }
+.bg-warn { background-color: var(--warn) !important; }
+.bg-danger { background-color: var(--danger) !important; }
+.bg-brand { background-color: var(--brand) !important; }
+.bg-brand2 { background-color: var(--brand-2) !important; }
+
+.grad-brand { background: var(--grad-brand) !important; }
+.grad-text {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+
+.glow { box-shadow: var(--glow); }
+
+/* Cards */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.card-hover:hover {
+  border-color: var(--border-2);
+}
+
+/* Tags / chips - sobrescreve o que tinha hardcoded */
+.tag-priority-high { background: var(--tag-prio-high-bg) !important; color: var(--tag-prio-high-fg) !important; }
+.tag-priority-mid  { background: var(--tag-prio-mid-bg)  !important; color: var(--tag-prio-mid-fg)  !important; }
+.tag-priority-low  { background: var(--tag-prio-low-bg)  !important; color: var(--tag-prio-low-fg)  !important; }
+.tag-status-doing  { background: var(--tag-doing-bg)     !important; color: var(--tag-doing-fg)     !important; }
+.tag-status-done   { background: var(--tag-done-bg)      !important; color: var(--tag-done-fg)      !important; }
+.tag-status-block  { background: var(--tag-block-bg)     !important; color: var(--tag-block-fg)     !important; }
+.tag-status-todo   { background: var(--tag-todo-bg)      !important; color: var(--tag-todo-fg)      !important; }
+.tag-status-review { background: var(--tag-review-bg)    !important; color: var(--tag-review-fg)    !important; }
+.tag-info          { background: var(--tag-info-bg)      !important; color: var(--tag-info-fg)      !important; }
+.tag-focus         { background: var(--tag-focus-bg)     !important; color: var(--tag-focus-fg)     !important; }
+.tag-warn          { background: var(--tag-prio-mid-bg)  !important; color: var(--tag-prio-mid-fg)  !important; }
+
+/* Progress bars */
+.progress-bar {
+  height: 6px;
+  background: var(--panel-2);
+  border-radius: 6px;
+  overflow: hidden;
+}
+[data-theme="sankhya-light"] .progress-bar {
+  background: #E2E7DD;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--grad-brand);
+  border-radius: 6px;
+}
+
+/* Scrollbar */
+.scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+.scrollbar::-webkit-scrollbar-track { background: transparent; }
+.scrollbar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.scrollbar::-webkit-scrollbar-thumb:hover { background: var(--border-2); }
+
+/* Inputs em tema claro precisam de fundo distinto */
+[data-theme="sankhya-light"] input,
+[data-theme="sankhya-light"] textarea {
+  background-color: var(--panel) !important;
+  color: var(--text) !important;
+}
+[data-theme="sankhya-light"] input::placeholder,
+[data-theme="sankhya-light"] textarea::placeholder {
+  color: var(--muted) !important;
+}
+
+/* Active nav item: usa brand */
+.nav-item.active {
+  background: linear-gradient(90deg, var(--tag-focus-bg), transparent);
+  border-left-color: var(--brand) !important;
+  color: var(--text) !important;
+}
+
+/* ================================================================
+ * AJUSTES ESPECÍFICOS DE TEMA CLARO
+ * Corrige hardcodes que ficam ruins quando o fundo é claro
+ * ================================================================ */
+
+/* No tema claro, hover-text-white precisa virar texto escuro */
+[data-theme="sankhya-light"] .hover\:text-white:hover {
+  color: var(--text) !important;
+}
+
+/* text-white solto no tema claro vira texto escuro... */
+[data-theme="sankhya-light"] .text-white {
+  color: var(--text) !important;
+}
+
+/* ...EXCETO dentro de elementos com fundo brand/colorido */
+[data-theme="sankhya-light"] .grad-brand,
+[data-theme="sankhya-light"] .grad-brand .text-white,
+[data-theme="sankhya-light"] button.grad-brand,
+[data-theme="sankhya-light"] a.grad-brand,
+[data-theme="sankhya-light"] .bg-brand .text-white,
+[data-theme="sankhya-light"] [class*="bg-emerald-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-blue-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-purple-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-pink-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-rose-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-amber-500"] .text-white,
+[data-theme="sankhya-light"] [class*="bg-cyan-500"] .text-white {
+  color: white !important;
+}
+
+/* Botões grad-brand: texto fica branco SEMPRE */
+[data-theme="sankhya-light"] .grad-brand {
+  color: white !important;
+}
+
+/* No tema claro, IA shimmer fica fraco - reforçar com tom verde */
+[data-theme="sankhya-light"] .ai-shimmer {
+  background: linear-gradient(90deg, rgba(0,154,78,0) 0%, rgba(0,154,78,0.10) 50%, rgba(0,154,78,0) 100%) !important;
+  background-size: 200% 100% !important;
+}
+
+/* Hover de cards no tema claro: borda verde + sombra suave */
+[data-theme="sankhya-light"] .card-hover:hover {
+  border-color: var(--brand) !important;
+  box-shadow: var(--shadow-md);
+}
+
+/* Topbar com backdrop-blur: fundo claro semi-transparente */
+[data-theme="sankhya-light"] [class*="bg-bg/85"],
+[data-theme="sankhya-light"] [class*="bg-bg/60"] {
+  background-color: rgba(245, 247, 244, 0.88) !important;
+}
+
+/* Sidebar e painéis com transparência */
+[data-theme="sankhya-light"] [class*="bg-panel/60"],
+[data-theme="sankhya-light"] [class*="bg-panel/40"],
+[data-theme="sankhya-light"] [class*="bg-panel/30"] {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* Hover panel-2 funciona em qualquer tema */
+[data-theme="sankhya-light"] [class*="hover:bg-panel2"]:hover {
+  background-color: var(--panel-2) !important;
+}
+
+/* Borders quentes/coloridas em cards de risco */
+[data-theme="sankhya-light"] [class*="border-warn"] {
+  border-color: var(--warn) !important;
+}
+[data-theme="sankhya-light"] [class*="border-danger"] {
+  border-color: var(--danger) !important;
+}
+
+/* ================================================================
+ * THEME SWITCHER · canto inferior direito · colapsável
+ * Não conflita com sino, avatares ou conteúdo do topo.
+ * ================================================================ */
+.theme-switcher {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-lg);
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow: hidden;
+  transition: gap .25s ease, padding .25s ease, max-width .25s ease;
+  max-width: 44px;
+}
+.theme-switcher.is-open {
+  gap: 6px;
+  padding: 5px 10px 5px 12px;
+  max-width: 280px;
+}
+
+/* Toggle (a "bolinha" sempre visível) */
+.theme-switcher-toggle {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color .15s ease, transform .15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+.theme-switcher-toggle:hover { color: var(--brand); transform: scale(1.05); }
+.theme-switcher-toggle svg { width: 18px; height: 18px; }
+
+/* Label e botões: escondidos quando fechado, visíveis quando aberto */
+.theme-switcher-label,
+.theme-switcher-btn {
+  opacity: 0;
+  transform: translateX(8px);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.theme-switcher.is-open .theme-switcher-label,
+.theme-switcher.is-open .theme-switcher-btn {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.theme-switcher-label {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 9px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.theme-switcher-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform .15s ease, border-color .15s ease, opacity .2s ease;
+  flex-shrink: 0;
+}
+.theme-switcher-btn:hover { transform: scale(1.12); }
+.theme-switcher-btn[data-active="true"] {
+  border-color: var(--text);
+  box-shadow: 0 0 0 2px var(--panel), 0 0 0 3px var(--text);
+}
+.theme-switcher-btn[data-theme="sankhya-light"]  { background: linear-gradient(135deg, #009A4E 0%, #7AC143 100%); }
+.theme-switcher-btn[data-theme="sankhya-dark"]   { background: linear-gradient(135deg, #0F1B16 0%, #22C55E 100%); }
+.theme-switcher-btn[data-theme="hagious-purple"] { background: linear-gradient(135deg, #7C5CFF 0%, #5B8DEF 100%); }
+
+/* Em telas mobile/estreitas, encolhe um pouco */
+@media (max-width: 480px) {
+  .theme-switcher { bottom: 12px; right: 12px; }
+}
+
+</style>
+<script>
+/* ================================================================
+ * HAGIOUS FLOW · THEME SWITCHER · v2 (canto inferior · colapsável)
+ * ================================================================ */
+(function(){
+  const THEMES = [
+    { id: 'sankhya-light',  label: 'Sankhya Light' },
+    { id: 'sankhya-dark',   label: 'Sankhya Dark' },
+    { id: 'hagious-purple', label: 'Hagious Purple' }
+  ];
+  const KEY = 'hagious-flow-theme';
+  const DEFAULT = 'sankhya-light';
+
+  function apply(themeId){
+    document.documentElement.setAttribute('data-theme', themeId);
+    try { localStorage.setItem(KEY, themeId); } catch(e){}
+    document.querySelectorAll('.theme-switcher-btn').forEach(btn => {
+      btn.setAttribute('data-active', btn.dataset.theme === themeId ? 'true' : 'false');
+    });
+  }
+
+  function getInitial(){
+    try {
+      const saved = localStorage.getItem(KEY);
+      if (saved && THEMES.some(t => t.id === saved)) return saved;
+    } catch(e){}
+    return DEFAULT;
+  }
+
+  // Aplica antes do DOM montar (evita flash)
+  apply(getInitial());
+
+  // SVG do ícone de paleta (lucide "palette")
+  const ICON_PALETTE = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+      <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+      <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+      <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
+    </svg>`;
+
+  function injectUI(){
+    if (document.querySelector('.theme-switcher')) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'theme-switcher';
+    wrap.setAttribute('aria-label', 'Seletor de tema');
+    wrap.innerHTML = `
+      <button type="button" class="theme-switcher-toggle" aria-label="Alternar seletor de tema" title="Tema">
+        ${ICON_PALETTE}
+      </button>
+      <span class="theme-switcher-label">Tema</span>
+      ${THEMES.map(t => `
+        <button type="button" class="theme-switcher-btn" data-theme="${t.id}" title="${t.label}" aria-label="Tema ${t.label}"></button>
+      `).join('')}
+    `;
+    document.body.appendChild(wrap);
+
+    const toggle = wrap.querySelector('.theme-switcher-toggle');
+
+    function closeSwitcher(){ wrap.classList.remove('is-open'); }
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      wrap.classList.toggle('is-open');
+    });
+
+    wrap.querySelectorAll('.theme-switcher-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        apply(btn.dataset.theme);
+      });
+    });
+
+    // Fecha ao clicar fora
+    document.addEventListener('click', (e) => {
+      if (!wrap.contains(e.target)) closeSwitcher();
+    });
+
+    // Fecha ao apertar Esc
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSwitcher();
+    });
+
+    // Re-marcar ativo agora que os botões existem
+    apply(document.documentElement.getAttribute('data-theme') || DEFAULT);
+  }
+
+  if (document.body) {
+    injectUI();
+  } else {
+    document.addEventListener('DOMContentLoaded', injectUI);
+  }
+})();
+
+</script>
+</head>
+<body class="min-h-screen">
+
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR (mesmo padrão) -->
+  <aside class="w-[240px] shrink-0 border-r border-border bg-panel/60 backdrop-blur sticky top-0 h-screen flex flex-col">
+    <div class="px-5 py-5 border-b border-border flex items-center gap-2">
+      <div class="w-9 h-9 rounded-xl grad-brand flex items-center justify-center font-bold text-white">H</div>
+      <div>
+        <div class="font-bold tracking-tight text-[15px]">Hagious <span class="grad-text">Flow</span></div>
+        <div class="text-[10px] text-muted -mt-0.5">v1.0 · Beta</div>
+      </div>
+    </div>
+    <div class="px-3 py-3 border-b border-border">
+      <button class="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-panel2 hover:bg-[#1d2230] text-left">
+        <div class="w-7 h-7 rounded-md bg-gradient-to-br from-fuchsia-500 to-rose-500 flex items-center justify-center text-[11px] font-bold">SA</div>
+        <div class="flex-1">
+          <div class="text-xs text-muted">Workspace</div>
+          <div class="text-sm font-semibold leading-tight">Sankhya ABC</div>
+        </div>
+      </button>
+    </div>
+    <nav class="flex-1 overflow-y-auto scrollbar py-3">
+      <div class="px-4 text-[10px] tracking-wider text-muted font-semibold uppercase mb-2">Operação</div>
+      <a href="hagious-flow.html" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </a>
+      <a href="hagious-projeto.html" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg>
+        Projetos
+      </a>
+
+      <div class="px-4 text-[10px] tracking-wider text-muted font-semibold uppercase mt-5 mb-2">Governança · v1.1</div>
+      <a href="hagious-inbox.html" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        Inbox de Triagem
+      </a>
+      <a href="#" class="nav-item active flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+        Capacity Planner
+      </a>
+      <a href="hagious-foco.html" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        Modo Foco
+      </a>
+
+      <div class="px-4 text-[10px] tracking-wider text-muted font-semibold uppercase mt-5 mb-2">Inteligência</div>
+      <a href="hagious-ia-coo.html" class="nav-item flex items-center gap-3 px-4 py-2 text-sm border-l-2 border-transparent text-muted hover:text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 5 5.6.8-4 4 1 5.6L12 14.8 6.9 17.4l1-5.6-4-4 5.6-.8z"/></svg>
+        IA COO
+      </a>
+    </nav>
+    <div class="border-t border-border p-3">
+      <div class="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-panel2 cursor-pointer">
+        <div class="w-8 h-8 rounded-full grad-brand flex items-center justify-center text-[12px] font-bold">GF</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-semibold truncate">Gusttavo Fróes</div>
+          <div class="text-[11px] text-muted truncate">Coord. Desenvolvimento</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 min-w-0">
+    <header class="sticky top-0 z-20 bg-bg/85 backdrop-blur border-b border-border">
+      <div class="px-8 h-14 flex items-center gap-4">
+        <nav class="flex items-center gap-2 text-[12px] text-muted">
+          <a href="#" class="hover:text-white">Governança</a>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          <span class="text-text font-medium">Capacity Planner</span>
+        </nav>
+        <div class="flex-1"></div>
+        <button class="text-xs bg-panel border border-border px-3 py-1.5 rounded-lg hover:border-brand/40 flex items-center gap-1.5">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 5 5.6.8-4 4 1 5.6L12 14.8 6.9 17.4l1-5.6-4-4 5.6-.8z"/></svg>
+          Sugestões da IA
+        </button>
+        <button class="grad-brand text-white text-sm font-semibold px-4 py-1.5 rounded-lg hover:opacity-90 flex items-center gap-1.5">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Alocar pessoa
+        </button>
+      </div>
+    </header>
+
+    <!-- HEADER -->
+    <section class="px-8 pt-6 pb-4 border-b border-border">
+      <div class="flex items-end justify-between">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight">Capacity Planner</h1>
+          <p class="text-sm text-muted mt-1">Carga semanal por pessoa. Alocações com bloqueio de over-allocation. <span class="text-brand font-semibold">A IA bloqueia decisões ruins antes de virarem dor.</span></p>
+        </div>
+        <div class="flex gap-1 text-xs border border-border rounded-lg p-0.5">
+          <button class="px-3 py-1.5 bg-panel2 rounded font-semibold">Semanal</button>
+          <button class="px-3 py-1.5 text-muted">Quinzenal</button>
+          <button class="px-3 py-1.5 text-muted">Mensal</button>
+        </div>
+      </div>
+
+      <!-- KPI ROW -->
+      <div class="grid grid-cols-4 gap-3 mt-5">
+        <div class="card px-4 py-3">
+          <div class="text-[10px] text-muted uppercase tracking-wider">Equipe ativa</div>
+          <div class="text-base font-bold mt-1">6 pessoas</div>
+          <div class="text-[10px] text-muted">240h capacidade total</div>
+        </div>
+        <div class="card px-4 py-3">
+          <div class="text-[10px] text-muted uppercase tracking-wider">Saturação atual</div>
+          <div class="text-base font-bold text-warn mt-1">68%</div>
+          <div class="text-[10px] text-muted">163h alocadas</div>
+        </div>
+        <div class="card px-4 py-3 border-danger/30">
+          <div class="text-[10px] text-muted uppercase tracking-wider">Em sobrecarga</div>
+          <div class="text-base font-bold text-danger mt-1">1 pessoa</div>
+          <div class="text-[10px] text-muted">Letícia · 92% esta semana</div>
+        </div>
+        <div class="card px-4 py-3 border-ok/30">
+          <div class="text-[10px] text-muted uppercase tracking-wider">Capacidade livre</div>
+          <div class="text-base font-bold text-ok mt-1">42h disponíveis</div>
+          <div class="text-[10px] text-muted">Camila + Gusttavo · pico próx. semana</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    <div class="p-8 space-y-6 max-w-[1500px] mx-auto">
+
+      <!-- SUGESTÃO IA -->
+      <section class="card p-5 ai-shimmer relative" style="border-color: rgba(124,92,255,.3)">
+        <div class="flex items-start gap-4">
+          <div class="shrink-0 w-11 h-11 rounded-xl grad-brand flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2l2.4 5 5.6.8-4 4 1 5.6L12 14.8 6.9 17.4l1-5.6-4-4 5.6-.8z"/></svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-[11px] uppercase tracking-wider font-bold grad-text">Análise da IA · Capacidade</span>
+              <span class="text-[11px] text-muted">· 4min atrás</span>
+            </div>
+            <h3 class="text-base font-semibold leading-snug">
+              <strong class="text-warn">Atenção</strong> · Letícia em <strong class="text-danger">92%</strong> esta semana e <strong class="text-danger">102%</strong> na próxima. Camila tem <strong class="text-ok">22h livres</strong> e skill QA Sr. <strong class="grad-text">Sugiro: realocar 14h da Letícia para Camila</strong> (testes de regressão Vetor não exigem skill de implantação). Resultado: Letícia volta para 76%, Camila vai pra 78%, equipe entra em equilíbrio.
+            </h3>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <button class="text-xs grad-brand text-white px-3 py-1.5 rounded-lg hover:opacity-90 font-semibold flex items-center gap-1.5">
+                ⚡ Aplicar realocação sugerida
+              </button>
+              <button class="text-xs bg-panel2 border border-border px-3 py-1.5 rounded-lg hover:border-brand/40">Ver detalhes</button>
+              <button class="text-xs bg-panel2 border border-border px-3 py-1.5 rounded-lg hover:border-brand/40">Outras opções</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HEATMAP -->
+      <section class="card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-semibold text-[15px]">Heatmap de carga · próximas 4 semanas</h3>
+            <p class="text-xs text-muted">Cada célula = % de saturação. Clique pra ver alocações detalhadas.</p>
+          </div>
+          <div class="flex items-center gap-3 text-[10px]">
+            <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded cell-under"></div><span class="text-muted">&lt; 50%</span></div>
+            <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded cell-healthy"></div><span class="text-muted">50-79%</span></div>
+            <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded cell-busy"></div><span class="text-muted">80-95%</span></div>
+            <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded cell-overload"></div><span class="text-muted">&gt; 95%</span></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-[180px_repeat(4,_1fr)] gap-2 items-center">
+          <!-- Header -->
+          <div></div>
+          <div class="text-[10px] text-center text-muted uppercase tracking-wider font-semibold">
+            Sem 18 · 27/04 <span class="text-danger">●</span>
+            <div class="text-[9px] normal-case font-normal opacity-70">esta semana</div>
+          </div>
+          <div class="text-[10px] text-center text-muted uppercase tracking-wider font-semibold">
+            Sem 19 · 04/05
+            <div class="text-[9px] normal-case font-normal opacity-70">próxima</div>
+          </div>
+          <div class="text-[10px] text-center text-muted uppercase tracking-wider font-semibold">
+            Sem 20 · 11/05
+          </div>
+          <div class="text-[10px] text-center text-muted uppercase tracking-wider font-semibold">
+            Sem 21 · 18/05
+          </div>
+
+          <!-- Letícia -->
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[10px] font-bold">LT</div>
+            <div>
+              <div class="text-[12px] font-semibold">Letícia</div>
+              <div class="text-[10px] text-muted">Consultora Sr</div>
+            </div>
+          </div>
+          <div class="cell cell-overload cell-focus">
+            <span class="text-base font-bold">92%</span>
+            <span class="text-[10px] opacity-90">37h / 40h</span>
+          </div>
+          <div class="cell cell-overload">
+            <span class="text-base font-bold">102%</span>
+            <span class="text-[10px] opacity-90">41h / 40h</span>
+          </div>
+          <div class="cell cell-busy">
+            <span class="text-base font-bold">75%</span>
+            <span class="text-[10px] opacity-90">30h / 40h</span>
+          </div>
+          <div class="cell cell-healthy">
+            <span class="text-base font-bold">60%</span>
+            <span class="text-[10px] opacity-90">24h / 40h</span>
+          </div>
+
+          <!-- Rafael -->
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-300 flex items-center justify-center text-[10px] font-bold">RM</div>
+            <div>
+              <div class="text-[12px] font-semibold">Rafael</div>
+              <div class="text-[10px] text-muted">Dev Backend</div>
+            </div>
+          </div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">74%</span><span class="text-[10px] opacity-90">30h / 40h</span></div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">60%</span><span class="text-[10px] opacity-90">24h / 40h</span></div>
+          <div class="cell cell-under"><span class="text-base font-bold">45%</span><span class="text-[10px] opacity-90">18h / 40h</span></div>
+          <div class="cell cell-under"><span class="text-base font-bold">30%</span><span class="text-[10px] opacity-90">12h / 40h</span></div>
+
+          <!-- Patrícia -->
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[10px] font-bold">PS</div>
+            <div>
+              <div class="text-[12px] font-semibold">Patrícia</div>
+              <div class="text-[10px] text-muted">Suporte</div>
+            </div>
+          </div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">58%</span><span class="text-[10px] opacity-90">23h / 40h</span></div>
+          <div class="cell cell-busy"><span class="text-base font-bold">80%</span><span class="text-[10px] opacity-90">32h / 40h</span></div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">70%</span><span class="text-[10px] opacity-90">28h / 40h</span></div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">55%</span><span class="text-[10px] opacity-90">22h / 40h</span></div>
+
+          <!-- Júlia -->
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-300 flex items-center justify-center text-[10px] font-bold">JC</div>
+            <div>
+              <div class="text-[12px] font-semibold">Júlia</div>
+              <div class="text-[10px] text-muted">Dev Pleno</div>
+            </div>
+          </div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">65%</span><span class="text-[10px] opacity-90">26h / 40h</span></div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">70%</span><span class="text-[10px] opacity-90">28h / 40h</span></div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">60%</span><span class="text-[10px] opacity-90">24h / 40h</span></div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">45%</span><span class="text-[10px] opacity-90">18h / 40h</span></div>
+
+          <!-- Camila -->
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-pink-500/20 text-pink-300 flex items-center justify-center text-[10px] font-bold">CB</div>
+            <div>
+              <div class="text-[12px] font-semibold">Camila</div>
+              <div class="text-[10px] text-muted">QA</div>
+            </div>
+          </div>
+          <div class="cell cell-under"><span class="text-base font-bold">42%</span><span class="text-[10px] opacity-90">17h / 40h</span></div>
+          <div class="cell cell-under"><span class="text-base font-bold">35%</span><span class="text-[10px] opacity-90">14h / 40h</span></div>
+          <div class="cell cell-busy"><span class="text-base font-bold">80%</span><span class="text-[10px] opacity-90">32h / 40h</span></div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">70%</span><span class="text-[10px] opacity-90">28h / 40h</span></div>
+
+          <!-- Gusttavo -->
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full grad-brand text-white flex items-center justify-center text-[10px] font-bold">GF</div>
+            <div>
+              <div class="text-[12px] font-semibold">Gusttavo</div>
+              <div class="text-[10px] text-muted">Coord.</div>
+            </div>
+          </div>
+          <div class="cell cell-busy"><span class="text-base font-bold">80%</span><span class="text-[10px] opacity-90">32h / 40h</span></div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">70%</span><span class="text-[10px] opacity-90">28h / 40h</span></div>
+          <div class="cell cell-healthy"><span class="text-base font-bold">55%</span><span class="text-[10px] opacity-90">22h / 40h</span></div>
+          <div class="cell cell-under"><span class="text-base font-bold">40%</span><span class="text-[10px] opacity-90">16h / 40h</span></div>
+        </div>
+      </section>
+
+      <!-- BLOQUEIO DE OVERALLOCATION -->
+      <section class="card p-5 border-warn/30 glow-warn relative" style="box-shadow: 0 0 0 1px rgba(245,158,11,.25), 0 8px 30px rgba(245,158,11,.08);">
+        <div class="flex items-start gap-4">
+          <div class="shrink-0 w-11 h-11 rounded-xl bg-warn/15 text-warn flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="chip tag-priority-mid">Bloqueio ativo</span>
+              <span class="text-[11px] text-muted">· criado pelo gestor há 12 dias</span>
+            </div>
+            <h3 class="text-base font-semibold leading-snug mb-1">Tentativa de alocar Letícia em DO-145 (6h) foi <strong class="text-warn">bloqueada</strong></h3>
+            <p class="text-[13px] text-muted">Regra <span class="font-mono text-[12px] bg-panel2 px-1.5 py-0.5 rounded">no_overallocation</span> impede alocações que ultrapassem 95% de saturação. Letícia já está em 92% esta semana. <strong class="text-text">Solicitação foi roteada para você</strong> (gestor) com 3 alternativas:</p>
+
+            <div class="grid grid-cols-3 gap-3 mt-4">
+              <button class="bg-panel2 border border-border rounded-lg p-3 text-left hover:border-brand/40 hover:bg-brand/5 transition">
+                <div class="flex items-center gap-2 mb-1">
+                  <div class="w-6 h-6 rounded-full bg-pink-500/20 text-pink-300 flex items-center justify-center text-[9px] font-bold">CB</div>
+                  <span class="text-[12px] font-semibold">Camila</span>
+                  <span class="chip tag-status-done text-[9px]">Recomendado</span>
+                </div>
+                <p class="text-[11px] text-muted">Capacity 42%, skill QA Sr. compatível com setup CFOP. <strong class="text-ok">Iria pra 57%.</strong></p>
+              </button>
+              <button class="bg-panel2 border border-border rounded-lg p-3 text-left hover:border-brand/40 hover:bg-brand/5 transition">
+                <div class="flex items-center gap-2 mb-1">
+                  <div class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[9px] font-bold">PS</div>
+                  <span class="text-[12px] font-semibold">Patrícia</span>
+                </div>
+                <p class="text-[11px] text-muted">Capacity 58%, skill Sankhya Pleno. Iria pra 73%. <strong class="text-warn">Sem skill em CFOP avançado.</strong></p>
+              </button>
+              <button class="bg-panel2 border border-danger/40 rounded-lg p-3 text-left hover:bg-danger/5 transition">
+                <div class="flex items-center gap-2 mb-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FCA5A5" stroke-width="2"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+                  <span class="text-[12px] font-semibold text-danger">Forçar Letícia</span>
+                </div>
+                <p class="text-[11px] text-muted">Bypass com justificativa. <strong class="text-danger">Fica registrado no log.</strong></p>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ALOCAÇÕES POR PROJETO -->
+      <section class="card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-semibold text-[15px]">Alocações ativas por projeto</h3>
+            <p class="text-xs text-muted">Quem está em quê, esta semana</p>
+          </div>
+          <button class="text-xs bg-panel2 border border-border px-3 py-1.5 rounded-lg hover:border-brand/40">Exportar CSV</button>
+        </div>
+
+        <div class="overflow-hidden border border-border rounded-xl">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-[11px] text-muted bg-panel2/50">
+                <th class="text-left font-medium py-2 px-3">Projeto</th>
+                <th class="text-left font-medium py-2 px-3">Equipe</th>
+                <th class="text-left font-medium py-2 px-3">Horas semana</th>
+                <th class="text-left font-medium py-2 px-3">Capacity restante</th>
+                <th class="text-left font-medium py-2 px-3">Saúde</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              <tr class="hover:bg-panel2/40">
+                <td class="py-3 px-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-md bg-rose-500/15 text-rose-300 flex items-center justify-center text-[10px] font-bold">DO</div>
+                    <div>
+                      <div class="font-semibold text-[13px]">Implantação Ômega</div>
+                      <div class="text-[10px] text-muted">Sankhya · entrega 06/05</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-3">
+                  <div class="flex -space-x-2">
+                    <div class="w-6 h-6 rounded-full border-2 border-panel bg-emerald-500/30 text-emerald-300 flex items-center justify-center text-[9px] font-bold">LT</div>
+                    <div class="w-6 h-6 rounded-full border-2 border-panel bg-blue-500/30 text-blue-300 flex items-center justify-center text-[9px] font-bold">RM</div>
+                    <div class="w-6 h-6 rounded-full border-2 border-panel bg-purple-500/30 text-purple-300 flex items-center justify-center text-[9px] font-bold">JC</div>
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-[12px] font-semibold">62h</td>
+                <td class="py-3 px-3 text-[12px] text-warn">−4h (sobrealocado)</td>
+                <td class="py-3 px-3"><span class="chip tag-priority-high">Em risco</span></td>
+              </tr>
+              <tr class="hover:bg-panel2/40">
+                <td class="py-3 px-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-md bg-blue-500/15 text-blue-300 flex items-center justify-center text-[10px] font-bold">AP</div>
+                    <div>
+                      <div class="font-semibold text-[13px]">Sustentação Apolo</div>
+                      <div class="text-[10px] text-muted">Mensal · 32h contratadas</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-3">
+                  <div class="flex -space-x-2">
+                    <div class="w-6 h-6 rounded-full border-2 border-panel bg-amber-500/30 text-amber-300 flex items-center justify-center text-[9px] font-bold">PS</div>
+                    <div class="w-6 h-6 rounded-full border-2 border-panel bg-pink-500/30 text-pink-300 flex items-center justify-center text-[9px] font-bold">CB</div>
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-[12px] font-semibold">21h</td>
+                <td class="py-3 px-3 text-[12px] text-ok">+11h livres</td>
+                <td class="py-3 px-3"><span class="chip tag-status-doing">No prazo</span></td>
+              </tr>
+              <tr class="hover:bg-panel2/40">
+                <td class="py-3 px-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-md bg-emerald-500/15 text-emerald-300 flex items-center justify-center text-[10px] font-bold">VT</div>
+                    <div>
+                      <div class="font-semibold text-[13px]">Migração Vetor 4.18</div>
+                      <div class="text-[10px] text-muted">Upgrade · entrega 14/05</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-3">
+                  <div class="flex -space-x-2">
+                    <div class="w-6 h-6 rounded-full border-2 border-panel bg-blue-500/30 text-blue-300 flex items-center justify-center text-[9px] font-bold">RM</div>
+                    <div class="w-6 h-6 rounded-full border-2 border-panel grad-brand text-white flex items-center justify-center text-[9px] font-bold">GF</div>
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-[12px] font-semibold">28h</td>
+                <td class="py-3 px-3 text-[12px] text-ok">+12h livres</td>
+                <td class="py-3 px-3"><span class="chip tag-status-done">Adiantado</span></td>
+              </tr>
+              <tr class="hover:bg-panel2/40">
+                <td class="py-3 px-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-md bg-purple-500/15 text-purple-300 flex items-center justify-center text-[10px] font-bold">HF</div>
+                    <div>
+                      <div class="font-semibold text-[13px]">Hagious Flow MVP</div>
+                      <div class="text-[10px] text-muted">Interno · sprint 3 de 12</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-3">
+                  <div class="flex -space-x-2">
+                    <div class="w-6 h-6 rounded-full border-2 border-panel grad-brand text-white flex items-center justify-center text-[9px] font-bold">GF</div>
+                    <div class="w-6 h-6 rounded-full border-2 border-panel bg-purple-500/30 text-purple-300 flex items-center justify-center text-[9px] font-bold">JC</div>
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-[12px] font-semibold">18h</td>
+                <td class="py-3 px-3 text-[12px] text-ok">+8h livres</td>
+                <td class="py-3 px-3"><span class="chip tag-status-doing">No ritmo</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SKILLS MATRIX -->
+      <section class="card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-semibold text-[15px]">Skill Matrix · alocação inteligente</h3>
+            <p class="text-xs text-muted">Quem pode pegar o quê. A IA usa isso pra sugerir realocação.</p>
+          </div>
+          <button class="text-xs bg-panel2 border border-border px-3 py-1.5 rounded-lg hover:border-brand/40">Editar matriz</button>
+        </div>
+
+        <div class="overflow-x-auto scrollbar">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-[11px] text-muted">
+                <th class="text-left font-medium pb-2 pr-3">Pessoa</th>
+                <th class="text-center font-medium pb-2 px-2">Sankhya<br>Financeiro</th>
+                <th class="text-center font-medium pb-2 px-2">Sankhya<br>WMS</th>
+                <th class="text-center font-medium pb-2 px-2">Sankhya<br>NF-e</th>
+                <th class="text-center font-medium pb-2 px-2">Custom<br>Sankhya</th>
+                <th class="text-center font-medium pb-2 px-2">Integração<br>Bancária</th>
+                <th class="text-center font-medium pb-2 px-2">Java/<br>Spring</th>
+                <th class="text-center font-medium pb-2 px-2">Postgres</th>
+                <th class="text-center font-medium pb-2 px-2">QA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-t border-border">
+                <td class="py-2 pr-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[9px] font-bold">LT</div>
+                    <span class="text-[12px] font-semibold">Letícia</span>
+                  </div>
+                </td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded grad-brand text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Sr</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded grad-brand text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Sr ★</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-purple-500 text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Es</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+              </tr>
+              <tr class="border-t border-border">
+                <td class="py-2 pr-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-300 flex items-center justify-center text-[9px] font-bold">RM</div>
+                    <span class="text-[12px] font-semibold">Rafael</span>
+                  </div>
+                </td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Pl</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded grad-brand text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Sr</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded grad-brand text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Sr</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+              </tr>
+              <tr class="border-t border-border">
+                <td class="py-2 pr-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[9px] font-bold">PS</div>
+                    <span class="text-[12px] font-semibold">Patrícia</span>
+                  </div>
+                </td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Pl</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Pl</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+              </tr>
+              <tr class="border-t border-border">
+                <td class="py-2 pr-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-300 flex items-center justify-center text-[9px] font-bold">JC</div>
+                    <span class="text-[12px] font-semibold">Júlia</span>
+                  </div>
+                </td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Pl</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Pl</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+              </tr>
+              <tr class="border-t border-border">
+                <td class="py-2 pr-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-pink-500/20 text-pink-300 flex items-center justify-center text-[9px] font-bold">CB</div>
+                    <span class="text-[12px] font-semibold">Camila</span>
+                  </div>
+                </td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded bg-panel2 border border-border text-muted text-[10px] flex items-center justify-center" style="display:inline-flex">—</div></td>
+                <td class="text-center"><div class="inline-block w-7 h-7 rounded grad-brand text-white text-[10px] font-bold flex items-center justify-center" style="display:inline-flex">Sr ★</div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center gap-3 mt-4 text-[10px]">
+          <div class="flex items-center gap-1.5"><div class="w-4 h-4 rounded bg-amber-500"></div><span class="text-muted">Pl = Pleno</span></div>
+          <div class="flex items-center gap-1.5"><div class="w-4 h-4 rounded grad-brand"></div><span class="text-muted">Sr = Sênior</span></div>
+          <div class="flex items-center gap-1.5"><div class="w-4 h-4 rounded bg-purple-500"></div><span class="text-muted">Es = Especialista</span></div>
+          <span class="text-muted">★ = Certificado</span>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
