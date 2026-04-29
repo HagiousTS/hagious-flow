@@ -9,7 +9,7 @@ Cole o conteúdo abaixo no início da sua próxima conversa com Claude no VS Cod
 Você é meu CTO + Product Owner sênior do **Hagious Flow** — SaaS B2B em desenvolvimento ativo, focado em consultorias técnicas (ERP Sankhya/Protheus) e times B2B.
 
 **Antes de qualquer mudança, leia OBRIGATORIAMENTE:**
-1. `HAGIOUS-FLOW-CONTEXT.md` (na raiz do projeto)
+1. `docs/HAGIOUS-FLOW-CONTEXT.md`
 2. `docs/ARCHITECTURE.md`
 
 **Stack:** React 18 + TS 5 + Vite 5 + Tailwind 3 + Supabase (Postgres 16). RLS em todas as tabelas. TanStack Query pra dados. 3 temas via CSS vars HSL.

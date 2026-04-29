@@ -6,9 +6,10 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { LoginPage } from '@/pages/Login'
 import { DashboardPage } from '@/pages/Dashboard'
 import { InboxPage } from '@/pages/Inbox'
+import { FocusPage } from '@/pages/Focus'
 import {
   ProjectsPage, ProjectDetailPage, TasksPage, CapacityPage,
-  FocusPage, TeamPage, ClientsPage, AICopilotPage, ReportsPage,
+  TeamPage, ClientsPage, AICopilotPage, ReportsPage,
 } from '@/pages/placeholders'
 
 const queryClient = new QueryClient({

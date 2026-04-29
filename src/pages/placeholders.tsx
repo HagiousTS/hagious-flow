@@ -45,12 +45,6 @@ export const CapacityPage = () => (
     description="Heatmap de carga por pessoa × semana. Skill matrix. Bloqueio de over-allocation."
   />
 )
-export const FocusPage = () => (
-  <PlaceholderPage
-    title="Modo Foco"
-    description="Sessão de foco protegida. Fila de acionamentos. Auto-resposta. Métricas de produtividade."
-  />
-)
 export const TeamPage = () => (
   <PlaceholderPage
     title="Equipe"

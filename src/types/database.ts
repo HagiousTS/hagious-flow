@@ -218,9 +218,17 @@ export interface FocusSession {
   started_at: string
   planned_minutes: number
   ended_at: string | null
+  actual_minutes: number | null
   interruptions_blocked: number
   interruptions_escalated: number
+  notes: string | null
+  created_at: string
+  // joined
+  task?: Task | null
+  member?: WorkspaceMember | null
 }
+
+export type AckUrgency = 'urgent' | 'can_wait' | 'normal' | null
 
 export interface AcknowledgmentQueueItem {
   id: string
@@ -230,9 +238,14 @@ export interface AcknowledgmentQueueItem {
   requester_external_name: string | null
   requester_external_email: string | null
   channel: string
-  urgency_marked: string | null
+  urgency_marked: AckUrgency
   message: string | null
   is_escalated: boolean
+  escalated_to_member_id: string | null
+  escalated_at: string | null
   resolved_at: string | null
   created_at: string
+  // joined
+  requester?: WorkspaceMember | null
+  escalated_to?: WorkspaceMember | null
 }
