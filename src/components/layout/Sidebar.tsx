@@ -5,8 +5,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/useAuth'
-import { useWorkspace } from '@/hooks/useWorkspace'
 import { Avatar } from '@/components/ui/Avatar'
+import { WorkspaceSwitcher } from '@/components/layout/WorkspaceSwitcher'
 
 interface NavItem {
   to: string
@@ -68,7 +68,6 @@ function NavSection({ title, items }: { title: string; items: NavItem[] }) {
 
 export function Sidebar() {
   const { user, signOut } = useAuth()
-  const { data: workspace } = useWorkspace()
 
   return (
     <aside className="w-[240px] shrink-0 border-r bg-panel/60 backdrop-blur sticky top-0 h-screen flex flex-col">
@@ -87,17 +86,7 @@ export function Sidebar() {
 
       {/* Workspace switcher */}
       <div className="px-3 py-3 border-b">
-        <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-panel2 hover:opacity-80 transition text-left">
-          <div className="w-7 h-7 rounded-md bg-gradient-to-br from-fuchsia-500 to-rose-500 flex items-center justify-center text-[11px] font-bold text-white">
-            {workspace?.name?.slice(0, 2).toUpperCase() ?? '..'}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-xs text-muted">Workspace</div>
-            <div className="text-sm font-semibold leading-tight truncate">
-              {workspace?.name ?? 'Carregando...'}
-            </div>
-          </div>
-        </button>
+        <WorkspaceSwitcher />
       </div>
 
       {/* Nav */}
