@@ -11,9 +11,10 @@ import { CapacityPage } from '@/pages/Capacity'
 import { ProjectDetailPage } from '@/pages/ProjectDetail'
 import { TasksPage } from '@/pages/Tasks'
 import { TeamPage } from '@/pages/Team'
+import { ClientsPage } from '@/pages/Clients'
 import {
   ProjectsPage,
-  ClientsPage, AICopilotPage, ReportsPage,
+  AICopilotPage, ReportsPage,
 } from '@/pages/placeholders'
 
 const queryClient = new QueryClient({

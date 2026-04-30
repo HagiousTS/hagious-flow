@@ -27,12 +27,6 @@ export const ProjectsPage = () => (
     description="Listagem completa, filtros, criação. Integrado com a tabela projects do Supabase."
   />
 )
-export const ClientsPage = () => (
-  <PlaceholderPage
-    title="Clientes"
-    description="CRM lite. Gestão de contatos, contratos, projetos por cliente."
-  />
-)
 export const AICopilotPage = () => (
   <PlaceholderPage
     title="IA COO"
