@@ -27,12 +27,6 @@ export const ProjectsPage = () => (
     description="Listagem completa, filtros, criação. Integrado com a tabela projects do Supabase."
   />
 )
-export const ProjectDetailPage = () => (
-  <PlaceholderPage
-    title="Projeto · Detalhe"
-    description="Cockpit do projeto: KPIs, timeline Gantt, tasks, riscos, equipe alocada."
-  />
-)
 export const TasksPage = () => (
   <PlaceholderPage
     title="Tasks"

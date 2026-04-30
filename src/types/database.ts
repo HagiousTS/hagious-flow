@@ -68,15 +68,55 @@ export interface Project {
   status: ProjectStatus
   priority: Priority | null
   health: ProjectHealth | null
+  color_hex: string | null
   start_date: string | null
   due_date: string | null
   estimated_hours: number | null
   actual_hours: number | null
   progress_percent: number | null
   budget_amount: number | null
+  cost_estimate: number | null
   owner_member_id: string | null
+  sponsor_name: string | null
+  sponsor_email: string | null
   // joined
   client?: Client | null
+}
+
+export interface ProjectPhase {
+  id: string
+  project_id: string
+  name: string
+  sort_order: number
+  start_date: string | null
+  due_date: string | null
+  status: string
+  progress_percent: number | null
+}
+
+export interface ProjectMember {
+  id: string
+  project_id: string
+  member_id: string
+  role: string
+  allocation_percent: number | null
+  // joined
+  member?: WorkspaceMember | null
+}
+
+export interface ActivityLogEntry {
+  id: string
+  workspace_id: string
+  actor_user_id: string | null
+  actor_type: string
+  action: string
+  entity_type: string
+  entity_id: string | null
+  diff_json: unknown
+  metadata_json: unknown
+  created_at: string
+  // joined
+  actor?: Profile | null
 }
 
 export interface ProjectHealthView {

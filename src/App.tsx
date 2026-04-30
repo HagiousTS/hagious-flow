@@ -8,8 +8,9 @@ import { DashboardPage } from '@/pages/Dashboard'
 import { InboxPage } from '@/pages/Inbox'
 import { FocusPage } from '@/pages/Focus'
 import { CapacityPage } from '@/pages/Capacity'
+import { ProjectDetailPage } from '@/pages/ProjectDetail'
 import {
-  ProjectsPage, ProjectDetailPage, TasksPage,
+  ProjectsPage, TasksPage,
   TeamPage, ClientsPage, AICopilotPage, ReportsPage,
 } from '@/pages/placeholders'
 
