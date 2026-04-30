@@ -9,8 +9,9 @@ import { InboxPage } from '@/pages/Inbox'
 import { FocusPage } from '@/pages/Focus'
 import { CapacityPage } from '@/pages/Capacity'
 import { ProjectDetailPage } from '@/pages/ProjectDetail'
+import { TasksPage } from '@/pages/Tasks'
 import {
-  ProjectsPage, TasksPage,
+  ProjectsPage,
   TeamPage, ClientsPage, AICopilotPage, ReportsPage,
 } from '@/pages/placeholders'
 

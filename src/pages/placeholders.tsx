@@ -27,12 +27,6 @@ export const ProjectsPage = () => (
     description="Listagem completa, filtros, criação. Integrado com a tabela projects do Supabase."
   />
 )
-export const TasksPage = () => (
-  <PlaceholderPage
-    title="Tasks"
-    description="Kanban full screen com drag & drop. Filtros por projeto, prioridade, assignee."
-  />
-)
 export const TeamPage = () => (
   <PlaceholderPage
     title="Equipe"
