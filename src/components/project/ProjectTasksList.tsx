@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
+import { TaskTimerButton } from '@/components/timer/TaskTimerButton'
 import { Card } from '@/components/ui/Card'
 import { cn, formatDateShort, getInitials } from '@/lib/utils'
 import type { Task } from '@/types/database'
@@ -7,6 +8,7 @@ import type { Task } from '@/types/database'
 interface ProjectTasksListProps {
   tasks: Task[]
   projectCode: string
+  projectId: string
 }
 
 const PRIORITY_CHIP: Record<string, { label: string; cls: string }> = {
@@ -47,6 +49,7 @@ const FILTERS: Array<{
 export function ProjectTasksList({
   tasks,
   projectCode,
+  projectId,
 }: ProjectTasksListProps) {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<TaskFilter>('all')
@@ -140,6 +143,7 @@ export function ProjectTasksList({
                   <th className="text-left font-medium py-2 px-3">Prazo</th>
                   <th className="text-left font-medium py-2 px-3">Estim.</th>
                   <th className="text-left font-medium py-2 px-3">Real</th>
+                  <th className="text-left font-medium py-2 px-3 w-10"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -216,6 +220,17 @@ export function ProjectTasksList({
                         {t.actual_hours != null
                           ? `${Number(t.actual_hours)}h`
                           : '—'}
+                      </td>
+                      <td className="py-3 px-3">
+                        {!completed && !t.is_blocked && (
+                          <TaskTimerButton
+                            taskId={t.id}
+                            taskTitle={t.title}
+                            taskCode={`${projectCode}-${t.sequence_number}`}
+                            projectId={projectId}
+                            projectCode={projectCode}
+                          />
+                        )}
                       </td>
                     </tr>
                   )

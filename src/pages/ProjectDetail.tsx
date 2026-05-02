@@ -102,7 +102,11 @@ export function ProjectDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
           <ProjectGantt phases={phases} project={project} />
-          <ProjectTasksList tasks={tasks} projectCode={project.code} />
+          <ProjectTasksList
+            tasks={tasks}
+            projectCode={project.code}
+            projectId={project.id}
+          />
         </div>
         <aside className="lg:col-span-4 space-y-6">
           <ProjectProgress

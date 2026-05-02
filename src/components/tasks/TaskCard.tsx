@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { AlertOctagon, Calendar } from 'lucide-react'
+import { TaskTimerButton } from '@/components/timer/TaskTimerButton'
 import { cn, formatDateShort, getInitials } from '@/lib/utils'
 import type { Task } from '@/types/database'
 
@@ -53,6 +54,17 @@ export function TaskCard({
           <span className="chip tag-status-block flex items-center gap-1">
             <AlertOctagon className="w-3 h-3" /> Bloqueada
           </span>
+        )}
+        {project && !task.completed_at && !task.is_blocked && (
+          <div className="ml-auto">
+            <TaskTimerButton
+              taskId={task.id}
+              taskTitle={task.title}
+              taskCode={code}
+              projectId={project.id}
+              projectCode={project.code}
+            />
+          </div>
         )}
       </div>
 
