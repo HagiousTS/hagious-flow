@@ -1,6 +1,7 @@
-import { Search, Bell, Plus } from 'lucide-react'
+import { Search, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/hooks/useAuth'
+import { NotificationsBell } from '@/components/layout/NotificationsBell'
 
 export function Topbar() {
   const { user } = useAuth()
@@ -36,15 +37,7 @@ export function Topbar() {
           </span>
         </div>
 
-        <button
-          className="relative w-9 h-9 rounded-lg bg-panel border hover:border-brand/40 flex items-center justify-center transition"
-          aria-label="Notificações"
-        >
-          <Bell className="w-4 h-4" />
-          <span className="absolute -top-1 -right-1 bg-danger text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-            5
-          </span>
-        </button>
+        <NotificationsBell />
         <Button>
           <Plus className="w-3.5 h-3.5" />
           Novo
