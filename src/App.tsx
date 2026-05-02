@@ -1,20 +1,47 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AppShell } from '@/components/layout/AppShell'
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { LoginPage } from '@/pages/Login'
-import { DashboardPage } from '@/pages/Dashboard'
-import { InboxPage } from '@/pages/Inbox'
-import { FocusPage } from '@/pages/Focus'
-import { CapacityPage } from '@/pages/Capacity'
-import { ProjectDetailPage } from '@/pages/ProjectDetail'
-import { TasksPage } from '@/pages/Tasks'
-import { TeamPage } from '@/pages/Team'
-import { ClientsPage } from '@/pages/Clients'
-import { AICopilotPage } from '@/pages/AICopilot'
-import { ProjectsPage } from '@/pages/Projects'
-import { ReportsPage } from '@/pages/Reports'
+import { Skeleton } from '@/components/ui/Skeleton'
+
+const DashboardPage = lazy(() =>
+  import('@/pages/Dashboard').then((m) => ({ default: m.DashboardPage }))
+)
+const InboxPage = lazy(() =>
+  import('@/pages/Inbox').then((m) => ({ default: m.InboxPage }))
+)
+const FocusPage = lazy(() =>
+  import('@/pages/Focus').then((m) => ({ default: m.FocusPage }))
+)
+const CapacityPage = lazy(() =>
+  import('@/pages/Capacity').then((m) => ({ default: m.CapacityPage }))
+)
+const ProjectDetailPage = lazy(() =>
+  import('@/pages/ProjectDetail').then((m) => ({
+    default: m.ProjectDetailPage,
+  }))
+)
+const TasksPage = lazy(() =>
+  import('@/pages/Tasks').then((m) => ({ default: m.TasksPage }))
+)
+const TeamPage = lazy(() =>
+  import('@/pages/Team').then((m) => ({ default: m.TeamPage }))
+)
+const ClientsPage = lazy(() =>
+  import('@/pages/Clients').then((m) => ({ default: m.ClientsPage }))
+)
+const AICopilotPage = lazy(() =>
+  import('@/pages/AICopilot').then((m) => ({ default: m.AICopilotPage }))
+)
+const ProjectsPage = lazy(() =>
+  import('@/pages/Projects').then((m) => ({ default: m.ProjectsPage }))
+)
+const ReportsPage = lazy(() =>
+  import('@/pages/Reports').then((m) => ({ default: m.ReportsPage }))
+)
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,6 +52,20 @@ const queryClient = new QueryClient({
     },
   },
 })
+
+function PageFallback() {
+  return (
+    <div className="space-y-4">
+      <Skeleton className="h-8 w-64 rounded-lg" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        {[...Array(4)].map((_, i) => (
+          <Skeleton key={i} className="h-24 rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  )
+}
 
 export function App() {
   return (
@@ -40,17 +81,94 @@ export function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/projetos" element={<ProjectsPage />} />
-            <Route path="/projetos/:id" element={<ProjectDetailPage />} />
-            <Route path="/tasks" element={<TasksPage />} />
-            <Route path="/inbox" element={<InboxPage />} />
-            <Route path="/capacity" element={<CapacityPage />} />
-            <Route path="/foco" element={<FocusPage />} />
-            <Route path="/equipe" element={<TeamPage />} />
-            <Route path="/clientes" element={<ClientsPage />} />
-            <Route path="/ia-coo" element={<AICopilotPage />} />
-            <Route path="/relatorios" element={<ReportsPage />} />
+            <Route
+              path="/"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <DashboardPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/projetos"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <ProjectsPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/projetos/:id"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <ProjectDetailPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/tasks"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <TasksPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/inbox"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <InboxPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/capacity"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <CapacityPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/foco"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <FocusPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/equipe"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <TeamPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/clientes"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <ClientsPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/ia-coo"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <AICopilotPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/relatorios"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <ReportsPage />
+                </Suspense>
+              }
+            />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
