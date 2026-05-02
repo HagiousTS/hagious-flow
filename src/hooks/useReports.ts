@@ -2,6 +2,11 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import type { ProjectStatus } from '@/types/database'
 
+export interface ReportsRange {
+  from: string // YYYY-MM-DD inclusivo
+  to: string // YYYY-MM-DD inclusivo
+}
+
 export interface ReportsKpis {
   totalRevenue: number
   recognizedRevenue: number
@@ -16,6 +21,8 @@ export interface ReportsKpis {
   throughputPct: number
   totalMembers: number
   averageTasksPerMember: number
+  billableHours: number
+  billableRevenue: number
 }
 
 export interface BreakdownRow {
@@ -30,9 +37,11 @@ export interface BreakdownRow {
 }
 
 export interface ReportsData {
+  range: ReportsRange
   kpis: ReportsKpis
   revenueByClient: BreakdownRow[]
   hoursByProject: BreakdownRow[]
+  hoursByMember: BreakdownRow[]
   loadByMember: BreakdownRow[]
   blockedByProject: BreakdownRow[]
   topSkills: BreakdownRow[]
@@ -47,7 +56,6 @@ interface ProjectRow {
   client_id: string | null
   budget_amount: number | null
   estimated_hours: number | null
-  actual_hours: number | null
   progress_percent: number | null
 }
 
@@ -75,6 +83,15 @@ interface MemberSkillRow {
   skill: { id: string; name: string; workspace_id: string } | null
 }
 
+interface TimeEntryRow {
+  project_id: string
+  member_id: string
+  hours: number
+  is_billable: boolean
+  hourly_rate: number | null
+  entry_date: string
+}
+
 const ACTIVE_STATUSES: ProjectStatus[] = ['planning', 'active', 'on_hold']
 
 function fmtBRL(value: number): string {
@@ -88,7 +105,7 @@ function fmtBRL(value: number): string {
 
 function fmtHours(value: number): string {
   if (value >= 1000) return `${(value / 1000).toFixed(1)}k h`
-  return `${Math.round(value)} h`
+  return `${Math.round(value * 10) / 10} h`
 }
 
 function withPctOfMax(rows: BreakdownRow[]): BreakdownRow[] {
@@ -97,9 +114,12 @@ function withPctOfMax(rows: BreakdownRow[]): BreakdownRow[] {
   return rows.map((r) => ({ ...r, pctOfMax: (r.value / max) * 100 }))
 }
 
-export function useReports(workspaceId: string | undefined) {
+export function useReports(
+  workspaceId: string | undefined,
+  range: ReportsRange
+) {
   return useQuery<ReportsData>({
-    queryKey: ['reports', workspaceId],
+    queryKey: ['reports', workspaceId, range.from, range.to],
     enabled: !!workspaceId,
     queryFn: async () => {
       const [
@@ -108,11 +128,12 @@ export function useReports(workspaceId: string | undefined) {
         { data: tasksRaw, error: tErr },
         { data: membersRaw, error: mErr },
         { data: skillsRaw, error: sErr },
+        { data: timeRaw, error: teErr },
       ] = await Promise.all([
         supabase
           .from('projects')
           .select(
-            'id, code, name, status, health, client_id, budget_amount, estimated_hours, actual_hours, progress_percent'
+            'id, code, name, status, health, client_id, budget_amount, estimated_hours, progress_percent'
           )
           .eq('workspace_id', workspaceId!)
           .is('deleted_at', null),
@@ -137,6 +158,14 @@ export function useReports(workspaceId: string | undefined) {
           .from('member_skills')
           .select('member_id, skill:skills!inner(id, name, workspace_id)')
           .eq('skill.workspace_id', workspaceId!),
+        supabase
+          .from('time_entries')
+          .select(
+            'project_id, member_id, hours, is_billable, hourly_rate, entry_date'
+          )
+          .eq('workspace_id', workspaceId!)
+          .gte('entry_date', range.from)
+          .lte('entry_date', range.to),
       ])
 
       if (pErr) throw pErr
@@ -144,12 +173,14 @@ export function useReports(workspaceId: string | undefined) {
       if (tErr) throw tErr
       if (mErr) throw mErr
       if (sErr) throw sErr
+      if (teErr) throw teErr
 
       const projects = (projectsRaw ?? []) as ProjectRow[]
       const clients = (clientsRaw ?? []) as ClientRow[]
       const tasks = (tasksRaw ?? []) as TaskRow[]
       const members = (membersRaw ?? []) as unknown as MemberRow[]
       const memberSkills = (skillsRaw ?? []) as unknown as MemberSkillRow[]
+      const timeEntries = (timeRaw ?? []) as TimeEntryRow[]
 
       const totalRevenue = projects.reduce(
         (acc, p) => acc + Number(p.budget_amount ?? 0),
@@ -162,23 +193,41 @@ export function useReports(workspaceId: string | undefined) {
             (Number(p.progress_percent ?? 0) / 100),
         0
       )
-      const hoursLogged = projects.reduce(
-        (acc, p) => acc + Number(p.actual_hours ?? 0),
+
+      const hoursLogged = timeEntries.reduce(
+        (acc, t) => acc + Number(t.hours ?? 0),
         0
       )
       const hoursEstimated = projects.reduce(
         (acc, p) => acc + Number(p.estimated_hours ?? 0),
         0
       )
+      const billableHours = timeEntries
+        .filter((t) => t.is_billable)
+        .reduce((acc, t) => acc + Number(t.hours ?? 0), 0)
+      const billableRevenue = timeEntries
+        .filter((t) => t.is_billable)
+        .reduce(
+          (acc, t) => acc + Number(t.hours ?? 0) * Number(t.hourly_rate ?? 0),
+          0
+        )
+
       const activeProjectsCount = projects.filter((p) =>
         ACTIVE_STATUSES.includes(p.status)
       ).length
-      const doneProjectsCount = projects.filter(
-        (p) => p.status === 'done'
-      ).length
+      const doneProjectsCount = projects.filter((p) => p.status === 'done')
+        .length
 
+      // Tasks completadas dentro do range
+      const fromTs = new Date(range.from + 'T00:00:00').getTime()
+      const toTs = new Date(range.to + 'T23:59:59').getTime()
       const totalTasks = tasks.length
-      const doneTasks = tasks.filter((t) => t.completed_at).length
+      const doneTasksInRange = tasks.filter((t) => {
+        if (!t.completed_at) return false
+        const ts = new Date(t.completed_at).getTime()
+        return ts >= fromTs && ts <= toTs
+      }).length
+      const doneTasksAll = tasks.filter((t) => t.completed_at).length
       const blockedTasks = tasks.filter(
         (t) => t.is_blocked && !t.completed_at
       ).length
@@ -195,11 +244,14 @@ export function useReports(workspaceId: string | undefined) {
         activeProjectsCount,
         doneProjectsCount,
         totalTasks,
-        doneTasks,
+        doneTasks: doneTasksInRange,
         blockedTasks,
-        throughputPct: totalTasks > 0 ? (doneTasks / totalTasks) * 100 : 0,
+        throughputPct:
+          totalTasks > 0 ? (doneTasksAll / totalTasks) * 100 : 0,
         totalMembers,
         averageTasksPerMember: totalMembers > 0 ? totalTasks / totalMembers : 0,
+        billableHours,
+        billableRevenue,
       }
 
       const clientById = new Map(clients.map((c) => [c.id, c]))
@@ -214,7 +266,7 @@ export function useReports(workspaceId: string | undefined) {
       }
       const revenueByClient = withPctOfMax(
         Array.from(revenueByClientMap.entries())
-          .filter(([_, v]) => v > 0)
+          .filter(([, v]) => v > 0)
           .map(([id, value]) => {
             const c = clientById.get(id)
             return {
@@ -232,25 +284,62 @@ export function useReports(workspaceId: string | undefined) {
           .sort((a, b) => b.value - a.value)
       )
 
+      // Hours by project — agora vem de time_entries no range
+      const hoursByProjectMap = new Map<string, number>()
+      for (const te of timeEntries) {
+        hoursByProjectMap.set(
+          te.project_id,
+          (hoursByProjectMap.get(te.project_id) ?? 0) + Number(te.hours)
+        )
+      }
+      const projectById = new Map(projects.map((p) => [p.id, p]))
       const hoursByProject = withPctOfMax(
-        projects
-          .map((p) => ({
-            id: p.id,
-            label: p.name,
-            sublabel: p.code,
-            value: Number(p.actual_hours ?? 0),
-            formatted: fmtHours(Number(p.actual_hours ?? 0)),
-            pct:
-              hoursLogged > 0
-                ? (Number(p.actual_hours ?? 0) / hoursLogged) * 100
-                : 0,
+        Array.from(hoursByProjectMap.entries())
+          .map(([id, value]) => {
+            const p = projectById.get(id)
+            return {
+              id,
+              label: p?.name ?? '—',
+              sublabel: p?.code ?? null,
+              value,
+              formatted: fmtHours(value),
+              pct: hoursLogged > 0 ? (value / hoursLogged) * 100 : 0,
+              pctOfMax: 0,
+              highlight: (p?.health as BreakdownRow['highlight']) ?? null,
+            }
+          })
+          .filter((r) => r.value > 0)
+          .sort((a, b) => b.value - a.value)
+      )
+
+      // Hours by member — novo, time_entries no range
+      const hoursByMemberMap = new Map<string, number>()
+      for (const te of timeEntries) {
+        hoursByMemberMap.set(
+          te.member_id,
+          (hoursByMemberMap.get(te.member_id) ?? 0) + Number(te.hours)
+        )
+      }
+      const memberById = new Map(
+        members.map((m) => [m.id, m.profile?.full_name ?? 'Sem nome'])
+      )
+      const hoursByMember = withPctOfMax(
+        Array.from(hoursByMemberMap.entries())
+          .map(([id, value]) => ({
+            id,
+            label: memberById.get(id) ?? 'Sem nome',
+            sublabel: null,
+            value,
+            formatted: fmtHours(value),
+            pct: hoursLogged > 0 ? (value / hoursLogged) * 100 : 0,
             pctOfMax: 0,
-            highlight: (p.health as BreakdownRow['highlight']) ?? null,
+            highlight: null,
           }))
           .filter((r) => r.value > 0)
           .sort((a, b) => b.value - a.value)
       )
 
+      // Carga atual (tasks abertas) — independe do range
       const tasksByMember = new Map<string, number>()
       for (const t of tasks) {
         if (!t.assignee_member_id || t.completed_at) continue
@@ -259,9 +348,6 @@ export function useReports(workspaceId: string | undefined) {
           (tasksByMember.get(t.assignee_member_id) ?? 0) + 1
         )
       }
-      const memberById = new Map(
-        members.map((m) => [m.id, m.profile?.full_name ?? 'Sem nome'])
-      )
       const loadByMember = withPctOfMax(
         Array.from(tasksByMember.entries())
           .map(([id, count]) => ({
@@ -285,7 +371,6 @@ export function useReports(workspaceId: string | undefined) {
           (blockedByProjectMap.get(t.project_id) ?? 0) + 1
         )
       }
-      const projectById = new Map(projects.map((p) => [p.id, p]))
       const blockedByProject = withPctOfMax(
         Array.from(blockedByProjectMap.entries())
           .map(([id, count]) => {
@@ -328,9 +413,11 @@ export function useReports(workspaceId: string | undefined) {
       )
 
       return {
+        range,
         kpis,
         revenueByClient,
         hoursByProject,
+        hoursByMember,
         loadByMember,
         blockedByProject,
         topSkills,
