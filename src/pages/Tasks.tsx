@@ -3,8 +3,10 @@ import { useWorkspace } from '@/hooks/useWorkspace'
 import { useMoveTask, useTasksBoard } from '@/hooks/useTasksBoard'
 import { KanbanBoard } from '@/components/tasks/KanbanBoard'
 import { TasksFiltersBar } from '@/components/tasks/TasksFiltersBar'
+import { TaskDrawer } from '@/components/tasks/TaskDrawer'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
+import type { Task } from '@/types/database'
 
 export function TasksPage() {
   const { data: workspace, isLoading: wsLoading } = useWorkspace()
@@ -15,6 +17,7 @@ export function TasksPage() {
   const [selectedProject, setSelectedProject] = useState('')
   const [selectedMember, setSelectedMember] = useState('')
   const [onlyBlocked, setOnlyBlocked] = useState(false)
+  const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
     if (!data) return []
@@ -119,6 +122,7 @@ export function TasksPage() {
         onMove={(taskId, newStatusId) =>
           moveTask.mutate({ taskId, newStatusId })
         }
+        onTaskClick={(t: Task) => setDrawerTaskId(t.id)}
       />
 
       {moveTask.isError && (
@@ -128,6 +132,14 @@ export function TasksPage() {
           </p>
         </Card>
       )}
+
+      <TaskDrawer
+        task={data.tasks.find((t) => t.id === drawerTaskId) ?? null}
+        statuses={data.statuses}
+        members={data.members}
+        workspaceId={workspace.id}
+        onClose={() => setDrawerTaskId(null)}
+      />
     </div>
   )
 }

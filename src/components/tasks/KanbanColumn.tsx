@@ -10,6 +10,7 @@ interface KanbanColumnProps {
   onDragStart: (e: React.DragEvent<HTMLDivElement>, taskId: string) => void
   onDragEnd: () => void
   onDrop: (statusId: string) => void
+  onTaskClick?: (task: Task) => void
 }
 
 const CATEGORY_ACCENT: Record<string, string> = {
@@ -27,6 +28,7 @@ export function KanbanColumn({
   onDragStart,
   onDragEnd,
   onDrop,
+  onTaskClick,
 }: KanbanColumnProps) {
   const [isOver, setIsOver] = useState(false)
 
@@ -77,6 +79,7 @@ export function KanbanColumn({
               isDragging={draggingTaskId === task.id}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
+              onClick={onTaskClick}
             />
           ))
         )}

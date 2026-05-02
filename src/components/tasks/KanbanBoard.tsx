@@ -6,9 +6,15 @@ interface KanbanBoardProps {
   statuses: TaskStatus[]
   tasks: Task[]
   onMove: (taskId: string, newStatusId: string) => void
+  onTaskClick?: (task: Task) => void
 }
 
-export function KanbanBoard({ statuses, tasks, onMove }: KanbanBoardProps) {
+export function KanbanBoard({
+  statuses,
+  tasks,
+  onMove,
+  onTaskClick,
+}: KanbanBoardProps) {
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null)
 
   const handleDragStart = (
@@ -46,6 +52,7 @@ export function KanbanBoard({ statuses, tasks, onMove }: KanbanBoardProps) {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDrop={handleDrop}
+            onTaskClick={onTaskClick}
           />
         )
       })}

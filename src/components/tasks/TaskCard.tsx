@@ -9,6 +9,7 @@ interface TaskCardProps {
   isDragging?: boolean
   onDragStart: (e: React.DragEvent<HTMLDivElement>, taskId: string) => void
   onDragEnd: () => void
+  onClick?: (task: Task) => void
 }
 
 const PRIORITY_CHIP: Record<string, { label: string; cls: string }> = {
@@ -22,6 +23,7 @@ export function TaskCard({
   isDragging,
   onDragStart,
   onDragEnd,
+  onClick,
 }: TaskCardProps) {
   const project = task.project
   const code = project
@@ -39,8 +41,9 @@ export function TaskCard({
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
       onDragEnd={onDragEnd}
+      onClick={() => onClick?.(task)}
       className={cn(
-        'card p-3 cursor-grab active:cursor-grabbing transition select-none',
+        'card p-3 cursor-grab active:cursor-grabbing transition select-none hover:border-brand/30',
         isDragging && 'opacity-40 scale-95',
         task.is_blocked && 'border-danger/40'
       )}

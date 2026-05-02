@@ -141,3 +141,58 @@ export function useMoveTask(workspaceId: string | undefined) {
 }
 
 export type { Task, TaskStatus, WorkspaceMember }
+
+export interface UpdateTaskArgs {
+  taskId: string
+  patch: {
+    title?: string
+    description_md?: string | null
+    status_id?: string
+    priority?: 'P1' | 'P2' | 'P3' | null
+    assignee_member_id?: string | null
+    estimated_hours?: number | null
+    due_date?: string | null
+    is_blocked?: boolean
+    blocked_reason?: string | null
+    completed_at?: string | null
+  }
+}
+
+export function useUpdateTask(workspaceId: string | undefined) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ taskId, patch }: UpdateTaskArgs) => {
+      const { error } = await supabase
+        .from('tasks')
+        .update(patch)
+        .eq('id', taskId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks-board', workspaceId] })
+      qc.invalidateQueries({ queryKey: ['project-detail'] })
+      qc.invalidateQueries({ queryKey: ['dashboard', workspaceId] })
+      qc.invalidateQueries({ queryKey: ['capacity', workspaceId] })
+      qc.invalidateQueries({ queryKey: ['reports', workspaceId] })
+    },
+  })
+}
+
+export function useDeleteTask(workspaceId: string | undefined) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (taskId: string) => {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', taskId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks-board', workspaceId] })
+      qc.invalidateQueries({ queryKey: ['project-detail'] })
+      qc.invalidateQueries({ queryKey: ['dashboard', workspaceId] })
+      qc.invalidateQueries({ queryKey: ['capacity', workspaceId] })
+    },
+  })
+}
