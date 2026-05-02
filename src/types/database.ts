@@ -197,6 +197,34 @@ export interface Risk {
   project?: Project
 }
 
+export type AIMessageRole = 'user' | 'assistant' | 'system' | 'tool'
+
+export interface AIConversation {
+  id: string
+  workspace_id: string
+  user_id: string
+  title: string | null
+  mode: string | null
+  context_json: unknown | null
+  created_at: string
+  updated_at: string
+  archived_at: string | null
+}
+
+export interface AIMessage {
+  id: string
+  conversation_id: string
+  role: AIMessageRole
+  content_md: string
+  citations_json: unknown | null
+  tool_calls_json: unknown | null
+  tokens_in: number | null
+  tokens_out: number | null
+  model_used: string | null
+  latency_ms: number | null
+  created_at: string
+}
+
 export interface AIInsight {
   id: string
   workspace_id: string

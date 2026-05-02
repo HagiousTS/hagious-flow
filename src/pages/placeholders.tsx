@@ -27,12 +27,6 @@ export const ProjectsPage = () => (
     description="Listagem completa, filtros, criação. Integrado com a tabela projects do Supabase."
   />
 )
-export const AICopilotPage = () => (
-  <PlaceholderPage
-    title="IA COO"
-    description="Chat fullscreen com a IA. Comandos slash. Tool use sob aprovação. Histórico semântico."
-  />
-)
 export const ReportsPage = () => (
   <PlaceholderPage
     title="Relatórios"
