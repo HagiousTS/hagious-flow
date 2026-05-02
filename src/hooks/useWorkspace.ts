@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { supabase } from '@/lib/supabase'
@@ -55,3 +55,34 @@ export function useSetActiveWorkspace() {
     qc.invalidateQueries()
   }
 }
+
+export interface BootstrapWorkspaceArgs {
+  name: string
+  slug: string
+  industry?: string | null
+  plan?: string
+  seats?: number
+}
+
+export function useBootstrapWorkspace() {
+  const setActiveId = useActiveWorkspace((s) => s.setActiveId)
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (args: BootstrapWorkspaceArgs) => {
+      const { data, error } = await supabase.rpc('bootstrap_workspace', {
+        p_name: args.name,
+        p_slug: args.slug,
+        p_industry: args.industry ?? null,
+        p_plan: args.plan ?? 'free',
+        p_seats: args.seats ?? 3,
+      })
+      if (error) throw error
+      return data as Workspace
+    },
+    onSuccess: (ws) => {
+      setActiveId(ws.id)
+      qc.invalidateQueries()
+    },
+  })
+}
+

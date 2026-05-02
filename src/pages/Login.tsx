@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { Mail, Lock, Loader2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/Button'
@@ -100,15 +100,20 @@ export function LoginPage() {
             </Button>
           </form>
 
-          <div className="text-center pt-2 border-t">
+          <div className="text-center pt-2 border-t space-y-2">
             <p className="text-xs text-muted mt-3">
-              Conta de demo:{' '}
-              <code className="bg-panel2 px-1.5 py-0.5 rounded text-[11px]">
+              Não tem conta?{' '}
+              <Link to="/signup" className="text-brand hover:underline">
+                Criar agora
+              </Link>
+            </p>
+            <p className="text-[11px] text-muted">
+              Demo:{' '}
+              <code className="bg-panel2 px-1.5 py-0.5 rounded">
                 gusttavo@hagious.com.br
-              </code>
-              <br />
-              Senha provisória:{' '}
-              <code className="bg-panel2 px-1.5 py-0.5 rounded text-[11px]">
+              </code>{' '}
+              ·{' '}
+              <code className="bg-panel2 px-1.5 py-0.5 rounded">
                 Hagious@2026
               </code>
             </p>
