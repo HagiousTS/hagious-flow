@@ -54,7 +54,8 @@ export function ChatInput({ onSend, disabled, placeholder }: ChatInputProps) {
         </button>
       </div>
       <div className="max-w-3xl mx-auto text-[10px] text-muted mt-2 text-center">
-        Shift+Enter para nova linha · Modo simulado (OpenAI ainda não integrada)
+        Shift+Enter para nova linha · Backend roda numa edge function (Anthropic
+        ou OpenAI conforme as secrets configuradas)
       </div>
     </form>
   )

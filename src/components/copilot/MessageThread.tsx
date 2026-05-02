@@ -99,7 +99,8 @@ export function MessageThread({
         <h3 className="text-lg font-semibold mb-2">IA COO</h3>
         <p className="text-sm text-muted max-w-md">
           Copiloto operacional. Pergunte sobre projetos, riscos, equipe ou OS.
-          Modo simulado ativo enquanto a integração com OpenAI não está plugada.
+          Conecta a Anthropic ou OpenAI quando a chave de API estiver definida
+          nas secrets da edge function; sem chave, responde em modo simulado.
         </p>
       </div>
     )

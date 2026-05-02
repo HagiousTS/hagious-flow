@@ -96,8 +96,8 @@ export function AICopilotPage() {
         <div>
           <h1 className="text-xl font-bold tracking-tight flex items-center gap-2">
             IA COO
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-warn/20 text-warn font-semibold uppercase tracking-wider">
-              mock
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-info/15 text-info font-semibold uppercase tracking-wider">
+              beta
             </span>
           </h1>
           <p className="text-xs text-muted mt-0.5">

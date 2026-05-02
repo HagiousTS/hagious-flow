@@ -2,21 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import type { AIConversation, AIMessage } from '@/types/database'
 
-const MOCK_MODEL = 'mock-coo-v0'
-
-const MOCK_REPLIES = [
-  'Recebi sua mensagem. Estou em modo simulado — quando a integração com OpenAI for ligada, vou conectar contexto do workspace, riscos e tasks para responder de verdade.',
-  'Anotado. Por enquanto sou um esqueleto. Sua mensagem ficou salva em `ai_messages` e vai virar contexto real quando o backend de IA estiver plugado.',
-  'Posso buscar projetos em risco, equipe sobrecarregada e OS na inbox. Hoje só registro intenção; em breve executo de fato.',
-  'Comando registrado. Próxima iteração: tool calls reais (criar task, escalar OS, ajustar prioridade) com aprovação humana antes de executar.',
-]
-
-function pickMockReply(seed: string): string {
-  let h = 0
-  for (let i = 0; i < seed.length; i += 1) h = (h * 31 + seed.charCodeAt(i)) | 0
-  return MOCK_REPLIES[Math.abs(h) % MOCK_REPLIES.length]
-}
-
 export function useAIConversations(workspaceId: string | undefined) {
   return useQuery<AIConversation[]>({
     queryKey: ['ai', 'conversations', workspaceId],
@@ -98,46 +83,14 @@ export function useSendMessage() {
       const trimmed = content.trim()
       if (!trimmed) throw new Error('Mensagem vazia')
 
-      const startedAt = Date.now()
-
-      const { data: userMsg, error: userErr } = await supabase
-        .from('ai_messages')
-        .insert({
-          conversation_id: conversationId,
-          role: 'user',
-          content_md: trimmed,
-        })
-        .select('*')
-        .single()
-      if (userErr) throw userErr
-
-      const reply = pickMockReply(trimmed)
-      const latency = Date.now() - startedAt
-
-      const { data: assistantMsg, error: asstErr } = await supabase
-        .from('ai_messages')
-        .insert({
-          conversation_id: conversationId,
-          role: 'assistant',
-          content_md: reply,
-          model_used: MOCK_MODEL,
-          tokens_in: trimmed.length,
-          tokens_out: reply.length,
-          latency_ms: latency,
-        })
-        .select('*')
-        .single()
-      if (asstErr) throw asstErr
-
-      await supabase
-        .from('ai_conversations')
-        .update({ updated_at: new Date().toISOString() })
-        .eq('id', conversationId)
-
-      return {
-        userMsg: userMsg as AIMessage,
-        assistantMsg: assistantMsg as AIMessage,
+      const { data, error } = await supabase.functions.invoke('ia-coo-chat', {
+        body: { conversationId, content: trimmed },
+      })
+      if (error) throw error
+      if (data && typeof data === 'object' && 'error' in data && data.error) {
+        throw new Error(String(data.error))
       }
+      return data as { userMsg: AIMessage; assistantMsg: AIMessage }
     },
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({
