@@ -14,7 +14,7 @@ import { TeamPage } from '@/pages/Team'
 import { ClientsPage } from '@/pages/Clients'
 import { AICopilotPage } from '@/pages/AICopilot'
 import { ProjectsPage } from '@/pages/Projects'
-import { ReportsPage } from '@/pages/placeholders'
+import { ReportsPage } from '@/pages/Reports'
 
 const queryClient = new QueryClient({
   defaultOptions: {

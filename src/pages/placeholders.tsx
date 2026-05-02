@@ -21,9 +21,3 @@ export function PlaceholderPage({ title, description }: PlaceholderProps) {
   )
 }
 
-export const ReportsPage = () => (
-  <PlaceholderPage
-    title="Relatórios"
-    description="BI executivo. Receita, margem, throughput, NPS. Exportação CSV/PDF."
-  />
-)
