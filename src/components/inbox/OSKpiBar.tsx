@@ -19,7 +19,9 @@ export function OSKpiBar({ kpis }: OSKpiBarProps) {
         value={
           <span>
             {kpis.returnedThisMonth}{' '}
-            <span className="text-[10px] text-muted font-normal">de {kpis.totalThisMonth}</span>
+            <span className="text-[10px] text-muted font-normal">
+              de {kpis.totalThisMonth}
+            </span>
           </span>
         }
       />
@@ -27,7 +29,9 @@ export function OSKpiBar({ kpis }: OSKpiBarProps) {
         label="DoR médio"
         value={kpis.avgQualityScore ?? '—'}
         accent={
-          kpis.avgQualityScore != null && kpis.avgQualityScore >= 70 ? 'text-ok' : 'text-text'
+          kpis.avgQualityScore != null && kpis.avgQualityScore >= 70
+            ? 'text-ok'
+            : 'text-text'
         }
       />
     </div>
@@ -43,7 +47,9 @@ interface StatProps {
 function Stat({ label, value, accent = 'text-text' }: StatProps) {
   return (
     <Card className="px-4 py-2 text-center min-w-[120px]">
-      <div className="text-[10px] text-muted uppercase tracking-wider">{label}</div>
+      <div className="text-[10px] text-muted uppercase tracking-wider">
+        {label}
+      </div>
       <div className={`text-sm font-bold ${accent}`}>{value}</div>
     </Card>
   )

@@ -8,14 +8,16 @@ interface ReportsKpiBarProps {
 
 export function ReportsKpiBar({ kpis }: ReportsKpiBarProps) {
   const recognizedPct =
-    kpis.totalRevenue > 0 ? (kpis.recognizedRevenue / kpis.totalRevenue) * 100 : 0
+    kpis.totalRevenue > 0
+      ? (kpis.recognizedRevenue / kpis.totalRevenue) * 100
+      : 0
 
   const utilCls =
     kpis.utilizationPct > 100
       ? 'text-danger'
       : kpis.utilizationPct > 85
-      ? 'text-warn'
-      : 'text-brand'
+        ? 'text-warn'
+        : 'text-brand'
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">

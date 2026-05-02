@@ -94,11 +94,7 @@ interface SendMessageArgs {
 export function useSendMessage() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({
-      conversationId,
-      workspaceId,
-      content,
-    }: SendMessageArgs) => {
+    mutationFn: async ({ conversationId, content }: SendMessageArgs) => {
       const trimmed = content.trim()
       if (!trimmed) throw new Error('Mensagem vazia')
 
@@ -144,7 +140,9 @@ export function useSendMessage() {
       }
     },
     onSuccess: (_data, vars) => {
-      qc.invalidateQueries({ queryKey: ['ai', 'messages', vars.conversationId] })
+      qc.invalidateQueries({
+        queryKey: ['ai', 'messages', vars.conversationId],
+      })
       qc.invalidateQueries({
         queryKey: ['ai', 'conversations', vars.workspaceId],
       })

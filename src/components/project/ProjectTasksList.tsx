@@ -25,7 +25,11 @@ const STATUS_CHIP: Record<string, string> = {
 
 type TaskFilter = 'all' | 'open' | 'blocked' | 'done'
 
-const FILTERS: Array<{ id: TaskFilter; label: string; matches: (t: Task) => boolean }> = [
+const FILTERS: Array<{
+  id: TaskFilter
+  label: string
+  matches: (t: Task) => boolean
+}> = [
   { id: 'all', label: 'Todas', matches: () => true },
   {
     id: 'open',
@@ -33,15 +37,27 @@ const FILTERS: Array<{ id: TaskFilter; label: string; matches: (t: Task) => bool
     matches: (t) => t.status?.category !== 'done' && !t.is_blocked,
   },
   { id: 'blocked', label: 'Bloqueadas', matches: (t) => t.is_blocked },
-  { id: 'done', label: 'Concluídas', matches: (t) => t.status?.category === 'done' },
+  {
+    id: 'done',
+    label: 'Concluídas',
+    matches: (t) => t.status?.category === 'done',
+  },
 ]
 
-export function ProjectTasksList({ tasks, projectCode }: ProjectTasksListProps) {
+export function ProjectTasksList({
+  tasks,
+  projectCode,
+}: ProjectTasksListProps) {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<TaskFilter>('all')
 
   const counts = useMemo(() => {
-    const c: Record<TaskFilter, number> = { all: 0, open: 0, blocked: 0, done: 0 }
+    const c: Record<TaskFilter, number> = {
+      all: 0,
+      open: 0,
+      blocked: 0,
+      done: 0,
+    }
     for (const t of tasks) {
       c.all += 1
       for (const f of FILTERS) {
@@ -74,8 +90,8 @@ export function ProjectTasksList({ tasks, projectCode }: ProjectTasksListProps) 
         <div>
           <h3 className="font-semibold text-[15px]">Tasks do projeto</h3>
           <p className="text-xs text-muted">
-            {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'} · ordenadas por prioridade e
-            prazo
+            {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'} · ordenadas
+            por prioridade e prazo
           </p>
         </div>
         <div className="flex gap-2 flex-wrap items-center">
@@ -129,7 +145,9 @@ export function ProjectTasksList({ tasks, projectCode }: ProjectTasksListProps) 
               <tbody className="divide-y divide-border">
                 {filtered.map((t) => {
                   const prio = t.priority ? PRIORITY_CHIP[t.priority] : null
-                  const statusKey = t.is_blocked ? 'blocked' : t.status?.category ?? 'todo'
+                  const statusKey = t.is_blocked
+                    ? 'blocked'
+                    : (t.status?.category ?? 'todo')
                   const statusCls = STATUS_CHIP[statusKey] ?? 'tag-status-todo'
                   const assigneeName = t.assignee?.profile?.full_name ?? null
                   const completed = t.status?.category === 'done'
@@ -140,9 +158,13 @@ export function ProjectTasksList({ tasks, projectCode }: ProjectTasksListProps) 
                           <span className="text-[10px] text-muted font-mono">
                             {projectCode}-{t.sequence_number}
                           </span>
-                          <span className="font-medium text-[13px]">{t.title}</span>
+                          <span className="font-medium text-[13px]">
+                            {t.title}
+                          </span>
                           {t.is_blocked && (
-                            <span className="chip tag-status-block">⚠ Bloqueada</span>
+                            <span className="chip tag-status-block">
+                              ⚠ Bloqueada
+                            </span>
                           )}
                         </div>
                       </td>
@@ -152,7 +174,11 @@ export function ProjectTasksList({ tasks, projectCode }: ProjectTasksListProps) 
                         </span>
                       </td>
                       <td className="py-3 px-3">
-                        {prio && <span className={cn('chip', prio.cls)}>{prio.label}</span>}
+                        {prio && (
+                          <span className={cn('chip', prio.cls)}>
+                            {prio.label}
+                          </span>
+                        )}
                       </td>
                       <td className="py-3 px-3">
                         {assigneeName ? (
@@ -173,18 +199,23 @@ export function ProjectTasksList({ tasks, projectCode }: ProjectTasksListProps) 
                           'py-3 px-3 text-[12px]',
                           completed
                             ? 'text-ok'
-                            : t.due_date && new Date(t.due_date).getTime() < Date.now()
-                            ? 'text-danger font-semibold'
-                            : 'text-text'
+                            : t.due_date &&
+                                new Date(t.due_date).getTime() < Date.now()
+                              ? 'text-danger font-semibold'
+                              : 'text-text'
                         )}
                       >
                         {formatDateShort(t.due_date)}
                       </td>
                       <td className="py-3 px-3 text-[12px] text-muted">
-                        {t.estimated_hours != null ? `${Number(t.estimated_hours)}h` : '—'}
+                        {t.estimated_hours != null
+                          ? `${Number(t.estimated_hours)}h`
+                          : '—'}
                       </td>
                       <td className="py-3 px-3 text-[12px]">
-                        {t.actual_hours != null ? `${Number(t.actual_hours)}h` : '—'}
+                        {t.actual_hours != null
+                          ? `${Number(t.actual_hours)}h`
+                          : '—'}
                       </td>
                     </tr>
                   )

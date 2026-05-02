@@ -15,7 +15,10 @@ import { Skeleton } from '@/components/ui/Skeleton'
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { data: workspace, isLoading: wsLoading } = useWorkspace()
-  const { data, isLoading, isError, error } = useProjectDetail(workspace?.id, id)
+  const { data, isLoading, isError, error } = useProjectDetail(
+    workspace?.id,
+    id
+  )
 
   if (wsLoading || isLoading) {
     return (
@@ -33,7 +36,9 @@ export function ProjectDetailPage() {
     return (
       <Card className="border-danger/30">
         <div className="text-center py-8">
-          <h3 className="font-semibold text-danger mb-2">Erro ao carregar projeto</h3>
+          <h3 className="font-semibold text-danger mb-2">
+            Erro ao carregar projeto
+          </h3>
           <p className="text-sm text-muted">{(error as Error).message}</p>
           <Link
             to="/projetos"
@@ -62,11 +67,22 @@ export function ProjectDetailPage() {
     )
   }
 
-  const { project, health, phases, tasks, risks, team, activity, statusBreakdown, totalHoursLogged } =
-    data
+  const {
+    project,
+    health,
+    phases,
+    tasks,
+    risks,
+    team,
+    activity,
+    statusBreakdown,
+    totalHoursLogged,
+  } = data
 
   const totalDone = statusBreakdown.done
-  const totalTasks = health?.total_tasks ?? Object.values(statusBreakdown).reduce((a, b) => a + b, 0)
+  const totalTasks =
+    health?.total_tasks ??
+    Object.values(statusBreakdown).reduce((a, b) => a + b, 0)
 
   return (
     <div className="space-y-6">

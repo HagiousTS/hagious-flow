@@ -101,15 +101,24 @@ function buildWeeks(): WeekColumn[] {
 function weekLabel(d: Date): string {
   const onejan = new Date(d.getFullYear(), 0, 1)
   const millisecsInDay = 86400000
-  const week = Math.ceil(((d.getTime() - onejan.getTime()) / millisecsInDay + onejan.getDay() + 1) / 7)
+  const week = Math.ceil(
+    ((d.getTime() - onejan.getTime()) / millisecsInDay + onejan.getDay() + 1) /
+      7
+  )
   return `Sem ${week}`
 }
 
 function shortDate(d: Date): string {
-  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(d)
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+  }).format(d)
 }
 
-function projectHealth(hoursWeek: number, totalCapacityRemaining: number): ProjectAllocation['health'] {
+function projectHealth(
+  hoursWeek: number,
+  totalCapacityRemaining: number
+): ProjectAllocation['health'] {
   if (hoursWeek === 0) return 'idle'
   if (totalCapacityRemaining < 0) return 'overloaded'
   if (totalCapacityRemaining < 8) return 'at_risk'
@@ -124,7 +133,12 @@ interface OpenTaskRow {
   actual_hours: number | null
   due_date: string | null
   is_blocked: boolean
-  project: { id: string; code: string; name: string; due_date: string | null } | null
+  project: {
+    id: string
+    code: string
+    name: string
+    due_date: string | null
+  } | null
 }
 
 export function useCapacity(workspaceId: string | undefined) {
@@ -157,7 +171,10 @@ export function useCapacity(workspaceId: string | undefined) {
           .not('assignee_member_id', 'is', null)
           .not('estimated_hours', 'is', null),
         supabase.from('skills').select('*').eq('workspace_id', workspaceId!),
-        supabase.from('member_skills').select('*, skill:skills!inner(id, workspace_id, name, category)').eq('skill.workspace_id', workspaceId!),
+        supabase
+          .from('member_skills')
+          .select('*, skill:skills!inner(id, workspace_id, name, category)')
+          .eq('skill.workspace_id', workspaceId!),
         supabase
           .from('workspace_members')
           .select('id, job_title, profile:profiles(id, full_name, avatar_url)')
@@ -172,18 +189,27 @@ export function useCapacity(workspaceId: string | undefined) {
       if (membersErr) throw membersErr
 
       const workloadList = (workload ?? []) as MemberWorkloadView[]
-      const tasks = ((tasksRaw ?? []) as unknown as OpenTaskRow[])
+      const tasks = (tasksRaw ?? []) as unknown as OpenTaskRow[]
       const skillsList = (skills ?? []) as Skill[]
       const memberSkillsList = (memberSkills ?? []) as MemberSkill[]
       const memberRows = (members ?? []) as unknown as Array<{
         id: string
         job_title: string | null
-        profile: { id: string; full_name: string; avatar_url: string | null } | null
+        profile: {
+          id: string
+          full_name: string
+          avatar_url: string | null
+        } | null
       }>
 
       const memberById = new Map<
         string,
-        { id: string; full_name: string; jobTitle: string | null; capacityWeek: number }
+        {
+          id: string
+          full_name: string
+          jobTitle: string | null
+          capacityWeek: number
+        }
       >()
       for (const m of memberRows) {
         const wl = workloadList.find((w) => w.member_id === m.id)
@@ -205,11 +231,12 @@ export function useCapacity(workspaceId: string | undefined) {
         }
       >()
 
-      const currentWeek = weeks[0]
-
       for (const t of tasks) {
         if (!t.assignee_member_id) continue
-        const remaining = Math.max(0, Number(t.estimated_hours ?? 0) - Number(t.actual_hours ?? 0))
+        const remaining = Math.max(
+          0,
+          Number(t.estimated_hours ?? 0) - Number(t.actual_hours ?? 0)
+        )
         if (remaining <= 0) continue
 
         const dueDate = t.due_date ? new Date(t.due_date) : null
@@ -222,7 +249,8 @@ export function useCapacity(workspaceId: string | undefined) {
         if (dueDate && dueDate > rangeEnd) continue
 
         const idx = weekIndex >= 0 ? weekIndex : 0
-        const memberMap = allocs.get(t.assignee_member_id) ?? new Map<number, number>()
+        const memberMap =
+          allocs.get(t.assignee_member_id) ?? new Map<number, number>()
         memberMap.set(idx, (memberMap.get(idx) ?? 0) + remaining)
         allocs.set(t.assignee_member_id, memberMap)
 
@@ -268,7 +296,10 @@ export function useCapacity(workspaceId: string | undefined) {
       }
       rows.sort((a, b) => (b.weeks[0]?.pct ?? 0) - (a.weeks[0]?.pct ?? 0))
 
-      const totalCapacityHours = rows.reduce((acc, r) => acc + r.capacityHoursWeek, 0)
+      const totalCapacityHours = rows.reduce(
+        (acc, r) => acc + r.capacityHoursWeek,
+        0
+      )
       const totalAllocatedHours = rows.reduce(
         (acc, r) => acc + (r.weeks[0]?.allocatedHours ?? 0),
         0
@@ -276,7 +307,9 @@ export function useCapacity(workspaceId: string | undefined) {
       const overloaded = rows.filter((r) => (r.weeks[0]?.pct ?? 0) > 95)
       const free = rows.filter((r) => (r.weeks[0]?.pct ?? 0) < 60)
       const freeHours = free.reduce(
-        (acc, r) => acc + Math.max(0, r.capacityHoursWeek - (r.weeks[0]?.allocatedHours ?? 0)),
+        (acc, r) =>
+          acc +
+          Math.max(0, r.capacityHoursWeek - (r.weeks[0]?.allocatedHours ?? 0)),
         0
       )
 
@@ -284,19 +317,25 @@ export function useCapacity(workspaceId: string | undefined) {
         membersCount: rows.length,
         totalCapacityHours,
         totalAllocatedHours,
-        saturationPct: totalCapacityHours > 0
-          ? (totalAllocatedHours / totalCapacityHours) * 100
-          : 0,
+        saturationPct:
+          totalCapacityHours > 0
+            ? (totalAllocatedHours / totalCapacityHours) * 100
+            : 0,
         overloadedCount: overloaded.length,
-        overloadedSummary: overloaded
-          .slice(0, 2)
-          .map((r) => `${r.fullName.split(' ')[0]} · ${Math.round(r.weeks[0]?.pct ?? 0)}%`)
-          .join(' · ') || '—',
+        overloadedSummary:
+          overloaded
+            .slice(0, 2)
+            .map(
+              (r) =>
+                `${r.fullName.split(' ')[0]} · ${Math.round(r.weeks[0]?.pct ?? 0)}%`
+            )
+            .join(' · ') || '—',
         freeHours,
-        freeSummary: free
-          .slice(0, 2)
-          .map((r) => r.fullName.split(' ')[0])
-          .join(' + ') || '—',
+        freeSummary:
+          free
+            .slice(0, 2)
+            .map((r) => r.fullName.split(' ')[0])
+            .join(' + ') || '—',
       }
 
       const projects: ProjectAllocation[] = []
@@ -333,7 +372,10 @@ export function useCapacity(workspaceId: string | undefined) {
         }
       }
 
-      const matrixMembers = rows.map((r) => ({ id: r.memberId, full_name: r.fullName }))
+      const matrixMembers = rows.map((r) => ({
+        id: r.memberId,
+        full_name: r.fullName,
+      }))
 
       const skillMatrix: SkillMatrix = {
         skills: skillsList,

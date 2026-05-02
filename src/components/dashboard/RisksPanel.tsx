@@ -9,16 +9,16 @@ interface RisksPanelProps {
 
 const severityClass: Record<string, string> = {
   critical: 'border-danger/30 bg-danger/5',
-  high:     'border-danger/30 bg-danger/5',
-  medium:   'border-warn/30 bg-warn/5',
-  low:      'border-info/30 bg-info/5',
+  high: 'border-danger/30 bg-danger/5',
+  medium: 'border-warn/30 bg-warn/5',
+  low: 'border-info/30 bg-info/5',
 }
 
 const severityChip: Record<string, string> = {
   critical: 'chip-priority-high',
-  high:     'chip-priority-high',
-  medium:   'chip-priority-mid',
-  low:      'chip-priority-low',
+  high: 'chip-priority-high',
+  medium: 'chip-priority-mid',
+  low: 'chip-priority-low',
 }
 
 export function RisksPanel({ risks }: RisksPanelProps) {
@@ -44,17 +44,30 @@ export function RisksPanel({ risks }: RisksPanelProps) {
               className={`border rounded-xl p-3 ${severityClass[r.severity] ?? ''}`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-mono text-muted">{r.code}</span>
-                <span className={`chip ${severityChip[r.severity] ?? 'chip-info'}`}>
-                  {r.severity === 'high' ? 'Alta' :
-                   r.severity === 'medium' ? 'Média' :
-                   r.severity === 'critical' ? 'Crítica' : 'Baixa'}
+                <span className="text-[10px] font-mono text-muted">
+                  {r.code}
+                </span>
+                <span
+                  className={`chip ${severityChip[r.severity] ?? 'chip-info'}`}
+                >
+                  {r.severity === 'high'
+                    ? 'Alta'
+                    : r.severity === 'medium'
+                      ? 'Média'
+                      : r.severity === 'critical'
+                        ? 'Crítica'
+                        : 'Baixa'}
                 </span>
               </div>
-              <h4 className="text-[13px] font-semibold leading-snug">{r.title}</h4>
+              <h4 className="text-[13px] font-semibold leading-snug">
+                {r.title}
+              </h4>
               {r.impact_amount != null && (
                 <p className="text-[11px] text-muted mt-1">
-                  Impacto estimado: <span className="text-text font-medium">{formatBRL(r.impact_amount)}</span>
+                  Impacto estimado:{' '}
+                  <span className="text-text font-medium">
+                    {formatBRL(r.impact_amount)}
+                  </span>
                 </p>
               )}
               {r.mitigation_plan && (

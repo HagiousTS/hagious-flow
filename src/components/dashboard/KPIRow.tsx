@@ -14,8 +14,12 @@ export function KPIRow({ projects, members }: KPIRowProps) {
 
   const totalTasks = projects.reduce((sum, p) => sum + (p.total_tasks ?? 0), 0)
   const doneTasks = projects.reduce((sum, p) => sum + (p.done_tasks ?? 0), 0)
-  const blockedTasks = projects.reduce((sum, p) => sum + (p.blocked_tasks ?? 0), 0)
-  const donePercent = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0
+  const blockedTasks = projects.reduce(
+    (sum, p) => sum + (p.blocked_tasks ?? 0),
+    0
+  )
+  const donePercent =
+    totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0
 
   // MRR mock baseado em budgets ativos (cenário fictício)
   const totalBudget = projects
@@ -50,8 +54,11 @@ export function KPIRow({ projects, members }: KPIRowProps) {
         value={String(totalTasks)}
         sub={
           <>
-            {doneTasks} done · {blockedTasks > 0 && (
-              <span className="text-danger font-semibold">{blockedTasks} bloqueadas</span>
+            {doneTasks} done ·{' '}
+            {blockedTasks > 0 && (
+              <span className="text-danger font-semibold">
+                {blockedTasks} bloqueadas
+              </span>
             )}
             {blockedTasks === 0 && <span className="text-ok">no fluxo</span>}
           </>

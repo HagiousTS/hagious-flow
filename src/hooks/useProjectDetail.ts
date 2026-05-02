@@ -52,7 +52,10 @@ interface RawProjectMember {
   } | null
 }
 
-export function useProjectDetail(workspaceId: string | undefined, projectId: string | undefined) {
+export function useProjectDetail(
+  workspaceId: string | undefined,
+  projectId: string | undefined
+) {
   return useQuery<ProjectDetailData>({
     queryKey: ['project', workspaceId, projectId],
     enabled: !!workspaceId && !!projectId,
@@ -69,7 +72,9 @@ export function useProjectDetail(workspaceId: string | undefined, projectId: str
       ] = await Promise.all([
         supabase
           .from('projects')
-          .select('*, client:clients(id, name, trade_name, contact_name, contact_email)')
+          .select(
+            '*, client:clients(id, name, trade_name, contact_name, contact_email)'
+          )
           .eq('id', projectId!)
           .eq('workspace_id', workspaceId!)
           .single(),
@@ -90,7 +95,9 @@ export function useProjectDetail(workspaceId: string | undefined, projectId: str
           .limit(200),
         supabase
           .from('risks')
-          .select('*, owner:workspace_members(id, profile:profiles(id, full_name))')
+          .select(
+            '*, owner:workspace_members(id, profile:profiles(id, full_name))'
+          )
           .eq('project_id', projectId!)
           .neq('status', 'closed')
           .order('severity', { ascending: false }),
@@ -113,7 +120,9 @@ export function useProjectDetail(workspaceId: string | undefined, projectId: str
           .from('activity_log')
           .select('*, actor:profiles(id, full_name, avatar_url)')
           .eq('workspace_id', workspaceId!)
-          .or(`entity_id.eq.${projectId!},metadata_json->>project_id.eq.${projectId!}`)
+          .or(
+            `entity_id.eq.${projectId!},metadata_json->>project_id.eq.${projectId!}`
+          )
           .order('created_at', { ascending: false })
           .limit(8),
       ])
@@ -155,20 +164,23 @@ export function useProjectDetail(workspaceId: string | undefined, projectId: str
         const h = Number(e.hours ?? 0)
         totalHours += h
         if (e.member_id) {
-          hoursByMember.set(e.member_id, (hoursByMember.get(e.member_id) ?? 0) + h)
+          hoursByMember.set(
+            e.member_id,
+            (hoursByMember.get(e.member_id) ?? 0) + h
+          )
         }
       }
 
-      const team: ProjectTeamLoad[] = ((members ?? []) as unknown as RawProjectMember[]).map(
-        (pm) => ({
-          memberId: pm.member_id,
-          fullName: pm.member?.profile?.full_name ?? 'Sem nome',
-          role: pm.role,
-          hoursLogged: hoursByMember.get(pm.member_id) ?? 0,
-          allocationPercent: pm.allocation_percent,
-          capacityHoursWeek: pm.member?.capacity_hours_week ?? 40,
-        })
-      )
+      const team: ProjectTeamLoad[] = (
+        (members ?? []) as unknown as RawProjectMember[]
+      ).map((pm) => ({
+        memberId: pm.member_id,
+        fullName: pm.member?.profile?.full_name ?? 'Sem nome',
+        role: pm.role,
+        hoursLogged: hoursByMember.get(pm.member_id) ?? 0,
+        allocationPercent: pm.allocation_percent,
+        capacityHoursWeek: pm.member?.capacity_hours_week ?? 40,
+      }))
       team.sort((a, b) => b.hoursLogged - a.hoursLogged)
 
       return {

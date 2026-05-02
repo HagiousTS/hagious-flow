@@ -13,18 +13,22 @@ function scoreColor(score: number): { stroke: string; text: string } {
   return { stroke: 'var(--danger)', text: 'text-danger' }
 }
 
-export function DoRRing({ score, size = 22, showLabel = true, className }: DoRRingProps) {
+export function DoRRing({
+  score,
+  size = 22,
+  showLabel = true,
+  className,
+}: DoRRingProps) {
   if (score == null) {
     return (
-      <span className={cn('text-[11px] text-muted', className)}>
-        DoR —
-      </span>
+      <span className={cn('text-[11px] text-muted', className)}>DoR —</span>
     )
   }
 
   const radius = 15
   const circumference = 2 * Math.PI * radius
-  const offset = circumference - (Math.min(100, Math.max(0, score)) / 100) * circumference
+  const offset =
+    circumference - (Math.min(100, Math.max(0, score)) / 100) * circumference
   const { stroke, text } = scoreColor(score)
 
   return (
@@ -57,7 +61,9 @@ export function DoRRing({ score, size = 22, showLabel = true, className }: DoRRi
         />
       </svg>
       {showLabel && (
-        <span className={cn('text-[11px] font-bold', text)}>DoR {Math.round(score)}</span>
+        <span className={cn('text-[11px] font-bold', text)}>
+          DoR {Math.round(score)}
+        </span>
       )}
     </div>
   )

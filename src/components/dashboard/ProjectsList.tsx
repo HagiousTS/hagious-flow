@@ -14,10 +14,18 @@ function healthMeta(p: ProjectHealthView): {
   iconColor: string
 } {
   if (p.blocked_tasks > 0) {
-    return { badge: 'chip-status-block', icon: AlertTriangle, iconColor: 'text-danger' }
+    return {
+      badge: 'chip-status-block',
+      icon: AlertTriangle,
+      iconColor: 'text-danger',
+    }
   }
   if (p.percent_done >= 80) {
-    return { badge: 'chip-status-done', icon: CheckCircle2, iconColor: 'text-ok' }
+    return {
+      badge: 'chip-status-done',
+      icon: CheckCircle2,
+      iconColor: 'text-ok',
+    }
   }
   return { badge: 'chip-status-doing', icon: Clock, iconColor: 'text-info' }
 }
@@ -66,14 +74,16 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="font-semibold text-sm truncate">{p.name}</h4>
+                      <h4 className="font-semibold text-sm truncate">
+                        {p.name}
+                      </h4>
                       <span className={`chip ${badge}`}>
                         <Icon className={`w-3 h-3 ${iconColor}`} />
                         {p.blocked_tasks > 0
                           ? `${p.blocked_tasks} bloqueada(s)`
                           : p.percent_done >= 80
-                          ? 'No fluxo'
-                          : 'Em execução'}
+                            ? 'No fluxo'
+                            : 'Em execução'}
                       </span>
                     </div>
                     <p className="text-xs text-muted mt-0.5">

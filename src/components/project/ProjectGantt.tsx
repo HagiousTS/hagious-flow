@@ -15,7 +15,10 @@ function dateToDay(date: string | null): number | null {
 }
 
 function formatWeek(date: Date): string {
-  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(date)
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+  }).format(date)
 }
 
 const PHASE_COLOR: Record<string, string> = {
@@ -80,9 +83,12 @@ export function ProjectGantt({ phases, project }: ProjectGanttProps) {
     <Card className="p-5">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div>
-          <h3 className="font-semibold text-[15px]">Timeline · Fases do projeto</h3>
+          <h3 className="font-semibold text-[15px]">
+            Timeline · Fases do projeto
+          </h3>
           <p className="text-xs text-muted">
-            {phases.length} {phases.length === 1 ? 'fase' : 'fases'} · linha vermelha = hoje
+            {phases.length} {phases.length === 1 ? 'fase' : 'fases'} · linha
+            vermelha = hoje
           </p>
         </div>
       </div>
@@ -108,7 +114,9 @@ export function ProjectGantt({ phases, project }: ProjectGanttProps) {
             {todayPct != null && (
               <div
                 className="absolute top-0 bottom-0 border-l-2 border-danger z-10 pointer-events-none"
-                style={{ left: `calc(200px + (100% - 200px) * ${todayPct / 100})` }}
+                style={{
+                  left: `calc(200px + (100% - 200px) * ${todayPct / 100})`,
+                }}
               >
                 <div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-danger" />
                 <div className="absolute -top-5 -left-4 text-[9px] text-danger font-semibold whitespace-nowrap">

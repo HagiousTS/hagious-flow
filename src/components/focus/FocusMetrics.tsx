@@ -16,9 +16,14 @@ function formatHM(min: number): string {
 export function FocusMetrics({ metrics }: FocusMetricsProps) {
   return (
     <Card className="p-5">
-      <h3 className="font-semibold text-[14px] mb-3">Métricas de foco · semana</h3>
+      <h3 className="font-semibold text-[14px] mb-3">
+        Métricas de foco · semana
+      </h3>
       <div className="space-y-3">
-        <Row label="Sessões esta semana" value={metrics.sessionsThisWeek.toString()} />
+        <Row
+          label="Sessões esta semana"
+          value={metrics.sessionsThisWeek.toString()}
+        />
         <Row label="Horas em foco" value={formatHM(metrics.minutesThisWeek)} />
         <Row
           label="Interrupções bloqueadas"

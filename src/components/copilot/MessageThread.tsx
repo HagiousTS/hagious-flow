@@ -39,9 +39,7 @@ function MessageBubble({ msg }: { msg: AIMessage }) {
       <div
         className={cn(
           'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
-          isUser
-            ? 'bg-info/20 text-info'
-            : 'grad-brand text-white'
+          isUser ? 'bg-info/20 text-info' : 'grad-brand text-white'
         )}
       >
         {isUser ? (
@@ -101,8 +99,7 @@ export function MessageThread({
         <h3 className="text-lg font-semibold mb-2">IA COO</h3>
         <p className="text-sm text-muted max-w-md">
           Copiloto operacional. Pergunte sobre projetos, riscos, equipe ou OS.
-          Modo simulado ativo enquanto a integração com OpenAI não está
-          plugada.
+          Modo simulado ativo enquanto a integração com OpenAI não está plugada.
         </p>
       </div>
     )

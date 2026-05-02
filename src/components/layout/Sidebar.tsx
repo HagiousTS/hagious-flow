@@ -1,7 +1,16 @@
 import { NavLink } from 'react-router-dom'
 import {
-  LayoutDashboard, Folder, ListChecks, Users, Building2,
-  Sparkles, BarChart3, Settings, Inbox, Calendar, Target,
+  LayoutDashboard,
+  Folder,
+  ListChecks,
+  Users,
+  Building2,
+  Sparkles,
+  BarChart3,
+  Settings,
+  Inbox,
+  Calendar,
+  Target,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/useAuth'
@@ -98,14 +107,15 @@ export function Sidebar() {
       {/* User */}
       <div className="border-t p-3">
         <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-panel2 cursor-pointer group">
-          <Avatar name={user?.user_metadata?.full_name ?? user?.email} size="md" />
+          <Avatar
+            name={user?.user_metadata?.full_name ?? user?.email}
+            size="md"
+          />
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold truncate">
               {user?.user_metadata?.full_name ?? user?.email?.split('@')[0]}
             </div>
-            <div className="text-[11px] text-muted truncate">
-              {user?.email}
-            </div>
+            <div className="text-[11px] text-muted truncate">{user?.email}</div>
           </div>
           <button
             onClick={() => signOut()}

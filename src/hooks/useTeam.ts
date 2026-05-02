@@ -1,10 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
-import type {
-  MemberWorkloadView,
-  Skill,
-  SkillProficiency,
-} from '@/types/database'
+import type { MemberWorkloadView, SkillProficiency } from '@/types/database'
 
 export interface TeamMemberSkill {
   skillId: string
@@ -106,9 +102,7 @@ export function useTeam(workspaceId: string | undefined) {
           .eq('workspace_id', workspaceId!),
         supabase
           .from('member_skills')
-          .select(
-            '*, skill:skills!inner(id, workspace_id, name, category)'
-          )
+          .select('*, skill:skills!inner(id, workspace_id, name, category)')
           .eq('skill.workspace_id', workspaceId!),
         supabase
           .from('project_members')
@@ -126,7 +120,8 @@ export function useTeam(workspaceId: string | undefined) {
       const membersList = (membersRaw ?? []) as unknown as MemberRow[]
       const workload = (workloadRaw ?? []) as MemberWorkloadView[]
       const memberSkills = (skillsRaw ?? []) as unknown as MemberSkillRow[]
-      const projectMembers = (projectMembersRaw ?? []) as unknown as ProjectMemberRow[]
+      const projectMembers = (projectMembersRaw ??
+        []) as unknown as ProjectMemberRow[]
 
       const skillsByMember = new Map<string, TeamMemberSkill[]>()
       for (const ms of memberSkills) {

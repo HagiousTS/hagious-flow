@@ -18,7 +18,8 @@ const ROLE_LABEL: Record<string, string> = {
 
 const ROLE_CLS: Record<string, string> = {
   owner: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-  manager: 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30',
+  manager:
+    'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30',
   member: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
   viewer: 'bg-panel2 text-muted border-border',
 }
@@ -51,12 +52,7 @@ export function MemberCard({ member }: MemberCardProps) {
   const inactive = !member.isActive
 
   return (
-    <Card
-      className={cn(
-        'flex flex-col gap-4',
-        inactive && 'opacity-60'
-      )}
-    >
+    <Card className={cn('flex flex-col gap-4', inactive && 'opacity-60')}>
       <div className="flex items-start gap-3">
         <Avatar name={member.fullName} src={member.avatarUrl} size="lg" />
         <div className="flex-1 min-w-0">
@@ -119,7 +115,8 @@ export function MemberCard({ member }: MemberCardProps) {
             {member.openTasks}
             {member.blockedTasks > 0 && (
               <span className="text-danger ml-1">
-                <AlertOctagon className="w-3 h-3 inline" /> {member.blockedTasks}
+                <AlertOctagon className="w-3 h-3 inline" />{' '}
+                {member.blockedTasks}
               </span>
             )}
           </div>

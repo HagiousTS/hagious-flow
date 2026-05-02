@@ -9,15 +9,16 @@ const buttonVariants = cva(
       variant: {
         default: 'grad-brand text-white hover:opacity-90',
         outline: 'border bg-panel text-text hover:border-brand/40',
-        ghost:   'text-muted hover:text-text hover:bg-panel2',
-        danger:  'bg-danger/15 text-danger border border-danger/30 hover:bg-danger/25',
-        soft:    'bg-brand/15 text-brand border border-brand/30 hover:bg-brand/25',
+        ghost: 'text-muted hover:text-text hover:bg-panel2',
+        danger:
+          'bg-danger/15 text-danger border border-danger/30 hover:bg-danger/25',
+        soft: 'bg-brand/15 text-brand border border-brand/30 hover:bg-brand/25',
       },
       size: {
         default: 'h-9 px-4',
-        sm:      'h-8 px-3 text-xs',
-        lg:      'h-10 px-5',
-        icon:    'h-9 w-9',
+        sm: 'h-8 px-3 text-xs',
+        lg: 'h-10 px-5',
+        icon: 'h-9 w-9',
       },
     },
     defaultVariants: { variant: 'default', size: 'default' },
@@ -25,12 +26,17 @@ const buttonVariants = cva(
 )
 
 export interface ButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => (
-    <button ref={ref} className={cn(buttonVariants({ variant, size }), className)} {...props} />
+    <button
+      ref={ref}
+      className={cn(buttonVariants({ variant, size }), className)}
+      {...props}
+    />
   )
 )
 Button.displayName = 'Button'

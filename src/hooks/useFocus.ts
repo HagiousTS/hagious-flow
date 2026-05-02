@@ -33,25 +33,29 @@ export function useFocus(workspaceId: string | undefined) {
     queryFn: async () => {
       const weekStart = startOfWeekIso()
 
-      const [{ data: sessions, error: sessionsErr }, { data: weekSessions, error: weekErr }] =
-        await Promise.all([
-          supabase
-            .from('focus_sessions')
-            .select(
-              `*,
+      const [
+        { data: sessions, error: sessionsErr },
+        { data: weekSessions, error: weekErr },
+      ] = await Promise.all([
+        supabase
+          .from('focus_sessions')
+          .select(
+            `*,
                task:tasks(id, sequence_number, title, description_md, priority, project:projects(id, code, name)),
                member:workspace_members(id, job_title, user_id, profile:profiles(id, full_name, avatar_url))`
-            )
-            .eq('workspace_id', workspaceId!)
-            .is('ended_at', null)
-            .order('started_at', { ascending: false })
-            .limit(1),
-          supabase
-            .from('focus_sessions')
-            .select('id, planned_minutes, actual_minutes, interruptions_blocked, interruptions_escalated, started_at, ended_at')
-            .eq('workspace_id', workspaceId!)
-            .gte('started_at', weekStart),
-        ])
+          )
+          .eq('workspace_id', workspaceId!)
+          .is('ended_at', null)
+          .order('started_at', { ascending: false })
+          .limit(1),
+        supabase
+          .from('focus_sessions')
+          .select(
+            'id, planned_minutes, actual_minutes, interruptions_blocked, interruptions_escalated, started_at, ended_at'
+          )
+          .eq('workspace_id', workspaceId!)
+          .gte('started_at', weekStart),
+      ])
 
       if (sessionsErr) throw sessionsErr
       if (weekErr) throw weekErr
@@ -78,7 +82,8 @@ export function useFocus(workspaceId: string | undefined) {
 
       const sessionsThisWeek = weekSessions?.length ?? 0
       const minutesThisWeek = (weekSessions ?? []).reduce((acc, s) => {
-        const elapsed = s.actual_minutes ?? minutesElapsed(s.started_at, s.ended_at)
+        const elapsed =
+          s.actual_minutes ?? minutesElapsed(s.started_at, s.ended_at)
         return acc + elapsed
       }, 0)
       const interruptionsBlocked = (weekSessions ?? []).reduce(

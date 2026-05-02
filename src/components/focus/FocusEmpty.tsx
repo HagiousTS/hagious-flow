@@ -9,8 +9,8 @@ export function FocusEmpty() {
       </div>
       <h2 className="text-xl font-bold mb-2">Nenhuma sessão de foco ativa</h2>
       <p className="text-sm text-muted max-w-md mx-auto mb-6">
-        Quando alguém do workspace estiver em modo foco, a sessão aparece aqui com a fila de
-        acionamentos e métricas em tempo real.
+        Quando alguém do workspace estiver em modo foco, a sessão aparece aqui
+        com a fila de acionamentos e métricas em tempo real.
       </p>
       <button
         type="button"

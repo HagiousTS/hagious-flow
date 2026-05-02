@@ -9,15 +9,15 @@
 
 ## Stack
 
-| Camada | Tecnologia |
-|---|---|
-| Build | Vite 5 |
-| Framework | React 18 + TypeScript 5 |
-| Styling | Tailwind CSS 3 + CSS variables (3 temas) |
-| Componentes | shadcn-style + lucide-react |
-| Estado servidor | TanStack Query |
-| Roteamento | React Router 6 |
-| Backend | Supabase (Postgres 16 + Auth + RLS) |
+| Camada          | Tecnologia                               |
+| --------------- | ---------------------------------------- |
+| Build           | Vite 5                                   |
+| Framework       | React 18 + TypeScript 5                  |
+| Styling         | Tailwind CSS 3 + CSS variables (3 temas) |
+| Componentes     | shadcn-style + lucide-react              |
+| Estado servidor | TanStack Query                           |
+| Roteamento      | React Router 6                           |
+| Backend         | Supabase (Postgres 16 + Auth + RLS)      |
 
 ---
 
@@ -50,8 +50,8 @@ Abra [http://localhost:5173](http://localhost:5173).
 
 ### 4. Login de demo
 
-| Email | Senha |
-|---|---|
+| Email                     | Senha          |
+| ------------------------- | -------------- |
 | `gusttavo@hagious.com.br` | `Hagious@2026` |
 
 > Troque a senha no Supabase Auth UI antes de qualquer uso real.
@@ -60,11 +60,11 @@ Abra [http://localhost:5173](http://localhost:5173).
 
 ## Scripts
 
-| Comando | O que faz |
-|---|---|
-| `npm run dev`       | Servidor dev (Vite) em :5173 |
-| `npm run build`     | Build de produção em `dist/` |
-| `npm run preview`   | Preview do build |
+| Comando             | O que faz                       |
+| ------------------- | ------------------------------- |
+| `npm run dev`       | Servidor dev (Vite) em :5173    |
+| `npm run build`     | Build de produção em `dist/`    |
+| `npm run preview`   | Preview do build                |
 | `npm run typecheck` | Verificação de tipos (sem emit) |
 
 ---
@@ -95,11 +95,11 @@ src/
 
 3 temas ativáveis em runtime via switcher (canto inferior direito):
 
-| Tema | Uso |
-|---|---|
+| Tema                           | Uso                                                  |
+| ------------------------------ | ---------------------------------------------------- |
 | 🟢 **Sankhya Light** (default) | Padrão claro, alinhado com o site oficial da Sankhya |
-| 🌑 **Sankhya Dark** | Escuro corporativo com mesmas cores de marca |
-| 🟣 **Hagious Purple** | Tema original (roxo/azul) |
+| 🌑 **Sankhya Dark**            | Escuro corporativo com mesmas cores de marca         |
+| 🟣 **Hagious Purple**          | Tema original (roxo/azul)                            |
 
 Tokens em HSL definidos em `src/styles/globals.css`. Tailwind os consome via `tailwind.config.js`.
 

@@ -52,7 +52,7 @@ export function WorkspaceSwitcher() {
         <div className="flex-1 min-w-0">
           <div className="text-xs text-muted">Workspace</div>
           <div className="text-sm font-semibold leading-tight truncate">
-            {isLoading ? 'Carregando...' : active?.name ?? 'Sem workspace'}
+            {isLoading ? 'Carregando...' : (active?.name ?? 'Sem workspace')}
           </div>
         </div>
         {hasMultiple && (

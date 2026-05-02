@@ -123,7 +123,9 @@ export function useReports(workspaceId: string | undefined) {
           .is('deleted_at', null),
         supabase
           .from('tasks')
-          .select('id, project_id, is_blocked, completed_at, assignee_member_id')
+          .select(
+            'id, project_id, is_blocked, completed_at, assignee_member_id'
+          )
           .eq('workspace_id', workspaceId!)
           .is('deleted_at', null),
         supabase
@@ -171,7 +173,9 @@ export function useReports(workspaceId: string | undefined) {
       const activeProjectsCount = projects.filter((p) =>
         ACTIVE_STATUSES.includes(p.status)
       ).length
-      const doneProjectsCount = projects.filter((p) => p.status === 'done').length
+      const doneProjectsCount = projects.filter(
+        (p) => p.status === 'done'
+      ).length
 
       const totalTasks = tasks.length
       const doneTasks = tasks.filter((t) => t.completed_at).length
@@ -195,8 +199,7 @@ export function useReports(workspaceId: string | undefined) {
         blockedTasks,
         throughputPct: totalTasks > 0 ? (doneTasks / totalTasks) * 100 : 0,
         totalMembers,
-        averageTasksPerMember:
-          totalMembers > 0 ? totalTasks / totalMembers : 0,
+        averageTasksPerMember: totalMembers > 0 ? totalTasks / totalMembers : 0,
       }
 
       const clientById = new Map(clients.map((c) => [c.id, c]))
@@ -217,7 +220,8 @@ export function useReports(workspaceId: string | undefined) {
             return {
               id,
               label: c?.trade_name ?? c?.name ?? '—',
-              sublabel: c?.trade_name && c.name !== c.trade_name ? c.name : null,
+              sublabel:
+                c?.trade_name && c.name !== c.trade_name ? c.name : null,
               value,
               formatted: fmtBRL(value),
               pct: totalRevenue > 0 ? (value / totalRevenue) * 100 : 0,
@@ -236,9 +240,10 @@ export function useReports(workspaceId: string | undefined) {
             sublabel: p.code,
             value: Number(p.actual_hours ?? 0),
             formatted: fmtHours(Number(p.actual_hours ?? 0)),
-            pct: hoursLogged > 0
-              ? (Number(p.actual_hours ?? 0) / hoursLogged) * 100
-              : 0,
+            pct:
+              hoursLogged > 0
+                ? (Number(p.actual_hours ?? 0) / hoursLogged) * 100
+                : 0,
             pctOfMax: 0,
             highlight: (p.health as BreakdownRow['highlight']) ?? null,
           }))
@@ -314,10 +319,7 @@ export function useReports(workspaceId: string | undefined) {
             sublabel: null,
             value: info.count,
             formatted: `${info.count} pessoa${info.count !== 1 ? 's' : ''}`,
-            pct:
-              totalMembers > 0
-                ? (info.count / totalMembers) * 100
-                : 0,
+            pct: totalMembers > 0 ? (info.count / totalMembers) * 100 : 0,
             pctOfMax: 0,
             highlight: null,
           }))

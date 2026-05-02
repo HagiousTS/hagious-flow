@@ -71,7 +71,11 @@ const OPEN_OS_STATUSES: ServiceOrderStatus[] = [
   'refined',
 ]
 
-const ACTIVE_PROJECT_STATUSES: ProjectStatus[] = ['planning', 'active', 'on_hold']
+const ACTIVE_PROJECT_STATUSES: ProjectStatus[] = [
+  'planning',
+  'active',
+  'on_hold',
+]
 
 export function useClients(workspaceId: string | undefined) {
   return useQuery<ClientsData>({
@@ -134,7 +138,8 @@ export function useClients(workspaceId: string | undefined) {
           name: p.name,
           status: p.status,
           health: p.health,
-          budgetAmount: p.budget_amount != null ? Number(p.budget_amount) : null,
+          budgetAmount:
+            p.budget_amount != null ? Number(p.budget_amount) : null,
           actualHours: p.actual_hours != null ? Number(p.actual_hours) : null,
           estimatedHours:
             p.estimated_hours != null ? Number(p.estimated_hours) : null,
@@ -196,10 +201,7 @@ export function useClients(workspaceId: string | undefined) {
       const kpis: ClientsKpis = {
         totalClients: rows.length,
         activeClients: rows.filter((r) => r.client.is_active).length,
-        totalActiveProjects: rows.reduce(
-          (acc, r) => acc + r.activeProjects,
-          0
-        ),
+        totalActiveProjects: rows.reduce((acc, r) => acc + r.activeProjects, 0),
         totalBudget: rows.reduce((acc, r) => acc + r.totalBudget, 0),
         totalOpenOS: rows.reduce((acc, r) => acc + r.openServiceOrders, 0),
       }

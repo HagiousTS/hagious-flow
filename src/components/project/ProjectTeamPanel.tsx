@@ -15,7 +15,8 @@ export function ProjectTeamPanel({ team, totalHours }: ProjectTeamPanelProps) {
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold text-[14px]">Time alocado</h3>
         <span className="text-[11px] text-muted">
-          {team.length} {team.length === 1 ? 'pessoa' : 'pessoas'} · {Math.round(totalHours)}h logadas
+          {team.length} {team.length === 1 ? 'pessoa' : 'pessoas'} ·{' '}
+          {Math.round(totalHours)}h logadas
         </span>
       </div>
       {team.length === 0 ? (
@@ -33,13 +34,18 @@ export function ProjectTeamPanel({ team, totalHours }: ProjectTeamPanelProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[12px] font-semibold truncate">{m.fullName}</span>
+                    <span className="text-[12px] font-semibold truncate">
+                      {m.fullName}
+                    </span>
                     <span className="text-[10px] text-muted shrink-0">
                       {m.hoursLogged.toFixed(0)}h{m.role ? ` · ${m.role}` : ''}
                     </span>
                   </div>
                   <div className="progress-bar mt-1">
-                    <div className="progress-fill" style={{ width: `${widthPct}%` }} />
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${widthPct}%` }}
+                    />
                   </div>
                 </div>
               </div>

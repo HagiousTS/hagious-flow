@@ -29,20 +29,24 @@ export function useInbox(workspaceId: string | undefined) {
     queryFn: async () => {
       const monthStart = startOfMonthIso()
 
-      const [{ data: orders, error: ordersErr }, { data: monthOrders, error: monthErr }] =
-        await Promise.all([
-          supabase
-            .from('service_orders')
-            .select('*, client:clients(id, name, trade_name), template:os_templates(id, name, slug, category, color_hex, default_priority, sla_response_hours)')
-            .eq('workspace_id', workspaceId!)
-            .order('created_at', { ascending: false })
-            .limit(50),
-          supabase
-            .from('service_orders')
-            .select('id, status, quality_score, created_at')
-            .eq('workspace_id', workspaceId!)
-            .gte('created_at', monthStart),
-        ])
+      const [
+        { data: orders, error: ordersErr },
+        { data: monthOrders, error: monthErr },
+      ] = await Promise.all([
+        supabase
+          .from('service_orders')
+          .select(
+            '*, client:clients(id, name, trade_name), template:os_templates(id, name, slug, category, color_hex, default_priority, sla_response_hours)'
+          )
+          .eq('workspace_id', workspaceId!)
+          .order('created_at', { ascending: false })
+          .limit(50),
+        supabase
+          .from('service_orders')
+          .select('id, status, quality_score, created_at')
+          .eq('workspace_id', workspaceId!)
+          .gte('created_at', monthStart),
+      ])
 
       if (ordersErr) throw ordersErr
       if (monthErr) throw monthErr
@@ -62,13 +66,16 @@ export function useInbox(workspaceId: string | undefined) {
         return due - now <= slaRiskMs
       }).length
 
-      const returnedThisMonth = monthList.filter((o) => o.status === 'returned').length
+      const returnedThisMonth = monthList.filter(
+        (o) => o.status === 'returned'
+      ).length
       const totalThisMonth = monthList.length
 
       const scored = monthList.filter((o) => o.quality_score != null)
       const avgQualityScore = scored.length
         ? Math.round(
-            scored.reduce((acc, o) => acc + Number(o.quality_score ?? 0), 0) / scored.length
+            scored.reduce((acc, o) => acc + Number(o.quality_score ?? 0), 0) /
+              scored.length
           )
         : null
 

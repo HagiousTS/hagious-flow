@@ -16,7 +16,9 @@ const PRIORITY_CHIP: Record<string, { label: string; cls: string }> = {
 
 export function FocusHero({ session }: FocusHeroProps) {
   const task = session.task
-  const project = task?.project as { id: string; code: string; name: string } | undefined
+  const project = task?.project as
+    | { id: string; code: string; name: string }
+    | undefined
   const elapsedMin = Math.max(
     0,
     Math.round((Date.now() - new Date(session.started_at).getTime()) / 60_000)
@@ -37,7 +39,9 @@ export function FocusHero({ session }: FocusHeroProps) {
         <span className="text-[10px] uppercase tracking-wider font-bold grad-text">
           Task em foco
         </span>
-        {priority && <span className={cn('chip', priority.cls)}>{priority.label}</span>}
+        {priority && (
+          <span className={cn('chip', priority.cls)}>{priority.label}</span>
+        )}
         {project && (
           <>
             <span className="text-[11px] text-muted">·</span>
@@ -65,7 +69,9 @@ export function FocusHero({ session }: FocusHeroProps) {
             {task?.title ?? 'Sem task associada à sessão'}
           </h1>
           {task?.description_md && (
-            <p className="text-sm text-muted mt-2 line-clamp-3">{task.description_md}</p>
+            <p className="text-sm text-muted mt-2 line-clamp-3">
+              {task.description_md}
+            </p>
           )}
         </div>
       </div>
@@ -104,7 +110,9 @@ export function FocusHero({ session }: FocusHeroProps) {
         />
         <Stat
           label="Interrupções bloqueadas"
-          value={<span className="text-ok">{session.interruptions_blocked}</span>}
+          value={
+            <span className="text-ok">{session.interruptions_blocked}</span>
+          }
           sub={`${session.interruptions_escalated} escaladas`}
         />
       </div>
@@ -149,7 +157,9 @@ interface StatProps {
 function Stat({ label, value, sub, progress }: StatProps) {
   return (
     <div className="bg-panel2/60 border border-border rounded-xl p-3 text-center">
-      <div className="text-[10px] text-muted uppercase tracking-wider">{label}</div>
+      <div className="text-[10px] text-muted uppercase tracking-wider">
+        {label}
+      </div>
       <div className="text-2xl font-bold mt-1 grad-text">{value}</div>
       <div className="text-[10px] text-muted">{sub}</div>
       {progress != null && (

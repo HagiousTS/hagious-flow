@@ -105,9 +105,7 @@ export function useProjects(workspaceId: string | undefined) {
           .order('updated_at', { ascending: false }),
         supabase
           .from('project_members')
-          .select(
-            'project_id, member_id, project:projects!inner(workspace_id)'
-          )
+          .select('project_id, member_id, project:projects!inner(workspace_id)')
           .eq('project.workspace_id', workspaceId!),
         supabase
           .from('tasks')

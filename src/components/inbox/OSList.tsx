@@ -12,10 +12,18 @@ interface OSListProps {
   onSelect: (id: string) => void
 }
 
-const TABS: { id: FilterTab; label: string; matches: (s: ServiceOrderStatus) => boolean }[] = [
+const TABS: {
+  id: FilterTab
+  label: string
+  matches: (s: ServiceOrderStatus) => boolean
+}[] = [
   { id: 'all', label: 'Todas', matches: () => true },
   { id: 'received', label: 'Recebidas', matches: (s) => s === 'received' },
-  { id: 'triaged', label: 'Em triagem', matches: (s) => s === 'triaged' || s === 'refined' },
+  {
+    id: 'triaged',
+    label: 'Em triagem',
+    matches: (s) => s === 'triaged' || s === 'refined',
+  },
   { id: 'returned', label: 'Devolvidas', matches: (s) => s === 'returned' },
 ]
 
@@ -24,7 +32,12 @@ export function OSList({ orders, selectedId, onSelect }: OSListProps) {
   const [search, setSearch] = useState('')
 
   const counts = useMemo(() => {
-    const c: Record<FilterTab, number> = { all: 0, received: 0, triaged: 0, returned: 0 }
+    const c: Record<FilterTab, number> = {
+      all: 0,
+      received: 0,
+      triaged: 0,
+      returned: 0,
+    }
     for (const o of orders) {
       c.all += 1
       for (const t of TABS) {
@@ -54,7 +67,8 @@ export function OSList({ orders, selectedId, onSelect }: OSListProps) {
     const recent: ServiceOrder[] = []
     const triagedRecent: ServiceOrder[] = []
     for (const o of filtered) {
-      if (o.status === 'accepted' || o.status === 'returned') triagedRecent.push(o)
+      if (o.status === 'accepted' || o.status === 'returned')
+        triagedRecent.push(o)
       else recent.push(o)
     }
     return { recent, triagedRecent }

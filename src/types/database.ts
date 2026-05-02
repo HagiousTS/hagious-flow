@@ -9,10 +9,26 @@
 
 export type Priority = 'P1' | 'P2' | 'P3'
 export type ProjectHealth = 'on_track' | 'at_risk' | 'off_track' | 'ahead'
-export type ProjectStatus = 'planning' | 'active' | 'on_hold' | 'done' | 'archived'
-export type TaskStatusCategory = 'todo' | 'doing' | 'review' | 'done' | 'blocked'
+export type ProjectStatus =
+  | 'planning'
+  | 'active'
+  | 'on_hold'
+  | 'done'
+  | 'archived'
+export type TaskStatusCategory =
+  | 'todo'
+  | 'doing'
+  | 'review'
+  | 'done'
+  | 'blocked'
 export type RiskSeverity = 'low' | 'medium' | 'high' | 'critical'
-export type ServiceOrderStatus = 'received' | 'triaged' | 'accepted' | 'refined' | 'returned' | 'rejected'
+export type ServiceOrderStatus =
+  | 'received'
+  | 'triaged'
+  | 'accepted'
+  | 'refined'
+  | 'returned'
+  | 'rejected'
 
 export interface Workspace {
   id: string

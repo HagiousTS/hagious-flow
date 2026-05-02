@@ -14,10 +14,10 @@ export function PlaceholderPage({ title, description }: PlaceholderProps) {
         <h2 className="text-xl font-semibold mb-2">{title}</h2>
         <p className="text-sm text-muted max-w-md mx-auto">{description}</p>
         <div className="text-[11px] text-muted mt-4">
-          Próximas iterações vão portar o protótipo HTML para esta tela conectada ao Supabase.
+          Próximas iterações vão portar o protótipo HTML para esta tela
+          conectada ao Supabase.
         </div>
       </div>
     </Card>
   )
 }
-

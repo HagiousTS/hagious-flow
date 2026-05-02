@@ -32,7 +32,8 @@ export function CapacityHeatmap({ weeks, rows }: CapacityHeatmapProps) {
             Heatmap de carga · próximas {weeks.length} semanas
           </h3>
           <p className="text-xs text-muted">
-            Soma das horas estimadas (restantes) por pessoa, distribuídas pela due_date das tasks.
+            Soma das horas estimadas (restantes) por pessoa, distribuídas pela
+            due_date das tasks.
           </p>
         </div>
         <div className="flex items-center gap-3 text-[10px] flex-wrap">
@@ -58,7 +59,9 @@ export function CapacityHeatmap({ weeks, rows }: CapacityHeatmapProps) {
             >
               {w.label} · {w.shortDate}
               {w.isCurrent && (
-                <div className="text-[9px] normal-case font-normal text-brand">esta semana</div>
+                <div className="text-[9px] normal-case font-normal text-brand">
+                  esta semana
+                </div>
               )}
             </div>
           ))}
@@ -89,8 +92,12 @@ function Row({ row, weeks }: { row: MemberHeatRow; weeks: WeekColumn[] }) {
           {getInitials(row.fullName)}
         </div>
         <div className="min-w-0">
-          <div className="text-[12px] font-semibold truncate">{row.fullName}</div>
-          <div className="text-[10px] text-muted truncate">{row.jobTitle ?? '—'}</div>
+          <div className="text-[12px] font-semibold truncate">
+            {row.fullName}
+          </div>
+          <div className="text-[10px] text-muted truncate">
+            {row.jobTitle ?? '—'}
+          </div>
         </div>
       </div>
       {weeks.map((w) => {
@@ -106,7 +113,9 @@ function Row({ row, weeks }: { row: MemberHeatRow; weeks: WeekColumn[] }) {
             )}
             title={`${row.fullName} · Sem ${w.label}: ${allocated.toFixed(1)}h / ${row.capacityHoursWeek}h`}
           >
-            <span className="text-base font-bold tabular-nums">{Math.round(pct)}%</span>
+            <span className="text-base font-bold tabular-nums">
+              {Math.round(pct)}%
+            </span>
             <span className="text-[10px] opacity-90">
               {allocated.toFixed(0)}h / {row.capacityHoursWeek}h
             </span>

@@ -21,7 +21,8 @@ export function TasksPage() {
     const q = search.trim().toLowerCase()
     return data.tasks.filter((t) => {
       if (selectedProject && t.project_id !== selectedProject) return false
-      if (selectedMember && t.assignee_member_id !== selectedMember) return false
+      if (selectedMember && t.assignee_member_id !== selectedMember)
+        return false
       if (onlyBlocked && !t.is_blocked) return false
       if (!q) return true
       const code = t.project ? `${t.project.code}-${t.sequence_number}` : ''
@@ -40,7 +41,10 @@ export function TasksPage() {
         <Skeleton className="h-12 rounded-xl" />
         <div className="flex gap-4 overflow-x-auto">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-[60vh] w-[280px] rounded-xl shrink-0" />
+            <Skeleton
+              key={i}
+              className="h-[60vh] w-[280px] rounded-xl shrink-0"
+            />
           ))}
         </div>
       </div>
@@ -51,7 +55,9 @@ export function TasksPage() {
     return (
       <Card className="border-danger/30">
         <div className="text-center py-8">
-          <h3 className="font-semibold text-danger mb-2">Erro ao carregar Tasks</h3>
+          <h3 className="font-semibold text-danger mb-2">
+            Erro ao carregar Tasks
+          </h3>
           <p className="text-sm text-muted">{(error as Error).message}</p>
         </div>
       </Card>
@@ -72,7 +78,10 @@ export function TasksPage() {
     value: p.id,
     label: `${p.code} · ${p.name}`,
   }))
-  const memberOptions = data.members.map((m) => ({ value: m.id, label: m.full_name }))
+  const memberOptions = data.members.map((m) => ({
+    value: m.id,
+    label: m.full_name,
+  }))
 
   return (
     <div className="space-y-5">
@@ -80,7 +89,8 @@ export function TasksPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Tasks · Kanban</h1>
           <p className="text-sm text-muted mt-1">
-            Arraste cards entre colunas para mudar o status. Mutação otimista, persiste no banco.
+            Arraste cards entre colunas para mudar o status. Mutação otimista,
+            persiste no banco.
           </p>
         </div>
         {moveTask.isPending && (
@@ -106,7 +116,9 @@ export function TasksPage() {
       <KanbanBoard
         statuses={data.statuses}
         tasks={filtered}
-        onMove={(taskId, newStatusId) => moveTask.mutate({ taskId, newStatusId })}
+        onMove={(taskId, newStatusId) =>
+          moveTask.mutate({ taskId, newStatusId })
+        }
       />
 
       {moveTask.isError && (

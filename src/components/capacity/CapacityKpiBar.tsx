@@ -11,8 +11,8 @@ export function CapacityKpiBar({ kpis }: CapacityKpiBarProps) {
     kpis.saturationPct > 95
       ? 'text-danger'
       : kpis.saturationPct > 80
-      ? 'text-warn'
-      : 'text-text'
+        ? 'text-warn'
+        : 'text-text'
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -53,10 +53,18 @@ interface StatProps {
   border?: string
 }
 
-function Stat({ label, value, sub, accent = 'text-text', border = '' }: StatProps) {
+function Stat({
+  label,
+  value,
+  sub,
+  accent = 'text-text',
+  border = '',
+}: StatProps) {
   return (
     <Card className={cn('px-4 py-3', border)}>
-      <div className="text-[10px] text-muted uppercase tracking-wider">{label}</div>
+      <div className="text-[10px] text-muted uppercase tracking-wider">
+        {label}
+      </div>
       <div className={cn('text-base font-bold mt-1', accent)}>{value}</div>
       <div className="text-[10px] text-muted truncate" title={sub}>
         {sub}

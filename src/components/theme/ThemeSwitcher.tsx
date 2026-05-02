@@ -5,9 +5,21 @@ import { cn } from '@/lib/utils'
 type ThemeId = 'sankhya-light' | 'sankhya-dark' | 'hagious-purple'
 
 const THEMES: { id: ThemeId; label: string; gradient: string }[] = [
-  { id: 'sankhya-light',  label: 'Sankhya Light',  gradient: 'linear-gradient(135deg, #009A4E, #7AC143)' },
-  { id: 'sankhya-dark',   label: 'Sankhya Dark',   gradient: 'linear-gradient(135deg, #0F1B16, #22C55E)' },
-  { id: 'hagious-purple', label: 'Hagious Purple', gradient: 'linear-gradient(135deg, #7C5CFF, #5B8DEF)' },
+  {
+    id: 'sankhya-light',
+    label: 'Sankhya Light',
+    gradient: 'linear-gradient(135deg, #009A4E, #7AC143)',
+  },
+  {
+    id: 'sankhya-dark',
+    label: 'Sankhya Dark',
+    gradient: 'linear-gradient(135deg, #0F1B16, #22C55E)',
+  },
+  {
+    id: 'hagious-purple',
+    label: 'Hagious Purple',
+    gradient: 'linear-gradient(135deg, #7C5CFF, #5B8DEF)',
+  },
 ]
 
 const STORAGE_KEY = 'hagious-flow-theme'
@@ -16,7 +28,9 @@ function getInitial(): ThemeId {
   try {
     const saved = localStorage.getItem(STORAGE_KEY) as ThemeId | null
     if (saved && THEMES.some((t) => t.id === saved)) return saved
-  } catch {}
+  } catch {
+    // localStorage indisponível (SSR, modo privado): cai no default
+  }
   return 'sankhya-light'
 }
 
@@ -27,7 +41,11 @@ export function ThemeSwitcher() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
-    try { localStorage.setItem(STORAGE_KEY, theme) } catch {}
+    try {
+      localStorage.setItem(STORAGE_KEY, theme)
+    } catch {
+      // localStorage indisponível: tema persiste só na sessão
+    }
   }, [theme])
 
   // Fecha ao clicar fora ou apertar Esc
@@ -58,7 +76,10 @@ export function ThemeSwitcher() {
     >
       <button
         type="button"
-        onClick={(e) => { e.stopPropagation(); setOpen(!isOpen) }}
+        onClick={(e) => {
+          e.stopPropagation()
+          setOpen(!isOpen)
+        }}
         className="w-11 h-11 flex items-center justify-center text-muted hover:text-brand transition-colors shrink-0"
         title="Trocar tema"
         aria-label="Alternar seletor de tema"
@@ -79,7 +100,10 @@ export function ThemeSwitcher() {
         <button
           key={t.id}
           type="button"
-          onClick={(e) => { e.stopPropagation(); setTheme(t.id) }}
+          onClick={(e) => {
+            e.stopPropagation()
+            setTheme(t.id)
+          }}
           className={cn(
             'w-[22px] h-[22px] rounded-full border-[1.5px] transition-all shrink-0 hover:scale-110',
             isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',

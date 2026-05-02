@@ -16,10 +16,15 @@ interface SourceIconProps {
   className?: string
 }
 
-export function SourceIcon({ channel, size = 'md', className }: SourceIconProps) {
+export function SourceIcon({
+  channel,
+  size = 'md',
+  className,
+}: SourceIconProps) {
   const key = channel.toLowerCase()
   const style = STYLES[key] ?? STYLES.manual
-  const dim = size === 'sm' ? 'w-[18px] h-[18px] text-[8px]' : 'w-6 h-6 text-[10px]'
+  const dim =
+    size === 'sm' ? 'w-[18px] h-[18px] text-[8px]' : 'w-6 h-6 text-[10px]'
 
   return (
     <span

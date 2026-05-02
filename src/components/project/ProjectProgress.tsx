@@ -16,12 +16,22 @@ const ROWS: Array<{
   { key: 'done', label: 'Done', color: 'var(--ok)', textCls: '' },
   { key: 'doing', label: 'Em execução', color: 'var(--info)', textCls: '' },
   { key: 'review', label: 'Em revisão', color: 'var(--brand-2)', textCls: '' },
-  { key: 'blocked', label: 'Bloqueadas', color: 'var(--danger)', textCls: 'text-danger' },
+  {
+    key: 'blocked',
+    label: 'Bloqueadas',
+    color: 'var(--danger)',
+    textCls: 'text-danger',
+  },
   { key: 'todo', label: 'A fazer', color: 'var(--muted)', textCls: '' },
 ]
 
-export function ProjectProgress({ breakdown, totalDone, totalTasks }: ProjectProgressProps) {
-  const total = totalTasks || Object.values(breakdown).reduce((a, b) => a + b, 0)
+export function ProjectProgress({
+  breakdown,
+  totalDone,
+  totalTasks,
+}: ProjectProgressProps) {
+  const total =
+    totalTasks || Object.values(breakdown).reduce((a, b) => a + b, 0)
   const pct = total > 0 ? (totalDone / total) * 100 : 0
   const radius = 42
   const circumference = 2 * Math.PI * radius
@@ -72,7 +82,13 @@ export function ProjectProgress({ breakdown, totalDone, totalTasks }: ProjectPro
           >
             {Math.round(pct)}%
           </text>
-          <text x="50" y="62" fill="var(--muted)" fontSize="8" textAnchor="middle">
+          <text
+            x="50"
+            y="62"
+            fill="var(--muted)"
+            fontSize="8"
+            textAnchor="middle"
+          >
             {totalDone} / {total}
           </text>
         </svg>
@@ -85,7 +101,9 @@ export function ProjectProgress({ breakdown, totalDone, totalTasks }: ProjectPro
               <div key={row.key}>
                 <div className="flex justify-between text-[11px] mb-1">
                   <span className="text-muted">{row.label}</span>
-                  <span className={`font-semibold ${row.textCls}`}>{value}</span>
+                  <span className={`font-semibold ${row.textCls}`}>
+                    {value}
+                  </span>
                 </div>
                 <div className="progress-bar">
                   <div

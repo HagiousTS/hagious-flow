@@ -11,7 +11,10 @@ interface KanbanBoardProps {
 export function KanbanBoard({ statuses, tasks, onMove }: KanbanBoardProps) {
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null)
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, taskId: string) => {
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    taskId: string
+  ) => {
     setDraggingTaskId(taskId)
     e.dataTransfer.effectAllowed = 'move'
     e.dataTransfer.setData('text/plain', taskId)

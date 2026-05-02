@@ -47,10 +47,12 @@ export function OSDetail({ order }: OSDetailProps) {
       <section className="overflow-y-auto scrollbar h-full">
         <div className="flex flex-col items-center justify-center h-full p-8 text-center">
           <Inbox className="w-12 h-12 text-muted mb-3" />
-          <h3 className="text-base font-semibold mb-1">Nenhuma OS selecionada</h3>
+          <h3 className="text-base font-semibold mb-1">
+            Nenhuma OS selecionada
+          </h3>
           <p className="text-sm text-muted max-w-sm">
-            Escolha uma OS na lista para revisar o conteúdo, qualidade e decidir se aceita ou
-            devolve.
+            Escolha uma OS na lista para revisar o conteúdo, qualidade e decidir
+            se aceita ou devolve.
           </p>
         </div>
       </section>
@@ -70,12 +72,18 @@ export function OSDetail({ order }: OSDetailProps) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="font-mono text-[11px] text-muted">{shortCode(order.id)}</span>
-              {prio && <span className={cn('chip', prio.cls)}>{prio.label}</span>}
+              <span className="font-mono text-[11px] text-muted">
+                {shortCode(order.id)}
+              </span>
+              {prio && (
+                <span className={cn('chip', prio.cls)}>{prio.label}</span>
+              )}
               {order.template?.name && (
                 <span className="chip tag-info">{order.template.name}</span>
               )}
-              {status && <span className={cn('chip', status.cls)}>{status.label}</span>}
+              {status && (
+                <span className={cn('chip', status.cls)}>{status.label}</span>
+              )}
             </div>
             <h2 className="text-xl font-bold leading-tight">
               {order.client?.name ? `${order.client.name} · ` : ''}
@@ -95,11 +103,14 @@ export function OSDetail({ order }: OSDetailProps) {
             <div>
               <h3 className="font-semibold text-[14px]">Definition of Ready</h3>
               <p className="text-[11px] text-muted">
-                Score calculado pela IA com base no template e nos campos preenchidos.
+                Score calculado pela IA com base no template e nos campos
+                preenchidos.
               </p>
             </div>
             <DoRRing
-              score={order.quality_score == null ? null : Number(order.quality_score)}
+              score={
+                order.quality_score == null ? null : Number(order.quality_score)
+              }
               size={44}
             />
           </div>
@@ -117,14 +128,18 @@ export function OSDetail({ order }: OSDetailProps) {
               ))}
             </ul>
           ) : (
-            <p className="text-[12px] text-muted">Nenhum problema identificado pela IA.</p>
+            <p className="text-[12px] text-muted">
+              Nenhum problema identificado pela IA.
+            </p>
           )}
         </Card>
 
         <Card className="p-0 overflow-hidden">
           <div className="px-5 py-3 border-b border-border bg-panel2/40 flex items-center justify-between">
             <h3 className="font-semibold text-[14px]">Conteúdo da OS</h3>
-            <span className="text-[11px] text-muted">{order.source_channel}</span>
+            <span className="text-[11px] text-muted">
+              {order.source_channel}
+            </span>
           </div>
           <div className="px-5 py-4 space-y-3 text-[13px] leading-relaxed">
             <FieldRow label="Assunto" value={order.subject} />
@@ -138,7 +153,9 @@ export function OSDetail({ order }: OSDetailProps) {
                   : '—'
               }
             />
-            {order.client?.name && <FieldRow label="Cliente" value={order.client.name} />}
+            {order.client?.name && (
+              <FieldRow label="Cliente" value={order.client.name} />
+            )}
             <FieldRow
               label="SLA"
               value={
@@ -153,7 +170,9 @@ export function OSDetail({ order }: OSDetailProps) {
                 order.raw_body ? (
                   <span className="whitespace-pre-line">{order.raw_body}</span>
                 ) : (
-                  <span className="italic text-muted">Sem corpo da mensagem.</span>
+                  <span className="italic text-muted">
+                    Sem corpo da mensagem.
+                  </span>
                 )
               }
             />
@@ -162,8 +181,12 @@ export function OSDetail({ order }: OSDetailProps) {
 
         {order.return_reason && (
           <Card className="p-5 border-danger/30">
-            <h3 className="font-semibold text-[14px] mb-2 text-danger">Motivo da devolução</h3>
-            <p className="text-[13px] text-muted whitespace-pre-line">{order.return_reason}</p>
+            <h3 className="font-semibold text-[14px] mb-2 text-danger">
+              Motivo da devolução
+            </h3>
+            <p className="text-[13px] text-muted whitespace-pre-line">
+              {order.return_reason}
+            </p>
           </Card>
         )}
 

@@ -7,72 +7,75 @@
  * Valores em HSL (sem hsl()) pra funcionar com /<alpha-value>
  * ============================================================ */
 
-:root, [data-theme="sankhya-light"] {
+:root,
+[data-theme='sankhya-light'] {
   /* Marca Sankhya */
-  --brand:        148 100% 30%;   /* #009A4E */
-  --brand-2:      87 53% 51%;     /* #7AC143 */
+  --brand: 148 100% 30%; /* #009A4E */
+  --brand-2: 87 53% 51%; /* #7AC143 */
 
   /* Superfícies */
-  --bg:           80 22% 96%;     /* #F5F7F4 */
-  --panel:        0 0% 100%;
-  --panel-2:      80 18% 94%;     /* #F0F3EE */
-  --border:       80 18% 88%;     /* #E2E7DD */
-  --border-2:     80 14% 82%;     /* #D0D7C9 */
+  --bg: 80 22% 96%; /* #F5F7F4 */
+  --panel: 0 0% 100%;
+  --panel-2: 80 18% 94%; /* #F0F3EE */
+  --border: 80 18% 88%; /* #E2E7DD */
+  --border-2: 80 14% 82%; /* #D0D7C9 */
 
   /* Texto */
-  --text:         148 24% 14%;    /* #1A2B22 */
-  --muted:        140 7% 45%;     /* #6B7A70 */
+  --text: 148 24% 14%; /* #1A2B22 */
+  --muted: 140 7% 45%; /* #6B7A70 */
 
   /* Estados */
-  --ok:           148 100% 30%;
-  --warn:         38 92% 50%;
-  --danger:       0 73% 51%;
-  --info:         222 89% 55%;
+  --ok: 148 100% 30%;
+  --warn: 38 92% 50%;
+  --danger: 0 73% 51%;
+  --info: 222 89% 55%;
 }
 
-[data-theme="sankhya-dark"] {
-  --brand:        142 71% 45%;    /* #22C55E */
-  --brand-2:      82 78% 46%;     /* #84CC16 */
+[data-theme='sankhya-dark'] {
+  --brand: 142 71% 45%; /* #22C55E */
+  --brand-2: 82 78% 46%; /* #84CC16 */
 
-  --bg:           150 22% 6%;     /* #0A1410 */
-  --panel:        150 27% 8%;     /* #0F1B16 */
-  --panel-2:      150 23% 11%;    /* #15241D */
-  --border:       150 21% 15%;    /* #1F302A */
-  --border-2:     150 21% 21%;    /* #2A413A */
+  --bg: 150 22% 6%; /* #0A1410 */
+  --panel: 150 27% 8%; /* #0F1B16 */
+  --panel-2: 150 23% 11%; /* #15241D */
+  --border: 150 21% 15%; /* #1F302A */
+  --border-2: 150 21% 21%; /* #2A413A */
 
-  --text:         132 30% 92%;    /* #E8F0EA */
-  --muted:        145 7% 51%;     /* #7A8A82 */
+  --text: 132 30% 92%; /* #E8F0EA */
+  --muted: 145 7% 51%; /* #7A8A82 */
 
-  --ok:           142 71% 45%;
-  --warn:         38 92% 50%;
-  --danger:       0 84% 60%;
-  --info:         220 87% 65%;
+  --ok: 142 71% 45%;
+  --warn: 38 92% 50%;
+  --danger: 0 84% 60%;
+  --info: 220 87% 65%;
 }
 
-[data-theme="hagious-purple"] {
-  --brand:        253 100% 68%;   /* #7C5CFF */
-  --brand-2:      221 84% 65%;    /* #5B8DEF */
+[data-theme='hagious-purple'] {
+  --brand: 253 100% 68%; /* #7C5CFF */
+  --brand-2: 221 84% 65%; /* #5B8DEF */
 
-  --bg:           225 18% 6%;     /* #0B0D12 */
-  --panel:        225 24% 9%;     /* #11141B */
-  --panel-2:      224 23% 12%;    /* #171B25 */
-  --border:       222 21% 16%;    /* #1F2430 */
-  --border-2:     222 22% 21%;    /* #2A3142 */
+  --bg: 225 18% 6%; /* #0B0D12 */
+  --panel: 225 24% 9%; /* #11141B */
+  --panel-2: 224 23% 12%; /* #171B25 */
+  --border: 222 21% 16%; /* #1F2430 */
+  --border-2: 222 22% 21%; /* #2A3142 */
 
-  --text:         225 17% 92%;    /* #E6E8EE */
-  --muted:        222 13% 60%;    /* #8A93A6 */
+  --text: 225 17% 92%; /* #E6E8EE */
+  --muted: 222 13% 60%; /* #8A93A6 */
 
-  --ok:           142 71% 45%;
-  --warn:         38 92% 50%;
-  --danger:       0 84% 60%;
-  --info:         221 84% 65%;
+  --ok: 142 71% 45%;
+  --warn: 38 92% 50%;
+  --danger: 0 84% 60%;
+  --info: 221 84% 65%;
 }
 
 * {
   border-color: hsl(var(--border));
 }
 
-html, body, #root {
+html,
+body,
+#root {
   min-height: 100vh;
 }
 
@@ -86,10 +89,20 @@ body {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--border-2)); }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--border-2));
+}
 
 /* ============================================================
  * UTILITY CLASSES
@@ -106,13 +119,13 @@ body {
 .glow {
   box-shadow:
     0 0 0 1px hsl(var(--brand) / 0.18),
-    0 8px 30px hsl(var(--brand) / 0.10);
+    0 8px 30px hsl(var(--brand) / 0.1);
 }
 .ai-shimmer {
   background: linear-gradient(
     90deg,
     hsl(var(--brand) / 0) 0%,
-    hsl(var(--brand) / 0.10) 50%,
+    hsl(var(--brand) / 0.1) 50%,
     hsl(var(--brand) / 0) 100%
   );
   background-size: 200% 100%;
@@ -129,15 +142,42 @@ body {
   border-radius: 6px;
   font-weight: 600;
 }
-.chip-priority-high  { background: hsl(var(--danger) / 0.12); color: hsl(var(--danger)); }
-.chip-priority-mid   { background: hsl(var(--warn)   / 0.12); color: hsl(var(--warn)); }
-.chip-priority-low   { background: hsl(var(--ok)     / 0.12); color: hsl(var(--ok)); }
-.chip-status-doing   { background: hsl(var(--info)   / 0.15); color: hsl(var(--info)); }
-.chip-status-done    { background: hsl(var(--ok)     / 0.12); color: hsl(var(--ok)); }
-.chip-status-block   { background: hsl(var(--danger) / 0.12); color: hsl(var(--danger)); }
-.chip-status-todo    { background: hsl(var(--muted)  / 0.20); color: hsl(var(--text)); }
-.chip-status-review  { background: hsl(var(--brand-2) / 0.18); color: hsl(var(--brand)); }
-.chip-info           { background: hsl(var(--info)   / 0.12); color: hsl(var(--info)); }
+.chip-priority-high {
+  background: hsl(var(--danger) / 0.12);
+  color: hsl(var(--danger));
+}
+.chip-priority-mid {
+  background: hsl(var(--warn) / 0.12);
+  color: hsl(var(--warn));
+}
+.chip-priority-low {
+  background: hsl(var(--ok) / 0.12);
+  color: hsl(var(--ok));
+}
+.chip-status-doing {
+  background: hsl(var(--info) / 0.15);
+  color: hsl(var(--info));
+}
+.chip-status-done {
+  background: hsl(var(--ok) / 0.12);
+  color: hsl(var(--ok));
+}
+.chip-status-block {
+  background: hsl(var(--danger) / 0.12);
+  color: hsl(var(--danger));
+}
+.chip-status-todo {
+  background: hsl(var(--muted) / 0.2);
+  color: hsl(var(--text));
+}
+.chip-status-review {
+  background: hsl(var(--brand-2) / 0.18);
+  color: hsl(var(--brand));
+}
+.chip-info {
+  background: hsl(var(--info) / 0.12);
+  color: hsl(var(--info));
+}
 
 /* Card */
 .card {
@@ -179,7 +219,9 @@ body {
 }
 
 /* Pulse dot */
-.pulse-dot { position: relative; }
+.pulse-dot {
+  position: relative;
+}
 .pulse-dot::after {
   content: '';
   position: absolute;
@@ -187,7 +229,7 @@ body {
   border-radius: 9999px;
   border: 2px solid currentColor;
   opacity: 0.4;
-  animation: ping 1.6s cubic-bezier(0,0,.2,1) infinite;
+  animation: ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 /* Loading skeleton */

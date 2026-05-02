@@ -44,7 +44,9 @@ export function SkillMatrixGrid({ matrix }: SkillMatrixGridProps) {
     <Card className="p-5">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div>
-          <h3 className="font-semibold text-[15px]">Skill Matrix · alocação inteligente</h3>
+          <h3 className="font-semibold text-[15px]">
+            Skill Matrix · alocação inteligente
+          </h3>
           <p className="text-xs text-muted">
             Quem pode pegar o quê. A IA usa isso pra sugerir realocação.
           </p>
@@ -59,7 +61,10 @@ export function SkillMatrixGrid({ matrix }: SkillMatrixGridProps) {
                 Pessoa
               </th>
               {matrix.skills.map((s) => (
-                <th key={s.id} className="text-center font-medium pb-2 px-2 min-w-[110px]">
+                <th
+                  key={s.id}
+                  className="text-center font-medium pb-2 px-2 min-w-[110px]"
+                >
                   <div className="leading-tight">{s.name}</div>
                   {s.category && (
                     <div className="text-[9px] uppercase tracking-wider opacity-60">
@@ -113,7 +118,9 @@ export function SkillMatrixGrid({ matrix }: SkillMatrixGridProps) {
                           }`}
                         >
                           {profLabel}
-                          {cell.isCertified && <span className="text-[8px]">★</span>}
+                          {cell.isCertified && (
+                            <span className="text-[8px]">★</span>
+                          )}
                         </div>
                       </td>
                     )

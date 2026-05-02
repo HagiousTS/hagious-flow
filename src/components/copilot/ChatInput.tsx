@@ -27,10 +27,7 @@ export function ChatInput({ onSend, disabled, placeholder }: ChatInputProps) {
   }
 
   return (
-    <form
-      onSubmit={submit}
-      className="border-t bg-panel/40 px-6 py-4"
-    >
+    <form onSubmit={submit} className="border-t bg-panel/40 px-6 py-4">
       <div className="max-w-3xl mx-auto flex items-end gap-2 bg-panel border rounded-2xl p-2 focus-within:border-brand/50 transition">
         <textarea
           value={value}

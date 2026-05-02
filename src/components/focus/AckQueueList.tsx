@@ -45,7 +45,8 @@ export function AckQueueList({ items }: AckQueueListProps) {
   }, [items])
 
   const filtered = useMemo(() => {
-    if (tab === 'urgent') return items.filter((i) => i.urgency_marked === 'urgent')
+    if (tab === 'urgent')
+      return items.filter((i) => i.urgency_marked === 'urgent')
     if (tab === 'escalated') return items.filter((i) => i.is_escalated)
     return items
   }, [items, tab])
@@ -59,7 +60,8 @@ export function AckQueueList({ items }: AckQueueListProps) {
             <span className="chip tag-info">{counts.all} aguardando</span>
           </div>
           <p className="text-xs text-muted mt-0.5">
-            Tudo que tentou interromper o foco. Olha quando terminar — exceto o que já escalou.
+            Tudo que tentou interromper o foco. Olha quando terminar — exceto o
+            que já escalou.
           </p>
         </div>
         <div className="flex gap-1 text-xs border border-border rounded-lg p-0.5">
@@ -69,7 +71,10 @@ export function AckQueueList({ items }: AckQueueListProps) {
           <TabBtn active={tab === 'urgent'} onClick={() => setTab('urgent')}>
             Urgentes ({counts.urgent})
           </TabBtn>
-          <TabBtn active={tab === 'escalated'} onClick={() => setTab('escalated')}>
+          <TabBtn
+            active={tab === 'escalated'}
+            onClick={() => setTab('escalated')}
+          >
             Escalados ({counts.escalated})
           </TabBtn>
         </div>
@@ -105,7 +110,9 @@ function TabBtn({
       onClick={onClick}
       className={cn(
         'px-3 py-1 rounded transition',
-        active ? 'bg-panel2 font-semibold text-text' : 'text-muted hover:text-text'
+        active
+          ? 'bg-panel2 font-semibold text-text'
+          : 'text-muted hover:text-text'
       )}
     >
       {children}
@@ -116,16 +123,21 @@ function TabBtn({
 function AckItem({ item }: { item: AcknowledgmentQueueItem }) {
   const isExternal = !!item.requester_external_name
   const requesterName =
-    item.requester?.profile?.full_name ?? item.requester_external_name ?? 'Desconhecido'
-  const channel = CHANNEL_META[item.channel] ?? { label: item.channel, icon: AppWindow }
+    item.requester?.profile?.full_name ??
+    item.requester_external_name ??
+    'Desconhecido'
+  const channel = CHANNEL_META[item.channel] ?? {
+    label: item.channel,
+    icon: AppWindow,
+  }
   const ChannelIcon = channel.icon
 
   const urgencyChip =
     item.urgency_marked === 'urgent'
       ? { label: 'Marcou: Urgente', cls: 'tag-priority-mid' }
       : item.urgency_marked === 'can_wait'
-      ? { label: 'Pode esperar', cls: 'tag-priority-low' }
-      : null
+        ? { label: 'Pode esperar', cls: 'tag-priority-low' }
+        : null
 
   const escalatedName = item.escalated_to?.profile?.full_name ?? null
 
@@ -133,14 +145,18 @@ function AckItem({ item }: { item: AcknowledgmentQueueItem }) {
     <div
       className={cn(
         'border rounded-xl p-3 transition',
-        item.is_escalated ? 'border-warn/30 bg-warn/5' : 'border-border hover:border-brand/40'
+        item.is_escalated
+          ? 'border-warn/30 bg-warn/5'
+          : 'border-border hover:border-brand/40'
       )}
     >
       <div className="flex items-start gap-3">
         <div
           className={cn(
             'w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0',
-            isExternal ? 'bg-rose-500/20 text-rose-300' : 'bg-blue-500/20 text-blue-300'
+            isExternal
+              ? 'bg-rose-500/20 text-rose-300'
+              : 'bg-blue-500/20 text-blue-300'
           )}
           title={requesterName}
         >
@@ -152,17 +168,24 @@ function AckItem({ item }: { item: AcknowledgmentQueueItem }) {
             {isExternal && (
               <span className="chip tag-info">Cliente externo</span>
             )}
-            {urgencyChip && <span className={cn('chip', urgencyChip.cls)}>{urgencyChip.label}</span>}
+            {urgencyChip && (
+              <span className={cn('chip', urgencyChip.cls)}>
+                {urgencyChip.label}
+              </span>
+            )}
             {item.is_escalated && (
               <span className="chip tag-info">
                 Escalado{escalatedName ? ` para ${escalatedName}` : ''}
               </span>
             )}
             <span className="text-[10px] text-muted flex items-center gap-1">
-              <ChannelIcon className="w-3 h-3" /> {channel.label} · {relativeTime(item.created_at)}
+              <ChannelIcon className="w-3 h-3" /> {channel.label} ·{' '}
+              {relativeTime(item.created_at)}
             </span>
           </div>
-          {item.message && <p className="text-[13px] leading-relaxed">{item.message}</p>}
+          {item.message && (
+            <p className="text-[13px] leading-relaxed">{item.message}</p>
+          )}
         </div>
       </div>
     </div>

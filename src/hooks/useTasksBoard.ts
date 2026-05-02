@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
-import type { Project, Task, TaskStatus, WorkspaceMember } from '@/types/database'
+import type {
+  Project,
+  Task,
+  TaskStatus,
+  WorkspaceMember,
+} from '@/types/database'
 
 export interface TasksBoardData {
   statuses: TaskStatus[]
@@ -65,16 +70,21 @@ export function useTasksBoard(workspaceId: string | undefined) {
       if (projectsErr) throw projectsErr
       if (membersErr) throw membersErr
 
-      const memberRows = ((members ?? []) as unknown as RawMember[]).map((m) => ({
-        id: m.id,
-        full_name: m.profile?.full_name ?? 'Sem nome',
-        avatar_url: m.profile?.avatar_url ?? null,
-      }))
+      const memberRows = ((members ?? []) as unknown as RawMember[]).map(
+        (m) => ({
+          id: m.id,
+          full_name: m.profile?.full_name ?? 'Sem nome',
+          avatar_url: m.profile?.avatar_url ?? null,
+        })
+      )
 
       return {
         statuses: (statuses ?? []) as TaskStatus[],
         tasks: (tasks ?? []) as Task[],
-        projects: (projects ?? []) as Pick<Project, 'id' | 'code' | 'name' | 'color_hex'>[],
+        projects: (projects ?? []) as Pick<
+          Project,
+          'id' | 'code' | 'name' | 'color_hex'
+        >[],
         members: memberRows,
       }
     },

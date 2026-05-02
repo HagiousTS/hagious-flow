@@ -30,7 +30,9 @@ export function FocusPage() {
     return (
       <Card className="border-danger/30">
         <div className="text-center py-8">
-          <h3 className="font-semibold text-danger mb-2">Erro ao carregar Modo Foco</h3>
+          <h3 className="font-semibold text-danger mb-2">
+            Erro ao carregar Modo Foco
+          </h3>
           <p className="text-sm text-muted">{(error as Error).message}</p>
         </div>
       </Card>

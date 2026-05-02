@@ -30,7 +30,9 @@ export function CapacityPage() {
     return (
       <Card className="border-danger/30">
         <div className="text-center py-8">
-          <h3 className="font-semibold text-danger mb-2">Erro ao carregar Capacity Planner</h3>
+          <h3 className="font-semibold text-danger mb-2">
+            Erro ao carregar Capacity Planner
+          </h3>
           <p className="text-sm text-muted">{(error as Error).message}</p>
         </div>
       </Card>
@@ -51,11 +53,15 @@ export function CapacityPage() {
     <div className="space-y-6">
       <div className="flex items-end justify-between gap-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Capacity Planner</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Capacity Planner
+          </h1>
           <p className="text-sm text-muted mt-1">
-            Carga semanal por pessoa, agrupada por <em>due_date</em> das tasks abertas.{' '}
+            Carga semanal por pessoa, agrupada por <em>due_date</em> das tasks
+            abertas.{' '}
             <span className="text-brand font-semibold">
-              Bloqueio de over-allocation e Skill Matrix vão na próxima iteração.
+              Bloqueio de over-allocation e Skill Matrix vão na próxima
+              iteração.
             </span>
           </p>
         </div>

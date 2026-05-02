@@ -55,9 +55,12 @@ function slaChip(order: ServiceOrder): { label: string; cls: string } | null {
 }
 
 function statusChip(status: string): { label: string; cls: string } | null {
-  if (status === 'accepted') return { label: '✓ Aceita', cls: 'tag-status-done' }
-  if (status === 'returned') return { label: '↩ Devolvida', cls: 'tag-status-block' }
-  if (status === 'triaged') return { label: 'Em triagem', cls: 'tag-status-doing' }
+  if (status === 'accepted')
+    return { label: '✓ Aceita', cls: 'tag-status-done' }
+  if (status === 'returned')
+    return { label: '↩ Devolvida', cls: 'tag-status-block' }
+  if (status === 'triaged')
+    return { label: 'Em triagem', cls: 'tag-status-doing' }
   return null
 }
 
@@ -80,7 +83,9 @@ export function OSCard({ order, selected, onClick }: OSCardProps) {
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
           <SourceIcon channel={order.source_channel} />
-          <span className="font-mono text-[10px] text-muted">{shortCode(order.id)}</span>
+          <span className="font-mono text-[10px] text-muted">
+            {shortCode(order.id)}
+          </span>
         </div>
         <span className={cn('chip', prio.cls)}>{prio.label}</span>
       </div>
@@ -92,15 +97,22 @@ export function OSCard({ order, selected, onClick }: OSCardProps) {
 
       <div className="flex items-center justify-between mt-3">
         <div className="text-[11px] text-muted">
-          {order.requester_name ?? 'Sem solicitante'} · {relativeTime(order.created_at)}
+          {order.requester_name ?? 'Sem solicitante'} ·{' '}
+          {relativeTime(order.created_at)}
         </div>
-        <DoRRing score={order.quality_score == null ? null : Number(order.quality_score)} />
+        <DoRRing
+          score={
+            order.quality_score == null ? null : Number(order.quality_score)
+          }
+        />
       </div>
 
       {(sla || status) && (
         <div className="flex flex-wrap gap-1 mt-2">
           {sla && <span className={cn('chip', sla.cls)}>{sla.label}</span>}
-          {status && <span className={cn('chip', status.cls)}>{status.label}</span>}
+          {status && (
+            <span className={cn('chip', status.cls)}>{status.label}</span>
+          )}
         </div>
       )}
     </button>

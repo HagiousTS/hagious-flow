@@ -77,14 +77,14 @@ export function TeamKpiBar({ kpis }: TeamKpiBarProps) {
           <div className="text-xl font-bold leading-none truncate">
             {kpis.blockedTotal > 0
               ? `${kpis.blockedTotal} task${kpis.blockedTotal !== 1 ? 's' : ''}`
-              : kpis.topSkill?.name ?? '—'}
+              : (kpis.topSkill?.name ?? '—')}
           </div>
           <div className="text-[11px] text-muted mt-0.5 truncate">
             {kpis.blockedTotal > 0
               ? 'requer ação'
               : kpis.topSkill
-              ? `${kpis.topSkill.count} pessoas`
-              : 'sem skills cadastradas'}
+                ? `${kpis.topSkill.count} pessoas`
+                : 'sem skills cadastradas'}
           </div>
         </div>
       </Card>

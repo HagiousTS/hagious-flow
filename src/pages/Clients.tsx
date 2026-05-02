@@ -46,8 +46,7 @@ export function ClientsPage() {
         c.contact_email?.toLowerCase().includes(q) ||
         r.projects.some(
           (p) =>
-            p.code.toLowerCase().includes(q) ||
-            p.name.toLowerCase().includes(q)
+            p.code.toLowerCase().includes(q) || p.name.toLowerCase().includes(q)
         )
       )
     })

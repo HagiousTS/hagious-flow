@@ -12,7 +12,7 @@ export function InboxPage() {
   const { data, isLoading, isError, error } = useInbox(workspace?.id)
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  const orders = data?.orders ?? []
+  const orders = useMemo(() => data?.orders ?? [], [data])
 
   useEffect(() => {
     if (!selectedId && orders.length > 0) {
@@ -41,7 +41,9 @@ export function InboxPage() {
     return (
       <Card className="border-danger/30">
         <div className="text-center py-8">
-          <h3 className="font-semibold text-danger mb-2">Erro ao carregar inbox</h3>
+          <h3 className="font-semibold text-danger mb-2">
+            Erro ao carregar inbox
+          </h3>
           <p className="text-sm text-muted">{(error as Error).message}</p>
         </div>
       </Card>
@@ -62,9 +64,12 @@ export function InboxPage() {
     <div className="space-y-5">
       <div className="flex items-end justify-between gap-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Inbox de Triagem</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Inbox de Triagem
+          </h1>
           <p className="text-sm text-muted mt-1">
-            Toda OS chega aqui antes de virar trabalho. Entrada controlada, qualidade garantida.
+            Toda OS chega aqui antes de virar trabalho. Entrada controlada,
+            qualidade garantida.
           </p>
         </div>
         <OSKpiBar kpis={data?.kpis ?? defaultKpis()} />
@@ -73,7 +78,11 @@ export function InboxPage() {
       <Card className="p-0 overflow-hidden">
         <div className="grid grid-cols-12 min-h-[calc(100vh-260px)]">
           <div className="col-span-12 lg:col-span-5 border-b lg:border-b-0 border-border">
-            <OSList orders={orders} selectedId={selectedId} onSelect={setSelectedId} />
+            <OSList
+              orders={orders}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+            />
           </div>
           <div className="col-span-12 lg:col-span-7">
             <OSDetail order={selected} />

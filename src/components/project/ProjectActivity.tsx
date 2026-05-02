@@ -43,7 +43,8 @@ export function ProjectActivity({ activity }: ProjectActivityProps) {
         <div className="space-y-3">
           {activity.map((a) => {
             const isAi = a.actor_type === 'ai' || a.actor_type === 'system'
-            const actorName = a.actor?.full_name ?? (isAi ? 'IA COO' : 'Sistema')
+            const actorName =
+              a.actor?.full_name ?? (isAi ? 'IA COO' : 'Sistema')
             const action = ACTION_LABEL[a.action] ?? a.action
             return (
               <div key={a.id} className="flex gap-3">
@@ -57,12 +58,18 @@ export function ProjectActivity({ activity }: ProjectActivityProps) {
                   </div>
                 )}
                 <div className="flex-1 min-w-0 text-[12px]">
-                  <span className={isAi ? 'grad-text font-semibold' : 'font-semibold'}>
+                  <span
+                    className={
+                      isAi ? 'grad-text font-semibold' : 'font-semibold'
+                    }
+                  >
                     {actorName}
                   </span>{' '}
                   <span className="text-muted">{action}</span>{' '}
                   <span className="text-brand">{a.entity_type}</span>
-                  <div className="text-[10px] text-muted">{relativeTime(a.created_at)}</div>
+                  <div className="text-[10px] text-muted">
+                    {relativeTime(a.created_at)}
+                  </div>
                 </div>
               </div>
             )

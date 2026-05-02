@@ -48,8 +48,12 @@ export function AIBriefingHero({ insight }: AIBriefingHeroProps) {
             <span className="text-[11px] uppercase tracking-wider font-bold grad-text">
               IA COO
             </span>
-            <span className={`chip ${severityChip[insight.severity] ?? 'chip-info'}`}>
-              {insight.kind === 'daily_briefing' ? 'Briefing Diário' : insight.kind}
+            <span
+              className={`chip ${severityChip[insight.severity] ?? 'chip-info'}`}
+            >
+              {insight.kind === 'daily_briefing'
+                ? 'Briefing Diário'
+                : insight.kind}
             </span>
             {insight.impact_amount != null && (
               <span className="chip chip-priority-high">
@@ -60,7 +64,9 @@ export function AIBriefingHero({ insight }: AIBriefingHeroProps) {
           <h2 className="text-base md:text-lg font-semibold leading-snug mb-1">
             {insight.title}
           </h2>
-          <p className="text-sm text-muted leading-relaxed">{insight.body_md}</p>
+          <p className="text-sm text-muted leading-relaxed">
+            {insight.body_md}
+          </p>
           <div className="flex flex-wrap gap-2 mt-3">
             <Button variant="soft" size="sm">
               <Zap className="w-3 h-3" />

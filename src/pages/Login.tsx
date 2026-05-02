@@ -22,9 +22,11 @@ export function LoginPage() {
     const { error } = await signIn(email, password)
     setLoading(false)
     if (error) {
-      setError(error.message === 'Invalid login credentials'
-        ? 'Email ou senha incorretos.'
-        : error.message)
+      setError(
+        error.message === 'Invalid login credentials'
+          ? 'Email ou senha incorretos.'
+          : error.message
+      )
       return
     }
     navigate(from, { replace: true })
@@ -50,7 +52,9 @@ export function LoginPage() {
         <div className="card p-6 space-y-4">
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label className="text-xs font-medium text-muted block mb-1">Email</label>
+              <label className="text-xs font-medium text-muted block mb-1">
+                Email
+              </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                 <input
@@ -64,7 +68,9 @@ export function LoginPage() {
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-muted block mb-1">Senha</label>
+              <label className="text-xs font-medium text-muted block mb-1">
+                Senha
+              </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                 <input
@@ -83,7 +89,12 @@ export function LoginPage() {
               </div>
             )}
 
-            <Button type="submit" disabled={loading} className="w-full" size="lg">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full"
+              size="lg"
+            >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
@@ -91,8 +102,15 @@ export function LoginPage() {
 
           <div className="text-center pt-2 border-t">
             <p className="text-xs text-muted mt-3">
-              Conta de demo: <code className="bg-panel2 px-1.5 py-0.5 rounded text-[11px]">gusttavo@hagious.com.br</code>
-              <br />Senha provisória: <code className="bg-panel2 px-1.5 py-0.5 rounded text-[11px]">Hagious@2026</code>
+              Conta de demo:{' '}
+              <code className="bg-panel2 px-1.5 py-0.5 rounded text-[11px]">
+                gusttavo@hagious.com.br
+              </code>
+              <br />
+              Senha provisória:{' '}
+              <code className="bg-panel2 px-1.5 py-0.5 rounded text-[11px]">
+                Hagious@2026
+              </code>
             </p>
           </div>
         </div>

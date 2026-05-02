@@ -54,13 +54,21 @@ export function ProjectRisks({ risks }: ProjectRisksProps) {
             return (
               <div
                 key={r.id}
-                className={cn('rounded-xl border p-3', meta.borderCls, meta.bgCls)}
+                className={cn(
+                  'rounded-xl border p-3',
+                  meta.borderCls,
+                  meta.bgCls
+                )}
               >
                 <div className="flex items-center justify-between mb-1 gap-2">
-                  <span className="text-[10px] font-mono text-muted">{r.code}</span>
+                  <span className="text-[10px] font-mono text-muted">
+                    {r.code}
+                  </span>
                   <span className={cn('chip', meta.chipCls)}>{meta.label}</span>
                 </div>
-                <h4 className="text-[13px] font-semibold leading-snug">{r.title}</h4>
+                <h4 className="text-[13px] font-semibold leading-snug">
+                  {r.title}
+                </h4>
                 <div className="text-[11px] text-muted mt-1 flex flex-wrap gap-2">
                   {r.impact_amount != null && (
                     <span>Impacto: {formatBRL(Number(r.impact_amount))}</span>

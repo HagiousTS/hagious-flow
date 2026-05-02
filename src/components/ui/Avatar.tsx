@@ -27,7 +27,8 @@ const palette = [
 
 function colorFor(name: string): string {
   let hash = 0
-  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0
+  for (let i = 0; i < name.length; i++)
+    hash = (hash * 31 + name.charCodeAt(i)) | 0
   return palette[Math.abs(hash) % palette.length]
 }
 
@@ -40,11 +41,7 @@ export function Avatar({ name, src, size = 'md', className }: AvatarProps) {
       <img
         src={src}
         alt={name ?? 'avatar'}
-        className={cn(
-          sizes[size],
-          'rounded-full object-cover',
-          className
-        )}
+        className={cn(sizes[size], 'rounded-full object-cover', className)}
       />
     )
   }

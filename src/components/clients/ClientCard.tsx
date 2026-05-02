@@ -29,12 +29,7 @@ export function ClientCard({ row }: ClientCardProps) {
   const offTrack = row.projects.some((p) => p.health === 'off_track')
 
   return (
-    <Card
-      className={cn(
-        'flex flex-col gap-4',
-        inactive && 'opacity-60'
-      )}
-    >
+    <Card className={cn('flex flex-col gap-4', inactive && 'opacity-60')}>
       <div className="flex items-start gap-3">
         <Avatar name={client.name} size="lg" />
         <div className="flex-1 min-w-0">
@@ -70,7 +65,9 @@ export function ClientCard({ row }: ClientCardProps) {
         </div>
       </div>
 
-      {(client.contact_name || client.contact_email || client.contact_phone) && (
+      {(client.contact_name ||
+        client.contact_email ||
+        client.contact_phone) && (
         <div className="space-y-1 text-[12px]">
           {client.contact_name && (
             <div className="font-medium text-text">{client.contact_name}</div>
@@ -102,10 +99,7 @@ export function ClientCard({ row }: ClientCardProps) {
           </div>
           <div className="text-sm font-bold mt-0.5">
             {row.activeProjects}
-            <span className="text-muted text-[10px] font-medium">
-              {' '}
-              ativos
-            </span>
+            <span className="text-muted text-[10px] font-medium"> ativos</span>
           </div>
         </div>
         <div className="bg-panel2 rounded-lg py-2">
@@ -173,9 +167,7 @@ export function ClientCard({ row }: ClientCardProps) {
           <Inbox className="w-3 h-3" />
           {row.openServiceOrders} OS abertas
         </div>
-        <div>
-          última atividade {relativeDays(row.lastActivityAt ?? null)}
-        </div>
+        <div>última atividade {relativeDays(row.lastActivityAt ?? null)}</div>
       </div>
     </Card>
   )
