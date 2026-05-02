@@ -1,8 +1,9 @@
 # Hagious Flow · Contexto do Projeto
 
 > **Documento de handoff** — leitura obrigatória antes de qualquer mudança no código.
-> Última atualização: 29/abr/2026 · v0.1 (MVP)
+> Última atualização: 02/mai/2026 · v0.2 (MVP completo, pré-beta)
 > Fundador: Gusttavo Fróes Lopes · Hagious Tecnologia · Uberlândia/MG
+> Deploy: https://hagious-flow-lopes.netlify.app
 
 ---
 
@@ -207,80 +208,107 @@ chore: <descrição>         # tarefas auxiliares
 
 ---
 
-## 6. ✅ O que está PRONTO (estado atual v0.1)
+## 6. ✅ O que está PRONTO (estado atual v0.2)
 
 ### Banco de dados (100%)
 - ✅ Projeto Supabase provisionado (`lbalifwjrdssoolactbd`)
 - ✅ Região: South America (São Paulo)
-- ✅ 35 tabelas + 2 views aplicadas via 6 migrations
+- ✅ 35 tabelas + 2 views aplicadas via 7 migrations
 - ✅ RLS ativado em todas as tabelas com policies por workspace
 - ✅ Triggers de `updated_at` automáticos
 - ✅ Trigger `handle_new_user()` cria profile automaticamente no signup
 - ✅ Helper `is_workspace_member(workspace_id)` para policies
+- ✅ Function `bootstrap_workspace(name, slug, ...)` (security definer) cria workspace + workspace_member(role=owner) em transação atômica via RPC
 - ✅ Seeds completos do cenário Sankhya ABC (1 workspace + 6 users + 3 clientes + 4 projetos + 11 tasks + 3 OS na inbox + 5 itens na fila)
 - ✅ View `v_project_health` corrigida (bug de multiplicação no JOIN)
 
-### Frontend (v0.1)
-- ✅ Setup Vite + React + TS + Tailwind funcionando
-- ✅ Cliente Supabase configurado
-- ✅ Sistema de 3 temas com persistência em localStorage
-- ✅ ThemeSwitcher (canto inferior direito, colapsável)
-- ✅ Login funcional via Supabase Auth
-- ✅ ProtectedRoute redireciona para /login se não autenticado
-- ✅ AppShell com Sidebar + Topbar
-- ✅ Sidebar com workspace switcher + nav 2 seções (Operação, Inteligência)
-- ✅ **Dashboard executivo** consumindo dados reais:
-  - Hero IA Briefing com insight do banco
-  - 4 KPIs calculados (receita, projetos ativos, tasks, saúde)
-  - Lista de projetos ordenada por risco
-  - Painel da equipe com % carga e sinais
-  - Riscos ativos com severidade
-- ✅ TypeScript compila sem erros (`tsc -b`)
-- ✅ Build de produção funciona (`vite build` → 472KB JS / 137KB gzip)
+### Edge functions
+- ✅ `ia-coo-chat` (verify_jwt) — backend do IA COO
+  - Anthropic Messages API (claude-haiku-4-5) se `ANTHROPIC_API_KEY` setada
+  - OpenAI Chat Completions (gpt-4o-mini) se `OPENAI_API_KEY` setada
+  - Mock determinístico se nenhuma estiver definida (fallback gracioso)
+  - Persiste user msg + assistant msg em ai_messages com model_used, tokens, latency
+
+### Frontend (v0.2 — todas as 11 telas reais)
+
+**Auth + onboarding**
+- ✅ Login (Supabase Auth)
+- ✅ Signup self-service (`/signup`) com email confirmation handling
+- ✅ Onboarding wizard (`/onboarding`) — cria workspace, escolhe plano, slug auto-gerado
+- ✅ AppShell redireciona pra `/onboarding` se user sem workspace
+
+**Páginas conectadas ao banco**
+- ✅ Dashboard executivo (KPIs + IA briefing + projetos + equipe + riscos)
+- ✅ Projetos (lista + filtros status/health + criação via dialog)
+- ✅ Projeto Detalhe (Gantt + tasks + riscos + atividade + equipe)
+- ✅ Tasks kanban (drag & drop conectado ao banco)
+- ✅ Inbox de OS (triagem + DoR + accept/refine/reject)
+- ✅ Capacity Planner (heatmap semanal + skill matrix + saturação)
+- ✅ Modo Foco (sessão ativa + métricas + fila de acionamentos)
+- ✅ Equipe (cards de membro + skills + projetos ativos + filtros)
+- ✅ Clientes (CRM lite + projetos linkados + OS por cliente)
+- ✅ IA COO fullscreen (chat persistido, edge function multi-provider)
+- ✅ Relatórios (KPIs executivos + 5 breakdowns: receita por cliente, horas por projeto, carga por pessoa, bloqueios, top skills)
+
+**Infra de produto**
+- ✅ Sistema de 3 temas com persistência em localStorage + ThemeSwitcher
+- ✅ Workspace switcher real com Zustand persist + invalidação de queries no troco
+- ✅ Notificações realtime via Supabase Realtime (canal por user_id, badge dinâmico)
+- ✅ Sidebar com nav 2 seções (Operação, Inteligência)
+
+**Build + qualidade**
+- ✅ Build com lazy load por rota + manualChunks (carga inicial ~125KB gzip, chunks de página 10–25KB)
+- ✅ ESLint flat config v9 + Prettier (lint clean, max-warnings 0)
+- ✅ Vitest + 20 testes em src/lib/utils
+- ✅ Tipos auto-gerados via Supabase MCP (`src/types/database.generated.ts`)
+- ✅ Compat layer (`src/types/database.ts`) com unions estreitas e joined shapes
+- ✅ TypeScript compila sem erros, build de produção OK
+
+### Deploy
+- ✅ Hospedado no Netlify (`hagious-flow-lopes.netlify.app`)
+- ✅ `netlify.toml` com build command, publish dir e SPA fallback
+- ✅ Env vars `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` configuradas no painel
 
 ---
 
 ## 7. ⏳ O que está PENDENTE (backlog priorizado)
 
-### 🔥 Alta prioridade (fazer agora)
+### 🔥 Próximas iniciativas de produto
 
 | # | Item | Esforço | Por quê |
 |---|---|---|---|
-| 1 | Portar **Inbox de OS** para React | M (2–3 dias) | Maior diferencial de venda |
-| 2 | Portar **Modo Foco** para React | M (2–3 dias) | Demo emocional pros GPs |
-| 3 | Portar **Capacity Planner** para React | L (3–5 dias) | Decisor de compra para gestores |
+| 1 | **Convidar membros** dentro de Equipe (envia magic link via Supabase Auth) | M | Hoje só owner via signup individual; bloqueio pra demos com time grande |
+| 2 | **Tool calls reais no IA COO** (criar task, escalar OS, ajustar prioridade) com aprovação humana | L | Vetor #1 de venda; mock atual só conversa, não age |
+| 3 | **Filtros temporais + export CSV/PDF** em Relatórios | M | Pedido recorrente em demos com gerentes |
+| 4 | **Time tracking** integrado (timer + entradas em time_entries) | L | Habilita faturamento por hora, vetor de venda pra consultorias |
+| 5 | **Landing page de vendas** + captura de beta | M | Aquisição |
 
-### 🟡 Média prioridade (próxima sprint)
-
-| # | Item | Esforço |
-|---|---|---|
-| 4 | Página **Projeto Detalhe** com Gantt + tasks + riscos | L |
-| 5 | Página **IA COO fullscreen** com chat | L |
-| 6 | Página **Tasks** kanban com drag & drop | M |
-| 7 | Multi-workspace switcher real | S |
-| 8 | Página **Equipe** | M |
-| 9 | Página **Clientes** | M |
-
-### 🔵 Baixa prioridade (depois do beta)
+### 🟡 Operação e UX
 
 | # | Item | Esforço |
 |---|---|---|
-| 10 | **Onboarding self-service** (criar workspace + convidar time) | L |
-| 11 | **Notificações realtime** via Supabase Realtime | M |
-| 12 | **Página Relatórios/BI** | L |
-| 13 | **Backend Spring Boot** (substituir queries diretas no Supabase pra rotas críticas) | XL |
-| 14 | **Integração OpenAI** real para IA COO | M |
-| 15 | **Landing page de vendas** + captura de beta | M |
+| 6 | **Edição inline** de projetos, tasks e clientes (hoje só create) | M |
+| 7 | **Comentários em tasks** + menções (notificação) | M |
+| 8 | **Search global** no topbar (Cmd+K) | M |
+| 9 | **Página de configurações** do workspace (rename, plano, billing) | M |
+| 10 | **Dashboard customizável** por papel (manager × dev × QA) | L |
 
-### 🟣 Backlog técnico (dívida)
+### 🔵 Backend e governança
 
-- [ ] Configurar ESLint + Prettier
-- [ ] Adicionar testes (Vitest + React Testing Library)
-- [ ] Configurar CI/CD (GitHub Actions)
-- [ ] Substituir tipos manuais em `src/types/database.ts` por tipos auto-gerados via `supabase gen types typescript`
-- [ ] Adicionar Storybook para os componentes ui/
-- [ ] Implementar tracking de erros (Sentry)
-- [ ] Configurar deploy automático (Vercel/Netlify)
+| # | Item | Esforço |
+|---|---|---|
+| 11 | **Backend Spring Boot** para rotas críticas (auditoria, billing) | XL |
+| 12 | **Webhook handler** para integrar Sankhya OS via API | L |
+| 13 | **Audit log UI** lendo activity_log table | M |
+
+### 🟣 Backlog técnico (dívida e infra)
+
+- [ ] CI/CD via GitHub Actions (lint + typecheck + test + build em PR)
+- [ ] Component tests com @testing-library/react (componentes principais)
+- [ ] Storybook para os componentes ui/
+- [ ] Tracking de erros (Sentry ou equivalente)
+- [ ] Generic do `Database` no `createClient` + atualizar hooks pra remover casts (refactor amplo)
+- [ ] E2E tests (Playwright) cobrindo fluxos críticos: signup → onboarding → criar projeto
 
 ---
 
@@ -296,7 +324,7 @@ chore: <descrição>         # tarefas auxiliares
 | Plano | Free |
 | Região | São Paulo |
 
-### Migrations aplicadas (6)
+### Migrations aplicadas (7)
 
 | Versão | Nome | O que faz |
 |---|---|---|
@@ -306,6 +334,7 @@ chore: <descrição>         # tarefas auxiliares
 | 20260429224622 | 004_notifications_ai_governance | Notif + IA + governança operacional + views |
 | 20260429224844 | 005_seeds_sankhya_abc | Cenário Sankhya ABC completo |
 | 20260429224921 | fix_project_health_view | Correção de bug na view |
+| 20260502xxx | 007_bootstrap_workspace_fn | Function `bootstrap_workspace` (security definer) para onboarding self-service |
 
 ### Cenário fictício "Sankhya ABC"
 
