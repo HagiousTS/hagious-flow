@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { LoginPage } from '@/pages/Login'
 import { SignupPage } from '@/pages/Signup'
 import { OnboardingPage } from '@/pages/Onboarding'
+import { AcceptInvitationPage } from '@/pages/AcceptInvitation'
 import { Skeleton } from '@/components/ui/Skeleton'
 
 const DashboardPage = lazy(() =>
@@ -76,6 +77,10 @@ export function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route
+            path="/aceitar-convite/:token"
+            element={<AcceptInvitationPage />}
+          />
 
           <Route
             path="/onboarding"

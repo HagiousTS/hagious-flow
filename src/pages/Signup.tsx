@@ -40,7 +40,17 @@ export function SignupPage() {
     }
 
     if (data.session) {
-      navigate('/onboarding', { replace: true })
+      let pendingInvite: string | null = null
+      try {
+        pendingInvite = localStorage.getItem('hagious.pendingInvitationToken')
+      } catch {
+        // localStorage indisponível
+      }
+      if (pendingInvite) {
+        navigate(`/aceitar-convite/${pendingInvite}`, { replace: true })
+      } else {
+        navigate('/onboarding', { replace: true })
+      }
     } else {
       setNeedsConfirmation(true)
     }

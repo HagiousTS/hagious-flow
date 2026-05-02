@@ -2069,6 +2069,53 @@ export type Database = {
           },
         ]
       }
+      workspace_invitations: {
+        Row: {
+          accepted_at: string | null
+          accepted_by_user_id: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by_user_id: string
+          role: string
+          token: string
+          workspace_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by_user_id?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by_user_id: string
+          role?: string
+          token: string
+          workspace_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by_user_id?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by_user_id?: string
+          role?: string
+          token?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_invitations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspace_members: {
         Row: {
           capacity_hours_week: number | null
@@ -2242,7 +2289,97 @@ export type Database = {
       }
     }
     Functions: {
+      accept_workspace_invitation: {
+        Args: { p_token: string }
+        Returns: {
+          cnpj: string | null
+          created_at: string
+          deleted_at: string | null
+          id: string
+          industry: string | null
+          logo_url: string | null
+          name: string
+          owner_user_id: string
+          plan: string
+          plan_expires_at: string | null
+          plan_renewed_at: string | null
+          plan_seats: number
+          settings_json: Json
+          slug: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "workspaces"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      bootstrap_workspace: {
+        Args: {
+          p_industry?: string
+          p_name: string
+          p_plan?: string
+          p_seats?: number
+          p_slug: string
+        }
+        Returns: {
+          cnpj: string | null
+          created_at: string
+          deleted_at: string | null
+          id: string
+          industry: string | null
+          logo_url: string | null
+          name: string
+          owner_user_id: string
+          plan: string
+          plan_expires_at: string | null
+          plan_renewed_at: string | null
+          plan_seats: number
+          settings_json: Json
+          slug: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "workspaces"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_workspace_invitation: {
+        Args: { p_email: string; p_role?: string; p_workspace_id: string }
+        Returns: {
+          accepted_at: string | null
+          accepted_by_user_id: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by_user_id: string
+          role: string
+          token: string
+          workspace_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "workspace_invitations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       is_workspace_member: { Args: { _workspace_id: string }; Returns: boolean }
+      preview_workspace_invitation: {
+        Args: { p_token: string }
+        Returns: {
+          accepted_at: string
+          email: string
+          expires_at: string
+          role: string
+          workspace_id: string
+          workspace_name: string
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

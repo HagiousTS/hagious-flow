@@ -165,6 +165,21 @@ export type AcknowledgmentQueueItem = Omit<
 
 export type Notification = Row<'notifications'>
 
+export type WorkspaceInvitationRole = 'manager' | 'member' | 'viewer'
+
+export type WorkspaceInvitation = Omit<Row<'workspace_invitations'>, 'role'> & {
+  role: WorkspaceInvitationRole
+}
+
+export interface WorkspaceInvitationPreview {
+  workspace_id: string
+  workspace_name: string
+  email: string
+  role: WorkspaceInvitationRole
+  expires_at: string
+  accepted_at: string | null
+}
+
 // ============================================================
 // Views (campos vêm nullable da view, normalizamos onde sabemos seguro)
 // ============================================================

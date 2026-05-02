@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
-import { Search } from 'lucide-react'
+import { Search, UserPlus } from 'lucide-react'
 import { useWorkspace } from '@/hooks/useWorkspace'
 import { useTeam } from '@/hooks/useTeam'
 import { TeamKpiBar } from '@/components/team/TeamKpiBar'
 import { MemberCard } from '@/components/team/MemberCard'
+import { InviteDialog } from '@/components/team/InviteDialog'
+import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { cn } from '@/lib/utils'
@@ -24,6 +26,7 @@ export function TeamPage() {
   const { data, isLoading, isError, error } = useTeam(workspace?.id)
   const [filter, setFilter] = useState<RoleFilter>('all')
   const [search, setSearch] = useState('')
+  const [inviteOpen, setInviteOpen] = useState(false)
 
   const filtered = useMemo(() => {
     if (!data) return []
@@ -95,7 +98,17 @@ export function TeamPage() {
             Membros do workspace, papéis, capacidade, skills e projetos ativos.
           </p>
         </div>
+        <Button onClick={() => setInviteOpen(true)}>
+          <UserPlus className="w-4 h-4" />
+          Convidar membros
+        </Button>
       </div>
+
+      <InviteDialog
+        workspaceId={workspace.id}
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+      />
 
       <TeamKpiBar kpis={data.kpis} />
 

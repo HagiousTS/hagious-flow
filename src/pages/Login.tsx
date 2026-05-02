@@ -29,7 +29,17 @@ export function LoginPage() {
       )
       return
     }
-    navigate(from, { replace: true })
+    let pendingInvite: string | null = null
+    try {
+      pendingInvite = localStorage.getItem('hagious.pendingInvitationToken')
+    } catch {
+      // localStorage indisponível
+    }
+    if (pendingInvite) {
+      navigate(`/aceitar-convite/${pendingInvite}`, { replace: true })
+    } else {
+      navigate(from, { replace: true })
+    }
   }
 
   return (
