@@ -37,10 +37,18 @@ export function formatDateShort(iso: string | null | undefined): string {
 
 /**
  * "em X dias" / "atrasado X dias" / "hoje"
+ *
+ * `YYYY-MM-DD` é parseado como local time (não UTC), pra evitar shift de TZ
+ * que faria "2026-05-02" virar "2026-05-01" em fusos a oeste de UTC.
  */
 export function relativeDays(iso: string | null | undefined): string {
   if (!iso) return '—'
-  const target = new Date(iso)
+  const ymd = iso.slice(0, 10).split('-').map(Number)
+  const isYmdOnly = ymd.length === 3 && !iso.includes('T')
+  const target = isYmdOnly
+    ? new Date(ymd[0], ymd[1] - 1, ymd[2])
+    : new Date(iso)
+  if (Number.isNaN(target.getTime())) return '—'
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   target.setHours(0, 0, 0, 0)
