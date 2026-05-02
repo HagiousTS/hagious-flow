@@ -9,6 +9,7 @@ import { SignupPage } from '@/pages/Signup'
 import { OnboardingPage } from '@/pages/Onboarding'
 import { AcceptInvitationPage } from '@/pages/AcceptInvitation'
 import { TimerBar } from '@/components/timer/TimerBar'
+import { CommandPaletteHost } from '@/components/search/CommandPaletteHost'
 import { Skeleton } from '@/components/ui/Skeleton'
 
 const DashboardPage = lazy(() =>
@@ -192,6 +193,7 @@ export function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <TimerBar />
+        <CommandPaletteHost />
         <ThemeSwitcher />
       </BrowserRouter>
     </QueryClientProvider>
