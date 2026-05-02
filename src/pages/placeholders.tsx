@@ -21,12 +21,6 @@ export function PlaceholderPage({ title, description }: PlaceholderProps) {
   )
 }
 
-export const ProjectsPage = () => (
-  <PlaceholderPage
-    title="Projetos"
-    description="Listagem completa, filtros, criação. Integrado com a tabela projects do Supabase."
-  />
-)
 export const ReportsPage = () => (
   <PlaceholderPage
     title="Relatórios"

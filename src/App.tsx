@@ -13,10 +13,8 @@ import { TasksPage } from '@/pages/Tasks'
 import { TeamPage } from '@/pages/Team'
 import { ClientsPage } from '@/pages/Clients'
 import { AICopilotPage } from '@/pages/AICopilot'
-import {
-  ProjectsPage,
-  ReportsPage,
-} from '@/pages/placeholders'
+import { ProjectsPage } from '@/pages/Projects'
+import { ReportsPage } from '@/pages/placeholders'
 
 const queryClient = new QueryClient({
   defaultOptions: {

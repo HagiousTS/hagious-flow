@@ -146,6 +146,25 @@ body {
   border-radius: 14px;
 }
 
+/* Form input padrão */
+.input {
+  width: 100%;
+  background-color: hsl(var(--panel));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: hsl(var(--text));
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input:focus {
+  border-color: hsl(var(--brand) / 0.5);
+}
+.input::placeholder {
+  color: hsl(var(--muted));
+}
+
 /* Progress */
 .progress-bar {
   height: 6px;
