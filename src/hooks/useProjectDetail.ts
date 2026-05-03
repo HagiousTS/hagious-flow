@@ -8,6 +8,7 @@ import type {
   ProjectPhase,
   Risk,
   Task,
+  TaskStatus,
 } from '@/types/database'
 
 export interface ProjectStatusBreakdown {
@@ -37,6 +38,8 @@ export interface ProjectDetailData {
   activity: ActivityLogEntry[]
   statusBreakdown: ProjectStatusBreakdown
   totalHoursLogged: number
+  statuses: TaskStatus[]
+  members: { id: string; full_name: string }[]
 }
 
 interface RawProjectMember {
@@ -69,6 +72,8 @@ export function useProjectDetail(
         { data: timeEntries, error: timeErr },
         { data: health, error: healthErr },
         { data: activity, error: activityErr },
+        { data: statuses, error: statusesErr },
+        { data: workspaceMembers, error: wsMembersErr },
       ] = await Promise.all([
         supabase
           .from('projects')
@@ -125,6 +130,17 @@ export function useProjectDetail(
           )
           .order('created_at', { ascending: false })
           .limit(8),
+        supabase
+          .from('task_statuses')
+          .select('*')
+          .eq('workspace_id', workspaceId!)
+          .is('project_id', null)
+          .order('sort_order', { ascending: true }),
+        supabase
+          .from('workspace_members')
+          .select('id, profile:profiles(id, full_name)')
+          .eq('workspace_id', workspaceId!)
+          .eq('is_active', true),
       ])
 
       if (projectErr) throw projectErr
@@ -135,6 +151,8 @@ export function useProjectDetail(
       if (timeErr) throw timeErr
       if (healthErr) throw healthErr
       if (activityErr) throw activityErr
+      if (statusesErr) throw statusesErr
+      if (wsMembersErr) throw wsMembersErr
 
       const taskList = (tasks ?? []) as Task[]
 
@@ -183,6 +201,17 @@ export function useProjectDetail(
       }))
       team.sort((a, b) => b.hoursLogged - a.hoursLogged)
 
+      type WsMemberRow = {
+        id: string
+        profile: { id: string; full_name: string } | null
+      }
+      const wsMembers = (
+        (workspaceMembers ?? []) as unknown as WsMemberRow[]
+      ).map((m) => ({
+        id: m.id,
+        full_name: m.profile?.full_name ?? 'Sem nome',
+      }))
+
       return {
         project: project as Project,
         health: (health as ProjectHealthView | null) ?? null,
@@ -193,6 +222,8 @@ export function useProjectDetail(
         activity: (activity ?? []) as ActivityLogEntry[],
         statusBreakdown: breakdown,
         totalHoursLogged: totalHours,
+        statuses: (statuses ?? []) as TaskStatus[],
+        members: wsMembers,
       }
     },
   })

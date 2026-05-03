@@ -9,6 +9,7 @@ interface ProjectTasksListProps {
   tasks: Task[]
   projectCode: string
   projectId: string
+  onTaskClick?: (task: Task) => void
 }
 
 const PRIORITY_CHIP: Record<string, { label: string; cls: string }> = {
@@ -50,6 +51,7 @@ export function ProjectTasksList({
   tasks,
   projectCode,
   projectId,
+  onTaskClick,
 }: ProjectTasksListProps) {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<TaskFilter>('all')
@@ -156,7 +158,14 @@ export function ProjectTasksList({
                   const assigneeName = t.assignee?.profile?.full_name ?? null
                   const completed = t.status?.category === 'done'
                   return (
-                    <tr key={t.id} className="hover:bg-panel2/40">
+                    <tr
+                      key={t.id}
+                      onClick={() => onTaskClick?.(t)}
+                      className={cn(
+                        'hover:bg-panel2/40',
+                        onTaskClick && 'cursor-pointer'
+                      )}
+                    >
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-[10px] text-muted font-mono">
@@ -221,7 +230,10 @@ export function ProjectTasksList({
                           ? `${Number(t.actual_hours)}h`
                           : '—'}
                       </td>
-                      <td className="py-3 px-3">
+                      <td
+                        className="py-3 px-3"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {!completed && !t.is_blocked && (
                           <TaskTimerButton
                             taskId={t.id}

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 import { useWorkspace } from '@/hooks/useWorkspace'
@@ -9,6 +10,7 @@ import { ProjectProgress } from '@/components/project/ProjectProgress'
 import { ProjectTeamPanel } from '@/components/project/ProjectTeamPanel'
 import { ProjectRisks } from '@/components/project/ProjectRisks'
 import { ProjectActivity } from '@/components/project/ProjectActivity'
+import { TaskDrawer } from '@/components/tasks/TaskDrawer'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
 
@@ -19,6 +21,7 @@ export function ProjectDetailPage() {
     workspace?.id,
     id
   )
+  const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null)
 
   if (wsLoading || isLoading) {
     return (
@@ -77,6 +80,8 @@ export function ProjectDetailPage() {
     activity,
     statusBreakdown,
     totalHoursLogged,
+    statuses,
+    members,
   } = data
 
   const totalDone = statusBreakdown.done
@@ -106,6 +111,7 @@ export function ProjectDetailPage() {
             tasks={tasks}
             projectCode={project.code}
             projectId={project.id}
+            onTaskClick={(t) => setDrawerTaskId(t.id)}
           />
         </div>
         <aside className="lg:col-span-4 space-y-6">
@@ -119,6 +125,14 @@ export function ProjectDetailPage() {
           <ProjectActivity activity={activity} />
         </aside>
       </div>
+
+      <TaskDrawer
+        task={tasks.find((t) => t.id === drawerTaskId) ?? null}
+        statuses={statuses}
+        members={members}
+        workspaceId={workspace.id}
+        onClose={() => setDrawerTaskId(null)}
+      />
     </div>
   )
 }
