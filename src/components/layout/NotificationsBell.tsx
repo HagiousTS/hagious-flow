@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Bell, Check, CheckCheck } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { ArrowRight, Bell, Check, CheckCheck } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useWorkspace } from '@/hooks/useWorkspace'
 import {
@@ -173,6 +173,17 @@ export function NotificationsBell() {
                 </button>
               ))
             )}
+          </div>
+
+          <div className="border-t bg-panel2/30">
+            <Link
+              to="/notificacoes"
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-center gap-1 px-4 py-2 text-xs text-muted hover:text-brand transition"
+            >
+              Ver todas as notificações
+              <ArrowRight className="w-3 h-3" />
+            </Link>
           </div>
         </div>
       )}

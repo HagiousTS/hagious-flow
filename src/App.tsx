@@ -50,6 +50,11 @@ const ReportsPage = lazy(() =>
 const SettingsPage = lazy(() =>
   import('@/pages/Settings').then((m) => ({ default: m.SettingsPage }))
 )
+const NotificationsPage = lazy(() =>
+  import('@/pages/Notifications').then((m) => ({
+    default: m.NotificationsPage,
+  }))
+)
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -196,6 +201,14 @@ export function App() {
               element={
                 <Suspense fallback={<PageFallback />}>
                   <SettingsPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/notificacoes"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <NotificationsPage />
                 </Suspense>
               }
             />

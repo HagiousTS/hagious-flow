@@ -8,15 +8,21 @@ export interface NotificationsData {
   unreadCount: number
 }
 
+interface UseNotificationsOptions {
+  limit?: number
+}
+
 export function useNotifications(
   workspaceId: string | undefined,
-  userId: string | undefined
+  userId: string | undefined,
+  options: UseNotificationsOptions = {}
 ) {
   const qc = useQueryClient()
   const enabled = !!workspaceId && !!userId
+  const limit = options.limit ?? 30
 
   const query = useQuery<NotificationsData>({
-    queryKey: ['notifications', workspaceId, userId],
+    queryKey: ['notifications', workspaceId, userId, limit],
     enabled,
     queryFn: async () => {
       const { data, error } = await supabase
@@ -25,7 +31,7 @@ export function useNotifications(
         .eq('workspace_id', workspaceId!)
         .eq('user_id', userId!)
         .order('created_at', { ascending: false })
-        .limit(30)
+        .limit(limit)
       if (error) throw error
       const list = (data ?? []) as Notification[]
       return {
