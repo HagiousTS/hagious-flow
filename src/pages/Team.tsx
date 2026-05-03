@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Search, UserPlus } from 'lucide-react'
 import { useWorkspace } from '@/hooks/useWorkspace'
 import { useTeam } from '@/hooks/useTeam'
@@ -27,6 +28,16 @@ export function TeamPage() {
   const [filter, setFilter] = useState<RoleFilter>('all')
   const [search, setSearch] = useState('')
   const [inviteOpen, setInviteOpen] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('invite') === '1') {
+      setInviteOpen(true)
+      const next = new URLSearchParams(searchParams)
+      next.delete('invite')
+      setSearchParams(next, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
 
   const filtered = useMemo(() => {
     if (!data) return []

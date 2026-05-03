@@ -1,10 +1,13 @@
-import { useMemo, useState } from 'react'
-import { Search } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { Plus, Search } from 'lucide-react'
 import { useWorkspace } from '@/hooks/useWorkspace'
 import { useClients } from '@/hooks/useClients'
 import { ClientsKpiBar } from '@/components/clients/ClientsKpiBar'
 import { ClientCard } from '@/components/clients/ClientCard'
 import { ClientDrawer } from '@/components/clients/ClientDrawer'
+import { NewClientDialog } from '@/components/clients/NewClientDialog'
+import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { cn } from '@/lib/utils'
@@ -24,6 +27,17 @@ export function ClientsPage() {
   const [filter, setFilter] = useState<ClientFilter>('all')
   const [search, setSearch] = useState('')
   const [drawerClientId, setDrawerClientId] = useState<string | null>(null)
+  const [createOpen, setCreateOpen] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('new') === '1') {
+      setCreateOpen(true)
+      const next = new URLSearchParams(searchParams)
+      next.delete('new')
+      setSearchParams(next, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
 
   const filtered = useMemo(() => {
     if (!data) return []
@@ -105,6 +119,10 @@ export function ClientsPage() {
             cliente.
           </p>
         </div>
+        <Button onClick={() => setCreateOpen(true)}>
+          <Plus className="w-4 h-4" />
+          Novo cliente
+        </Button>
       </div>
 
       <ClientsKpiBar kpis={data.kpis} />
@@ -161,6 +179,13 @@ export function ClientsPage() {
         row={data.rows.find((r) => r.client.id === drawerClientId) ?? null}
         workspaceId={workspace.id}
         onClose={() => setDrawerClientId(null)}
+      />
+
+      <NewClientDialog
+        workspaceId={workspace.id}
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreated={(id) => setDrawerClientId(id)}
       />
     </div>
   )
