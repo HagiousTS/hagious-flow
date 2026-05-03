@@ -22,6 +22,10 @@ const ACTION_LABEL: Record<string, string> = {
   mark_task_blocked: 'Marcar como bloqueada',
   update_task_priority: 'Mudar prioridade',
   escalate_os: 'Triagear OS',
+  complete_task: 'Concluir task',
+  reassign_task: 'Trocar responsável',
+  create_risk: 'Registrar risco',
+  accept_os: 'Aceitar OS',
 }
 
 const STATUS_LABEL: Record<AIActionStatus, string> = {

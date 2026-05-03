@@ -125,6 +125,10 @@ export type AIActionType =
   | 'mark_task_blocked'
   | 'update_task_priority'
   | 'escalate_os'
+  | 'complete_task'
+  | 'reassign_task'
+  | 'create_risk'
+  | 'accept_os'
   | string
 
 export type AIActionStatus =
