@@ -198,6 +198,10 @@ export type TaskComment = Row<'task_comments'> & {
   author?: WorkspaceMember | null
 }
 
+export type ProjectComment = Row<'project_comments'> & {
+  author?: WorkspaceMember | null
+}
+
 export type TimeEntry = Row<'time_entries'> & {
   member?: WorkspaceMember | null
   task?: Task | null

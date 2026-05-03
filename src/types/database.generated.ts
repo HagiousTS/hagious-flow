@@ -896,6 +896,78 @@ export type Database = {
         }
         Relationships: []
       }
+      project_comments: {
+        Row: {
+          author_member_id: string
+          body_md: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          is_ai_generated: boolean | null
+          project_id: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          author_member_id: string
+          body_md: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_ai_generated?: boolean | null
+          project_id: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          author_member_id?: string
+          body_md?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_ai_generated?: boolean | null
+          project_id?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_comments_author_member_id_fkey"
+            columns: ["author_member_id"]
+            isOneToOne: false
+            referencedRelation: "v_member_workload"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "project_comments_author_member_id_fkey"
+            columns: ["author_member_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_comments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_comments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_project_health"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_comments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_members: {
         Row: {
           allocation_percent: number | null
@@ -2319,6 +2391,32 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      apply_ai_action: {
+        Args: { p_action_id: string }
+        Returns: {
+          action_type: string
+          approved_at: string | null
+          approved_by_user_id: string | null
+          conversation_id: string | null
+          created_at: string
+          error_message: string | null
+          executed_at: string | null
+          id: string
+          insight_id: string | null
+          payload_json: Json
+          requires_approval: boolean | null
+          result_json: Json | null
+          status: string | null
+          user_id: string
+          workspace_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ai_actions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       archive_workspace: {
         Args: { p_workspace_id: string }
         Returns: undefined
@@ -2388,6 +2486,32 @@ export type Database = {
           workspace_id: string
           workspace_name: string
         }[]
+      }
+      reject_ai_action: {
+        Args: { p_action_id: string }
+        Returns: {
+          action_type: string
+          approved_at: string | null
+          approved_by_user_id: string | null
+          conversation_id: string | null
+          created_at: string
+          error_message: string | null
+          executed_at: string | null
+          id: string
+          insight_id: string | null
+          payload_json: Json
+          requires_approval: boolean | null
+          result_json: Json | null
+          status: string | null
+          user_id: string
+          workspace_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ai_actions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }

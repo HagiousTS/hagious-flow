@@ -12,6 +12,8 @@ import { ProjectRisks } from '@/components/project/ProjectRisks'
 import { ProjectActivity } from '@/components/project/ProjectActivity'
 import { TaskDrawer } from '@/components/tasks/TaskDrawer'
 import { ProjectTimeEntries } from '@/components/project/ProjectTimeEntries'
+import { ProjectComments } from '@/components/project/ProjectComments'
+import { useCurrentMember } from '@/hooks/useCurrentMember'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
 
@@ -23,6 +25,7 @@ export function ProjectDetailPage() {
     id
   )
   const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null)
+  const { data: currentMember } = useCurrentMember(workspace?.id)
 
   if (wsLoading || isLoading) {
     return (
@@ -134,6 +137,14 @@ export function ProjectDetailPage() {
           <ProjectTeamPanel team={team} totalHours={totalHoursLogged} />
           <ProjectRisks risks={risks} />
           <ProjectActivity activity={activity} />
+          <ProjectComments
+            projectId={project.id}
+            projectName={project.name}
+            projectHref={`/projetos/${project.id}`}
+            workspaceId={workspace.id}
+            currentMemberId={currentMember?.id ?? null}
+            members={members}
+          />
         </aside>
       </div>
 
