@@ -1,7 +1,30 @@
 import { useEffect, useRef } from 'react'
 import { Sparkles, User as UserIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { AIMessage } from '@/types/database'
+import type { AIMessage, AIToolCallProposal } from '@/types/database'
+import { ActionProposals } from '@/components/copilot/ActionProposal'
+
+function parseToolCalls(raw: unknown): AIToolCallProposal[] {
+  if (!Array.isArray(raw)) return []
+  return raw
+    .map((item) => {
+      if (typeof item !== 'object' || item === null) return null
+      const obj = item as Record<string, unknown>
+      const id = obj.action_id
+      const name = obj.name
+      const input = obj.input
+      if (typeof id !== 'string' || typeof name !== 'string') return null
+      return {
+        action_id: id,
+        name,
+        input:
+          typeof input === 'object' && input !== null
+            ? (input as Record<string, unknown>)
+            : {},
+      } as AIToolCallProposal
+    })
+    .filter((x): x is AIToolCallProposal => x !== null)
+}
 
 interface MessageThreadProps {
   messages: AIMessage[]
@@ -29,6 +52,8 @@ function MessageBubble({ msg }: { msg: AIMessage }) {
     )
   }
 
+  const proposals = !isUser ? parseToolCalls(msg.tool_calls_json) : []
+
   return (
     <div
       className={cn(
@@ -48,24 +73,33 @@ function MessageBubble({ msg }: { msg: AIMessage }) {
           <Sparkles className="w-4 h-4" />
         )}
       </div>
-      <div
-        className={cn(
-          'rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap',
-          isUser
-            ? 'bg-info/10 text-text border border-info/20'
-            : 'bg-panel border border-border'
-        )}
-      >
-        {msg.content_md}
-        <div className="flex items-center gap-2 text-[10px] text-muted mt-1.5">
-          <span>{formatTime(msg.created_at)}</span>
-          {msg.model_used && (
-            <span className="opacity-70">· {msg.model_used}</span>
+      <div className="flex-1 min-w-0">
+        <div
+          className={cn(
+            'rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap',
+            isUser
+              ? 'bg-info/10 text-text border border-info/20'
+              : 'bg-panel border border-border'
           )}
-          {msg.latency_ms != null && (
-            <span className="opacity-70">· {msg.latency_ms}ms</span>
-          )}
+        >
+          {msg.content_md}
+          <div className="flex items-center gap-2 text-[10px] text-muted mt-1.5">
+            <span>{formatTime(msg.created_at)}</span>
+            {msg.model_used && (
+              <span className="opacity-70">· {msg.model_used}</span>
+            )}
+            {msg.latency_ms != null && (
+              <span className="opacity-70">· {msg.latency_ms}ms</span>
+            )}
+            {proposals.length > 0 && (
+              <span className="opacity-70">
+                · {proposals.length} ação{proposals.length > 1 ? 'ões' : ''}{' '}
+                proposta{proposals.length > 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
         </div>
+        {proposals.length > 0 && <ActionProposals proposals={proposals} />}
       </div>
     </div>
   )

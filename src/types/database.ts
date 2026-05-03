@@ -119,6 +119,31 @@ export type AIInsight = Omit<
   is_read: boolean
   is_dismissed: boolean
 }
+
+export type AIActionType =
+  | 'create_task'
+  | 'mark_task_blocked'
+  | 'update_task_priority'
+  | 'escalate_os'
+  | string
+
+export type AIActionStatus =
+  | 'proposed'
+  | 'pending'
+  | 'applied'
+  | 'rejected'
+  | 'failed'
+
+export type AIAction = Omit<Row<'ai_actions'>, 'action_type' | 'status'> & {
+  action_type: AIActionType
+  status: AIActionStatus
+}
+
+export interface AIToolCallProposal {
+  action_id: string
+  name: AIActionType
+  input: Record<string, unknown>
+}
 export type AIConversation = Row<'ai_conversations'>
 export type AIMessage = Omit<Row<'ai_messages'>, 'role'> & {
   role: AIMessageRole
