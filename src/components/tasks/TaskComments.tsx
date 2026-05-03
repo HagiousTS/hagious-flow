@@ -1,11 +1,12 @@
 import { useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
-import { Loader2, MessageSquare, Send, Trash2 } from 'lucide-react'
+import { Check, Loader2, MessageSquare, Pencil, Send, Trash2, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import {
   extractMentions,
   useCreateTaskComment,
   useDeleteTaskComment,
   useTaskComments,
+  useUpdateTaskComment,
 } from '@/hooks/useTaskComments'
 import { useAuth } from '@/hooks/useAuth'
 import { cn, getInitials, relativeDays } from '@/lib/utils'
@@ -31,9 +32,12 @@ export function TaskComments({
   const comments = useTaskComments(taskId)
   const create = useCreateTaskComment()
   const del = useDeleteTaskComment()
+  const update = useUpdateTaskComment()
 
   const [body, setBody] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editBody, setEditBody] = useState('')
 
   const memberById = useMemo(
     () => new Map(members.map((m) => [m.id, m.full_name])),
@@ -86,6 +90,28 @@ export function TaskComments({
     }
   }
 
+  function startEdit(commentId: string, current: string) {
+    setEditingId(commentId)
+    setEditBody(current)
+    setError(null)
+  }
+
+  async function handleSaveEdit() {
+    if (!editingId) return
+    setError(null)
+    try {
+      await update.mutateAsync({
+        commentId: editingId,
+        taskId,
+        body: editBody,
+      })
+      setEditingId(null)
+      setEditBody('')
+    } catch (err) {
+      setError((err as Error).message)
+    }
+  }
+
   const list = comments.data ?? []
   const mentionsPreview = useMemo(
     () => extractMentions(body, members),
@@ -115,11 +141,10 @@ export function TaskComments({
           list.map((c) => {
             const isOwn = c.author_member_id === currentMemberId
             const name = c.author?.profile?.full_name ?? 'Sem nome'
+            const isEditing = editingId === c.id
+            const wasEdited = c.updated_at && c.updated_at !== c.created_at
             return (
-              <div
-                key={c.id}
-                className="flex gap-2 group"
-              >
+              <div key={c.id} className="flex gap-2 group">
                 <div className="w-7 h-7 rounded-full bg-panel2 border border-border flex items-center justify-center text-[10px] font-bold shrink-0">
                   {getInitials(name)}
                 </div>
@@ -128,25 +153,78 @@ export function TaskComments({
                     <span className="font-semibold text-text">{name}</span>
                     <span>·</span>
                     <span>{relativeDays(c.created_at)}</span>
+                    {wasEdited && !isEditing && (
+                      <span className="text-[9px] italic">(editado)</span>
+                    )}
                     {c.is_ai_generated && (
                       <span className="bg-purple-500/15 text-purple-300 px-1 py-0.5 rounded text-[9px] uppercase tracking-wider">
                         IA
                       </span>
                     )}
-                    {isOwn && (
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(c.id)}
-                        className="ml-auto opacity-0 group-hover:opacity-100 text-muted hover:text-danger transition"
-                        title="Excluir comentário"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
+                    {isOwn && !isEditing && (
+                      <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                        <button
+                          type="button"
+                          onClick={() => startEdit(c.id, c.body_md)}
+                          className="text-muted hover:text-brand"
+                          title="Editar comentário"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(c.id)}
+                          className="text-muted hover:text-danger"
+                          title="Excluir comentário"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
                     )}
                   </div>
-                  <div className="text-sm whitespace-pre-wrap mt-0.5">
-                    <CommentBody text={c.body_md} memberById={memberById} />
-                  </div>
+                  {isEditing ? (
+                    <div className="mt-1 space-y-1.5">
+                      <textarea
+                        value={editBody}
+                        onChange={(e) => setEditBody(e.target.value)}
+                        rows={2}
+                        className="input resize-none"
+                        autoFocus
+                      />
+                      <div className="flex items-center gap-2 justify-end">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingId(null)
+                            setEditBody('')
+                          }}
+                          disabled={update.isPending}
+                        >
+                          <X className="w-3 h-3" />
+                          Cancelar
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={handleSaveEdit}
+                          disabled={update.isPending || !editBody.trim()}
+                        >
+                          {update.isPending ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <Check className="w-3 h-3" />
+                          )}
+                          Salvar
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-sm whitespace-pre-wrap mt-0.5">
+                      <CommentBody text={c.body_md} memberById={memberById} />
+                    </div>
+                  )}
                 </div>
               </div>
             )

@@ -132,6 +132,30 @@ export function useCreateProjectComment() {
   })
 }
 
+interface UpdateProjectCommentArgs {
+  commentId: string
+  projectId: string
+  body: string
+}
+
+export function useUpdateProjectComment() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ commentId, body }: UpdateProjectCommentArgs) => {
+      const trimmed = body.trim()
+      if (!trimmed) throw new Error('Comentário vazio')
+      const { error } = await supabase
+        .from('project_comments')
+        .update({ body_md: trimmed })
+        .eq('id', commentId)
+      if (error) throw error
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ['project-comments', vars.projectId] })
+    },
+  })
+}
+
 export function useDeleteProjectComment() {
   const qc = useQueryClient()
   return useMutation({

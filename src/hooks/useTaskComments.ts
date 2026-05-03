@@ -132,6 +132,30 @@ export function useCreateTaskComment() {
   })
 }
 
+interface UpdateTaskCommentArgs {
+  commentId: string
+  taskId: string
+  body: string
+}
+
+export function useUpdateTaskComment() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ commentId, body }: UpdateTaskCommentArgs) => {
+      const trimmed = body.trim()
+      if (!trimmed) throw new Error('Comentário vazio')
+      const { error } = await supabase
+        .from('task_comments')
+        .update({ body_md: trimmed })
+        .eq('id', commentId)
+      if (error) throw error
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ['task-comments', vars.taskId] })
+    },
+  })
+}
+
 export function useDeleteTaskComment() {
   const qc = useQueryClient()
   return useMutation({
