@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import type {
   Client,
@@ -207,6 +207,104 @@ export function useClients(workspaceId: string | undefined) {
       }
 
       return { rows, kpis }
+    },
+  })
+}
+
+export interface CreateClientArgs {
+  workspaceId: string
+  name: string
+  trade_name?: string | null
+  cnpj?: string | null
+  contact_name?: string | null
+  contact_email?: string | null
+  contact_phone?: string | null
+  notes?: string | null
+}
+
+export function useCreateClient() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (args: CreateClientArgs) => {
+      const payload: Record<string, unknown> = {
+        workspace_id: args.workspaceId,
+        name: args.name.trim(),
+        trade_name: args.trade_name?.trim() || null,
+        cnpj: args.cnpj?.trim() || null,
+        contact_name: args.contact_name?.trim() || null,
+        contact_email: args.contact_email?.trim() || null,
+        contact_phone: args.contact_phone?.trim() || null,
+        notes: args.notes?.trim() || null,
+        is_active: true,
+      }
+      const { data, error } = await supabase
+        .from('clients')
+        .insert(payload)
+        .select('*')
+        .single()
+      if (error) throw error
+      return data as Client
+    },
+    onSuccess: (c) => {
+      qc.invalidateQueries({ queryKey: ['clients', c.workspace_id] })
+      qc.invalidateQueries({ queryKey: ['clients', 'lite', c.workspace_id] })
+    },
+  })
+}
+
+export interface UpdateClientArgs {
+  workspaceId: string
+  clientId: string
+  patch: {
+    name?: string
+    trade_name?: string | null
+    cnpj?: string | null
+    contact_name?: string | null
+    contact_email?: string | null
+    contact_phone?: string | null
+    notes?: string | null
+    is_active?: boolean
+  }
+}
+
+export function useUpdateClient() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (args: UpdateClientArgs) => {
+      const payload: Record<string, unknown> = { ...args.patch }
+      if (typeof payload.name === 'string') {
+        payload.name = (payload.name as string).trim()
+      }
+      const { data, error } = await supabase
+        .from('clients')
+        .update(payload)
+        .eq('id', args.clientId)
+        .select('*')
+        .single()
+      if (error) throw error
+      return data as Client
+    },
+    onSuccess: (c) => {
+      qc.invalidateQueries({ queryKey: ['clients', c.workspace_id] })
+      qc.invalidateQueries({ queryKey: ['clients', 'lite', c.workspace_id] })
+      qc.invalidateQueries({ queryKey: ['reports', c.workspace_id] })
+    },
+  })
+}
+
+export function useDeleteClient(workspaceId: string | undefined) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (clientId: string) => {
+      const { error } = await supabase
+        .from('clients')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', clientId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['clients', workspaceId] })
+      qc.invalidateQueries({ queryKey: ['clients', 'lite', workspaceId] })
     },
   })
 }

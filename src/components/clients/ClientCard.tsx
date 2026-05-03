@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Mail, Phone, Inbox, AlertTriangle } from 'lucide-react'
+import { Mail, Phone, Inbox, AlertTriangle, Pencil } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Card } from '@/components/ui/Card'
 import { cn, formatBRL, relativeDays } from '@/lib/utils'
@@ -7,6 +7,7 @@ import type { ClientRow } from '@/hooks/useClients'
 
 interface ClientCardProps {
   row: ClientRow
+  onEdit?: (row: ClientRow) => void
 }
 
 const STATUS_CLS: Record<string, string> = {
@@ -23,13 +24,28 @@ const STATUS_LABEL: Record<string, string> = {
   off_track: 'fora',
 }
 
-export function ClientCard({ row }: ClientCardProps) {
+export function ClientCard({ row, onEdit }: ClientCardProps) {
   const { client } = row
   const inactive = !client.is_active
   const offTrack = row.projects.some((p) => p.health === 'off_track')
 
   return (
-    <Card className={cn('flex flex-col gap-4', inactive && 'opacity-60')}>
+    <Card
+      className={cn(
+        'flex flex-col gap-4 relative group',
+        inactive && 'opacity-60'
+      )}
+    >
+      {onEdit && (
+        <button
+          type="button"
+          onClick={() => onEdit(row)}
+          className="absolute top-2 right-2 w-7 h-7 rounded-md bg-panel border border-border text-muted hover:text-brand hover:border-brand/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+          title="Editar cliente"
+        >
+          <Pencil className="w-3 h-3" />
+        </button>
+      )}
       <div className="flex items-start gap-3">
         <Avatar name={client.name} size="lg" />
         <div className="flex-1 min-w-0">

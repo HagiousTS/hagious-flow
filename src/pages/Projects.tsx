@@ -5,6 +5,7 @@ import { useWorkspace } from '@/hooks/useWorkspace'
 import { useProjects } from '@/hooks/useProjects'
 import { ProjectListCard } from '@/components/projects/ProjectListCard'
 import { NewProjectDialog } from '@/components/projects/NewProjectDialog'
+import { ProjectDrawer } from '@/components/projects/ProjectDrawer'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -38,6 +39,7 @@ export function ProjectsPage() {
   const [healthFilter, setHealthFilter] = useState<HealthFilter>('all')
   const [search, setSearch] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [drawerProjectId, setDrawerProjectId] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
     if (!data) return []
@@ -191,7 +193,11 @@ export function ProjectsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((p) => (
-            <ProjectListCard key={p.id} project={p} />
+            <ProjectListCard
+              key={p.id}
+              project={p}
+              onEdit={(proj) => setDrawerProjectId(proj.id)}
+            />
           ))}
         </div>
       )}
@@ -201,6 +207,14 @@ export function ProjectsPage() {
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         onCreated={(id) => navigate(`/projetos/${id}`)}
+      />
+
+      <ProjectDrawer
+        project={
+          data.projects.find((p) => p.id === drawerProjectId) ?? null
+        }
+        workspaceId={workspace.id}
+        onClose={() => setDrawerProjectId(null)}
       />
     </div>
   )

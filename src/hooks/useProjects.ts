@@ -276,3 +276,77 @@ export function useCreateProject() {
     },
   })
 }
+
+export interface UpdateProjectArgs {
+  workspaceId: string
+  projectId: string
+  patch: {
+    code?: string
+    name?: string
+    description?: string | null
+    client_id?: string | null
+    project_type?: string
+    status?: ProjectStatus
+    priority?: Priority | null
+    health?: 'on_track' | 'at_risk' | 'off_track' | 'ahead' | null
+    start_date?: string | null
+    due_date?: string | null
+    estimated_hours?: number | null
+    budget_amount?: number | null
+    color_hex?: string | null
+    progress_percent?: number | null
+    sponsor_name?: string | null
+    sponsor_email?: string | null
+  }
+}
+
+export function useUpdateProject() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (args: UpdateProjectArgs) => {
+      const payload: Record<string, unknown> = { ...args.patch }
+      if (typeof payload.code === 'string') {
+        payload.code = (payload.code as string).trim().toUpperCase()
+      }
+      if (typeof payload.name === 'string') {
+        payload.name = (payload.name as string).trim()
+      }
+      const { data, error } = await supabase
+        .from('projects')
+        .update(payload)
+        .eq('id', args.projectId)
+        .select('*')
+        .single()
+      if (error) throw error
+      return data as Project
+    },
+    onSuccess: (proj) => {
+      qc.invalidateQueries({
+        queryKey: ['projects', 'list', proj.workspace_id],
+      })
+      qc.invalidateQueries({ queryKey: ['project', proj.workspace_id] })
+      qc.invalidateQueries({ queryKey: ['dashboard', proj.workspace_id] })
+      qc.invalidateQueries({ queryKey: ['capacity', proj.workspace_id] })
+      qc.invalidateQueries({ queryKey: ['reports', proj.workspace_id] })
+      qc.invalidateQueries({ queryKey: ['clients', proj.workspace_id] })
+    },
+  })
+}
+
+export function useDeleteProject(workspaceId: string | undefined) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (projectId: string) => {
+      const { error } = await supabase
+        .from('projects')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', projectId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['projects', 'list', workspaceId] })
+      qc.invalidateQueries({ queryKey: ['dashboard', workspaceId] })
+      qc.invalidateQueries({ queryKey: ['clients', workspaceId] })
+    },
+  })
+}

@@ -5,6 +5,7 @@ import {
   ListChecks,
   AlertOctagon,
   Building2,
+  Pencil,
 } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { cn, formatBRL, formatDateShort, relativeDays } from '@/lib/utils'
@@ -12,6 +13,7 @@ import type { ProjectListItem } from '@/hooks/useProjects'
 
 interface ProjectListCardProps {
   project: ProjectListItem
+  onEdit?: (project: ProjectListItem) => void
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -50,13 +52,27 @@ const PRIORITY_CLS: Record<string, string> = {
   P3: 'chip-priority-low',
 }
 
-export function ProjectListCard({ project }: ProjectListCardProps) {
+export function ProjectListCard({ project, onEdit }: ProjectListCardProps) {
   const progress = project.progressPercent ?? 0
   const accent = project.colorHex ?? undefined
 
   return (
     <Link to={`/projetos/${project.id}`} className="block group">
-      <Card className="hover:border-brand/40 transition cursor-pointer h-full flex flex-col gap-3">
+      <Card className="hover:border-brand/40 transition cursor-pointer h-full flex flex-col gap-3 relative">
+        {onEdit && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onEdit(project)
+            }}
+            className="absolute top-2 right-2 w-7 h-7 rounded-md bg-panel border border-border text-muted hover:text-brand hover:border-brand/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+            title="Editar projeto"
+          >
+            <Pencil className="w-3 h-3" />
+          </button>
+        )}
         <div className="flex items-start gap-3">
           <div
             className="w-1 self-stretch rounded-full shrink-0"

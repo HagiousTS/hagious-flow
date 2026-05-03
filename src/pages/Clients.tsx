@@ -4,6 +4,7 @@ import { useWorkspace } from '@/hooks/useWorkspace'
 import { useClients } from '@/hooks/useClients'
 import { ClientsKpiBar } from '@/components/clients/ClientsKpiBar'
 import { ClientCard } from '@/components/clients/ClientCard'
+import { ClientDrawer } from '@/components/clients/ClientDrawer'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { cn } from '@/lib/utils'
@@ -22,6 +23,7 @@ export function ClientsPage() {
   const { data, isLoading, isError, error } = useClients(workspace?.id)
   const [filter, setFilter] = useState<ClientFilter>('all')
   const [search, setSearch] = useState('')
+  const [drawerClientId, setDrawerClientId] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
     if (!data) return []
@@ -146,10 +148,20 @@ export function ClientsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((r) => (
-            <ClientCard key={r.client.id} row={r} />
+            <ClientCard
+              key={r.client.id}
+              row={r}
+              onEdit={(row) => setDrawerClientId(row.client.id)}
+            />
           ))}
         </div>
       )}
+
+      <ClientDrawer
+        row={data.rows.find((r) => r.client.id === drawerClientId) ?? null}
+        workspaceId={workspace.id}
+        onClose={() => setDrawerClientId(null)}
+      />
     </div>
   )
 }
