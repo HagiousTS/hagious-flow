@@ -1,7 +1,7 @@
 # Hagious Flow · Contexto do Projeto
 
 > **Documento de handoff** — leitura obrigatória antes de qualquer mudança no código.
-> Última atualização: 02/mai/2026 · v0.3 (MVP completo + automação operacional + IA com tool calls)
+> Última atualização: 03/mai/2026 · v0.4 (CRUD pleno + IA com 8 tools + auditoria + notif page + member detail)
 > Fundador: Gusttavo Fróes Lopes · Hagious Tecnologia · Uberlândia/MG
 > Deploy: https://hagious-flow-lopes.netlify.app
 
@@ -208,12 +208,12 @@ chore: <descrição>         # tarefas auxiliares
 
 ---
 
-## 6. ✅ O que está PRONTO (estado atual v0.3)
+## 6. ✅ O que está PRONTO (estado atual v0.4)
 
 ### Banco de dados (100%)
 - ✅ Projeto Supabase provisionado (`lbalifwjrdssoolactbd`)
 - ✅ Região: South America (São Paulo)
-- ✅ 36 tabelas + 2 views via 11 migrations
+- ✅ 36 tabelas + 2 views via 13 migrations
 - ✅ RLS ativado em todas as tabelas com policies por workspace
 - ✅ Triggers de `updated_at` automáticos
 - ✅ Trigger `handle_new_user()` cria profile automaticamente no signup
@@ -222,20 +222,21 @@ chore: <descrição>         # tarefas auxiliares
   - `bootstrap_workspace`: onboarding self-service, cria workspace + member(owner) atomicamente
   - `create_workspace_invitation`, `accept_workspace_invitation`, `preview_workspace_invitation`: convites por link
   - `update_workspace`, `archive_workspace`: edição/danger zone (owner-only)
-  - `apply_ai_action`, `reject_ai_action`: aplicação de tool calls da IA com auditoria
-- ✅ Seeds enriquecidos (Sankhya ABC) — 1 workspace, 6 users, 3 clientes, 4 projetos, 16 tasks (4 done, 1 review, 1 blocked), 9 OS variados, 28 time_entries em 3 semanas, 8 notifications, 4 ai_insights, member_skills denso
+  - `apply_ai_action`, `reject_ai_action`: aplicação de 8 tool calls da IA com auditoria automática (insere em activity_log)
+- ✅ Seeds enriquecidos (Sankhya ABC) — 1 workspace, 6 users, 3 clientes, 4 projetos, 16+ tasks (4 done, 1 review, 1 blocked), 9 OS variados, 28+ time_entries em 3 semanas, 8 notifications, 4 ai_insights, member_skills denso, 8 entries em activity_log
 - ✅ View `v_project_health` corrigida (bug de multiplicação no JOIN)
 
 ### Edge functions
-- ✅ `ia-coo-chat` v2 (verify_jwt) — backend do IA COO
+- ✅ `ia-coo-chat` v3 (verify_jwt) — backend do IA COO
   - Anthropic Messages API (claude-haiku-4-5) se `ANTHROPIC_API_KEY` setada
   - OpenAI Chat Completions (gpt-4o-mini) se `OPENAI_API_KEY` setada
   - Mock determinístico se nenhuma estiver definida (fallback gracioso)
-  - **Tool calls**: 4 ferramentas (`create_task`, `mark_task_blocked`, `update_task_priority`, `escalate_os`) propostas pelo modelo e gravadas em `ai_actions` com `status='proposed'`, `requires_approval=true`. Execução real só após Aprovar humano via UI.
-  - Injeta contexto do workspace (projetos, membros, tasks, OS) com UUIDs reais no system prompt pra modelo preencher payloads corretos
+  - **8 Tool calls**: `create_task`, `mark_task_blocked`, `update_task_priority`, `escalate_os`, `complete_task`, `reassign_task`, `create_risk`, `accept_os` — todas propostas pelo modelo e gravadas em `ai_actions` com `status='proposed'`, `requires_approval=true`. Execução real só após Aprovar humano via UI.
+  - Injeta contexto do workspace (projetos, membros, tasks, OS, riscos) com UUIDs reais no system prompt
   - Persiste user msg + assistant msg em ai_messages com model_used, tokens, latency, tool_calls_json (referências aos action_ids)
+  - apply_ai_action grava activity_log automaticamente
 
-### Frontend (v0.3 — todas as 11 telas reais + automação operacional)
+### Frontend (v0.4 — CRUD pleno em 4 entidades + 13 páginas reais)
 
 **Auth + onboarding + convites**
 - ✅ Login (Supabase Auth) com link pra signup
@@ -245,27 +246,31 @@ chore: <descrição>         # tarefas auxiliares
 - ✅ Convidar membros: dialog na página Equipe gera link `/aceitar-convite/:token` (clipboard) válido 14 dias
 - ✅ Página `/aceitar-convite/:token`: 6 estados (sem auth, validando, expirado, mismatch de email, sucesso, erro). Login/Signup respeitam token pendente em localStorage.
 
-**Páginas conectadas ao banco**
+**Páginas conectadas ao banco (13)**
 - ✅ Dashboard executivo (KPIs + IA briefing + projetos + equipe + riscos)
-- ✅ Projetos (lista + filtros status/health + criação via dialog)
-- ✅ Projeto Detalhe (Gantt + tasks + riscos + atividade + equipe + TaskDrawer no clique da linha)
-- ✅ Tasks kanban (drag & drop + clique abre TaskDrawer com edição completa: título, descrição, status, prioridade, responsável, prazo, horas estim., bloqueio com motivo, concluir, soft-delete)
+- ✅ Projetos (lista + filtros + criação via dialog + edição inline via ProjectDrawer com 14 campos + soft delete)
+- ✅ Projeto Detalhe (Gantt + tasks + riscos + atividade + equipe + TaskDrawer + ProjectTimeEntries com lista/edit/add manual de horas)
+- ✅ Tasks kanban (drag & drop + TaskDrawer completo + comentários com menções @user que disparam notification realtime + TaskTimerButton)
 - ✅ Inbox de OS (triagem + DoR + accept/refine/reject)
 - ✅ Capacity Planner (heatmap semanal + skill matrix + saturação)
 - ✅ Modo Foco (sessão ativa + métricas + fila de acionamentos)
-- ✅ Equipe (cards de membro + skills + projetos ativos + filtros + botão Convidar)
-- ✅ Clientes (CRM lite + projetos linkados + OS por cliente)
-- ✅ IA COO fullscreen (chat persistido + tool calls com aprovação humana)
-- ✅ Relatórios (KPIs executivos + 6 breakdowns + filtros temporais 7d/30d/90d/MTD/custom + export CSV com BOM UTF-8)
+- ✅ Equipe (cards filtráveis + busca + botão Convidar). Card linka pra `/equipe/:id`
+- ✅ **Member Detalhe** `/equipe/:id` (KPIs 30d, tasks abertas linkadas, últimos 30 registros de horas, skills ordenadas por proficiência, projetos ativos com role/alocação)
+- ✅ Clientes (CRM lite + edição inline via ClientDrawer + criação via NewClientDialog)
+- ✅ IA COO fullscreen (chat persistido + 8 tool calls com aprovação humana via ActionProposal cards)
+- ✅ Relatórios (KPIs executivos + 6 breakdowns + filtros temporais + export CSV com BOM UTF-8)
 - ✅ Configurações `/configuracoes` (rename, slug, setor, plano, seats; danger zone arquiva workspace)
+- ✅ Notificações `/notificacoes` (lista 200 últimas + filtros lido/tipo + bulk select/marcar/excluir)
+- ✅ Auditoria `/auditoria` (activity_log com filtros actor/action/entity, expand pra ver diff_json+metadata_json)
 
 **Infra de produto**
 - ✅ Sistema de 3 temas com persistência em localStorage + ThemeSwitcher
 - ✅ Workspace switcher real com Zustand persist + invalidação de queries no troco
 - ✅ Notificações realtime via Supabase Realtime (canal por user_id, badge dinâmico)
 - ✅ Sidebar com nav 2 seções (Operação, Inteligência) + ícones separados Settings/LogOut
-- ✅ **Time tracking**: TaskTimerButton (▶/⏹) em TaskCard e ProjectTasksList; TimerBar flutuante global mostra cronômetro live; stop cria time_entry no banco. Estado persiste via Zustand persist (sobrevive reload).
-- ✅ **Command Palette** (⌘K / Ctrl K): busca debounced em projects, tasks, clients e workspace_members. Navegação ↑↓ + Enter, ESC fecha. Botão no Topbar substitui input fake.
+- ✅ **Time tracking**: TaskTimerButton (▶/⏹) em TaskCard e ProjectTasksList; TimerBar flutuante global; stop cria time_entry. Lista/edit/add manual no ProjectDetail.
+- ✅ **Command Palette** (⌘K / Ctrl K): busca debounced em 4 entidades + seção "Ações rápidas" (5 atalhos pra criar projeto/cliente/convidar/etc) + suporte a query começando com `>` ou `/` pra filtrar só ações. Pages auto-abrem dialogs via `?new=1`/`?invite=1`.
+- ✅ **Comentários em tasks** com menções `@user` (parser tolerante a diacríticos), notification realtime pro mencionado, soft delete
 
 **Build + qualidade**
 - ✅ Build com lazy load por rota + manualChunks (carga inicial ~125KB gzip, chunks de página 10–25KB)
@@ -284,33 +289,25 @@ chore: <descrição>         # tarefas auxiliares
 
 ## 7. ⏳ O que está PENDENTE (backlog priorizado)
 
-### 🔥 Próximas iniciativas de produto
+### 🔥 Próximas iniciativas de produto (faltam pra v1)
 
 | # | Item | Esforço | Por quê |
 |---|---|---|---|
-| 1 | **Edição de projetos e clientes** com drawer (hoje só tasks têm) | M | Closure do ciclo CRUD pleno. Projetos/clientes ainda exigem ir no banco |
-| 2 | **Comentários em tasks** + menções `@user` (notificação) | M | Conversa intra-task evita migração pro WhatsApp/Slack |
-| 3 | **Time tracking enriquecido**: editar/excluir entries, batch sem timer ("registrar 2h ontem") | M | Hoje só entrada via timer; consultorias precisam ajustar a posteriori |
-| 4 | **Landing page de vendas** + captura de beta | M | Aquisição |
-| 5 | **Mais tool calls no IA COO** (resolve_risk, mark_os_accepted, reassign_task, focus_session_propose) | M | Hoje 4 ações; cobertura ainda parcial dos verbos do produto |
+| 1 | **Landing page de vendas** + captura de beta | M | Aquisição. Sem isso, leads dependem de você puxar manual |
+| 2 | **Billing real** (Stripe + cobrança por seat conforme plano) | L | Hoje plano é só metadata; sem cobrar não fecha venda |
+| 3 | **Webhook handler** para integrar Sankhya OS via API (recebe OS automaticamente) | L | Diferencial #1 da Inbox: hoje OS são manuais; cliente quer automação |
+| 4 | **Dashboard customizável** por papel (manager × dev × QA) | L | Cada papel quer ver coisa diferente; hoje todos veem o mesmo |
+| 5 | **Backend Spring Boot** para rotas críticas (auditoria, billing, integrações pesadas) | XL | Edge functions servem o MVP, mas escala/queue jobs precisa backend |
 
-### 🟡 Operação e UX
-
-| # | Item | Esforço |
-|---|---|---|
-| 6 | **Dashboard customizável** por papel (manager × dev × QA) | L |
-| 7 | **Páginas Project / Client / Member detalhe completas** (rotas próprias com edição inline) | M |
-| 8 | **Quick-create global** no Cmd+K (criar task/projeto direto da palette) | S |
-| 9 | **Notificações: marcar individual + ver tudo** (página dedicada) | M |
-| 10 | **Audit log UI** lendo activity_log table | M |
-
-### 🔵 Backend e governança
+### 🟡 Operação e UX (polish)
 
 | # | Item | Esforço |
 |---|---|---|
-| 11 | **Backend Spring Boot** para rotas críticas (auditoria, billing) | XL |
-| 12 | **Webhook handler** para integrar Sankhya OS via API | L |
-| 13 | **Billing real** (Stripe + cobrança por seat conforme plano) | L |
+| 6 | **Triggers de auditoria automáticos** em projects/tasks/risks (hoje só apply_ai_action loga) | M |
+| 7 | **Comentários em projetos** (já temos em tasks) | S |
+| 8 | **Anexos em tasks/comentários** via Supabase Storage | M |
+| 9 | **Edição de comentários** (hoje só create + delete) | S |
+| 10 | **Filtros temporais em outros relatórios** (Capacity, Team) | M |
 
 ### 🟣 Backlog técnico (dívida e infra)
 
@@ -336,7 +333,7 @@ chore: <descrição>         # tarefas auxiliares
 | Plano | Free |
 | Região | São Paulo |
 
-### Migrations aplicadas (11)
+### Migrations aplicadas (13)
 
 | Versão | Nome | O que faz |
 |---|---|---|
@@ -350,7 +347,9 @@ chore: <descrição>         # tarefas auxiliares
 | 20260502xxx | 008_enrich_sankhya_seeds | Seeds enriquecidos (notifications, time_entries, OS, AI insights, member_skills) — idempotente |
 | 20260502xxx | 009_workspace_invitations | Tabela + RLS + 3 RPCs (create/accept/preview) para convites por link |
 | 20260502xxx | 010_workspace_admin_fns | RPCs update_workspace + archive_workspace + ALTER workspaces ADD archived_at |
-| 20260502xxx | 011_ai_action_rpcs | RPCs apply_ai_action + reject_ai_action (executa tool calls da IA com auditoria) |
+| 20260502xxx | 011_ai_action_rpcs | RPCs apply_ai_action + reject_ai_action (4 tools iniciais) |
+| 20260503xxx | 012_more_ai_tools | apply_ai_action estende para 8 tools (complete_task, reassign_task, create_risk, accept_os) |
+| 20260503xxx | 013_activity_log_seeds_and_apply_action_logger | Seeds em activity_log + apply_ai_action grava entry automaticamente |
 
 ### Cenário fictício "Sankhya ABC"
 
