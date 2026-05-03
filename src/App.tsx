@@ -8,6 +8,7 @@ import { LoginPage } from '@/pages/Login'
 import { SignupPage } from '@/pages/Signup'
 import { OnboardingPage } from '@/pages/Onboarding'
 import { AcceptInvitationPage } from '@/pages/AcceptInvitation'
+import { LandingPage } from '@/pages/Landing'
 import { TimerBar } from '@/components/timer/TimerBar'
 import { CommandPaletteHost } from '@/components/search/CommandPaletteHost'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -91,6 +92,7 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route

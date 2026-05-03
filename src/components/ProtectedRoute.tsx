@@ -19,6 +19,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!user) {
+    // Visita à raiz sem auth: manda pra landing pública.
+    // Outras rotas protegidas: login com returnTo.
+    if (location.pathname === '/') {
+      return <Navigate to="/landing" replace />
+    }
     return <Navigate to="/login" state={{ from: location.pathname }} replace />
   }
 
