@@ -58,6 +58,9 @@ const NotificationsPage = lazy(() =>
 const AuditPage = lazy(() =>
   import('@/pages/Audit').then((m) => ({ default: m.AuditPage }))
 )
+const MemberDetailPage = lazy(() =>
+  import('@/pages/MemberDetail').then((m) => ({ default: m.MemberDetailPage }))
+)
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -172,6 +175,14 @@ export function App() {
               element={
                 <Suspense fallback={<PageFallback />}>
                   <TeamPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/equipe/:id"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <MemberDetailPage />
                 </Suspense>
               }
             />

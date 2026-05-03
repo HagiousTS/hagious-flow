@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Mail, Target, AlertOctagon, Briefcase } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Card } from '@/components/ui/Card'
@@ -52,8 +53,14 @@ export function MemberCard({ member }: MemberCardProps) {
   const inactive = !member.isActive
 
   return (
-    <Card className={cn('flex flex-col gap-4', inactive && 'opacity-60')}>
-      <div className="flex items-start gap-3">
+    <Link to={`/equipe/${member.id}`} className="block group">
+      <Card
+        className={cn(
+          'flex flex-col gap-4 hover:border-brand/40 transition cursor-pointer h-full',
+          inactive && 'opacity-60'
+        )}
+      >
+        <div className="flex items-start gap-3">
         <Avatar name={member.fullName} src={member.avatarUrl} size="lg" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -195,6 +202,7 @@ export function MemberCard({ member }: MemberCardProps) {
           </div>
         </div>
       )}
-    </Card>
+      </Card>
+    </Link>
   )
 }
