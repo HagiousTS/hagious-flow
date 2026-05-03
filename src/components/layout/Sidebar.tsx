@@ -12,6 +12,7 @@ import {
   Inbox,
   Calendar,
   Target,
+  ScrollText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/useAuth'
@@ -39,6 +40,7 @@ const operationalNav: NavItem[] = [
 const intelligenceNav: NavItem[] = [
   { to: '/ia-coo', label: 'IA COO', icon: Sparkles },
   { to: '/relatorios', label: 'Relatórios', icon: BarChart3 },
+  { to: '/auditoria', label: 'Auditoria', icon: ScrollText },
 ]
 
 function NavSection({ title, items }: { title: string; items: NavItem[] }) {

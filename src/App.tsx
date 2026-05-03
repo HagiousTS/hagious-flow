@@ -55,6 +55,9 @@ const NotificationsPage = lazy(() =>
     default: m.NotificationsPage,
   }))
 )
+const AuditPage = lazy(() =>
+  import('@/pages/Audit').then((m) => ({ default: m.AuditPage }))
+)
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -209,6 +212,14 @@ export function App() {
               element={
                 <Suspense fallback={<PageFallback />}>
                   <NotificationsPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/auditoria"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <AuditPage />
                 </Suspense>
               }
             />
