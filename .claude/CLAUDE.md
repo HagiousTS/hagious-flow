@@ -213,7 +213,7 @@ chore: <descrição>         # tarefas auxiliares
 ### Banco de dados (100%)
 - ✅ Projeto Supabase provisionado (`lbalifwjrdssoolactbd`)
 - ✅ Região: South America (São Paulo)
-- ✅ 36 tabelas + 2 views via 13 migrations
+- ✅ 36 tabelas + 2 views via 14 migrations
 - ✅ RLS ativado em todas as tabelas com policies por workspace
 - ✅ Triggers de `updated_at` automáticos
 - ✅ Trigger `handle_new_user()` cria profile automaticamente no signup
@@ -303,8 +303,7 @@ chore: <descrição>         # tarefas auxiliares
 
 | # | Item | Esforço |
 |---|---|---|
-| 6 | **Triggers de auditoria automáticos** em projects/tasks/risks (hoje só apply_ai_action loga) | M |
-| 7 | **Comentários em projetos** (já temos em tasks) | S |
+| 6 | **Comentários em projetos** (já temos em tasks) | S |
 | 8 | **Anexos em tasks/comentários** via Supabase Storage | M |
 | 9 | **Edição de comentários** (hoje só create + delete) | S |
 | 10 | **Filtros temporais em outros relatórios** (Capacity, Team) | M |
@@ -333,7 +332,7 @@ chore: <descrição>         # tarefas auxiliares
 | Plano | Free |
 | Região | São Paulo |
 
-### Migrations aplicadas (13)
+### Migrations aplicadas (14)
 
 | Versão | Nome | O que faz |
 |---|---|---|
@@ -350,6 +349,7 @@ chore: <descrição>         # tarefas auxiliares
 | 20260502xxx | 011_ai_action_rpcs | RPCs apply_ai_action + reject_ai_action (4 tools iniciais) |
 | 20260503xxx | 012_more_ai_tools | apply_ai_action estende para 8 tools (complete_task, reassign_task, create_risk, accept_os) |
 | 20260503xxx | 013_activity_log_seeds_and_apply_action_logger | Seeds em activity_log + apply_ai_action grava entry automaticamente |
+| 20260503xxx | 014_audit_triggers | Trigger log_activity_change em UPDATE de projects/tasks/risks/clients/workspaces/workspace_members. Detecta archive (workspaces.archived_at), soft delete (deleted_at), demais mudanças viram action='update'. Diff é jsonb com {col: {old, new}} pros campos alterados (ignora updated_at e jsons grandes). actor_type='user' se auth.uid() presente, senão 'system'. |
 
 ### Cenário fictício "Sankhya ABC"
 
