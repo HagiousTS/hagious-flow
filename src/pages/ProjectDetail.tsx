@@ -11,6 +11,7 @@ import { ProjectTeamPanel } from '@/components/project/ProjectTeamPanel'
 import { ProjectRisks } from '@/components/project/ProjectRisks'
 import { ProjectActivity } from '@/components/project/ProjectActivity'
 import { TaskDrawer } from '@/components/tasks/TaskDrawer'
+import { ProjectTimeEntries } from '@/components/project/ProjectTimeEntries'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
 
@@ -112,6 +113,16 @@ export function ProjectDetailPage() {
             projectCode={project.code}
             projectId={project.id}
             onTaskClick={(t) => setDrawerTaskId(t.id)}
+          />
+          <ProjectTimeEntries
+            workspaceId={workspace.id}
+            projectId={project.id}
+            members={members}
+            tasks={tasks.map((t) => ({
+              id: t.id,
+              title: t.title,
+              sequence_number: t.sequence_number,
+            }))}
           />
         </div>
         <aside className="lg:col-span-4 space-y-6">

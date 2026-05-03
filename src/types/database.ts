@@ -194,6 +194,11 @@ export type TaskComment = Row<'task_comments'> & {
   author?: WorkspaceMember | null
 }
 
+export type TimeEntry = Row<'time_entries'> & {
+  member?: WorkspaceMember | null
+  task?: Task | null
+}
+
 export type WorkspaceInvitationRole = 'manager' | 'member' | 'viewer'
 
 export type WorkspaceInvitation = Omit<Row<'workspace_invitations'>, 'role'> & {
