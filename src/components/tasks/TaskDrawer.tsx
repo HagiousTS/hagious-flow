@@ -16,6 +16,8 @@ import {
   type TaskStatus,
 } from '@/hooks/useTasksBoard'
 import { TaskTimerButton } from '@/components/timer/TaskTimerButton'
+import { TaskComments } from '@/components/tasks/TaskComments'
+import { useCurrentMember } from '@/hooks/useCurrentMember'
 import { cn } from '@/lib/utils'
 
 interface TaskDrawerProps {
@@ -41,6 +43,7 @@ export function TaskDrawer({
 }: TaskDrawerProps) {
   const update = useUpdateTask(workspaceId)
   const del = useDeleteTask(workspaceId)
+  const { data: currentMember } = useCurrentMember(workspaceId)
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -309,6 +312,19 @@ export function TaskDrawer({
               {task.estimated_hours != null &&
                 ` / estimadas ${Number(task.estimated_hours)}h`}
             </div>
+          )}
+
+          {workspaceId && (
+            <TaskComments
+              taskId={task.id}
+              taskTitle={task.title}
+              projectHref={
+                project ? `/projetos/${project.id}` : '/tasks'
+              }
+              workspaceId={workspaceId}
+              currentMemberId={currentMember?.id ?? null}
+              members={members}
+            />
           )}
 
           {error && (
