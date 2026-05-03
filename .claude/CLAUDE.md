@@ -1,7 +1,7 @@
 # Hagious Flow · Contexto do Projeto
 
 > **Documento de handoff** — leitura obrigatória antes de qualquer mudança no código.
-> Última atualização: 02/mai/2026 · v0.2 (MVP completo, pré-beta)
+> Última atualização: 02/mai/2026 · v0.3 (MVP completo + automação operacional + IA com tool calls)
 > Fundador: Gusttavo Fróes Lopes · Hagious Tecnologia · Uberlândia/MG
 > Deploy: https://hagious-flow-lopes.netlify.app
 
@@ -208,60 +208,71 @@ chore: <descrição>         # tarefas auxiliares
 
 ---
 
-## 6. ✅ O que está PRONTO (estado atual v0.2)
+## 6. ✅ O que está PRONTO (estado atual v0.3)
 
 ### Banco de dados (100%)
 - ✅ Projeto Supabase provisionado (`lbalifwjrdssoolactbd`)
 - ✅ Região: South America (São Paulo)
-- ✅ 35 tabelas + 2 views aplicadas via 7 migrations
+- ✅ 36 tabelas + 2 views via 11 migrations
 - ✅ RLS ativado em todas as tabelas com policies por workspace
 - ✅ Triggers de `updated_at` automáticos
 - ✅ Trigger `handle_new_user()` cria profile automaticamente no signup
 - ✅ Helper `is_workspace_member(workspace_id)` para policies
-- ✅ Function `bootstrap_workspace(name, slug, ...)` (security definer) cria workspace + workspace_member(role=owner) em transação atômica via RPC
-- ✅ Seeds completos do cenário Sankhya ABC (1 workspace + 6 users + 3 clientes + 4 projetos + 11 tasks + 3 OS na inbox + 5 itens na fila)
+- ✅ RPCs (security definer) para fluxos críticos:
+  - `bootstrap_workspace`: onboarding self-service, cria workspace + member(owner) atomicamente
+  - `create_workspace_invitation`, `accept_workspace_invitation`, `preview_workspace_invitation`: convites por link
+  - `update_workspace`, `archive_workspace`: edição/danger zone (owner-only)
+  - `apply_ai_action`, `reject_ai_action`: aplicação de tool calls da IA com auditoria
+- ✅ Seeds enriquecidos (Sankhya ABC) — 1 workspace, 6 users, 3 clientes, 4 projetos, 16 tasks (4 done, 1 review, 1 blocked), 9 OS variados, 28 time_entries em 3 semanas, 8 notifications, 4 ai_insights, member_skills denso
 - ✅ View `v_project_health` corrigida (bug de multiplicação no JOIN)
 
 ### Edge functions
-- ✅ `ia-coo-chat` (verify_jwt) — backend do IA COO
+- ✅ `ia-coo-chat` v2 (verify_jwt) — backend do IA COO
   - Anthropic Messages API (claude-haiku-4-5) se `ANTHROPIC_API_KEY` setada
   - OpenAI Chat Completions (gpt-4o-mini) se `OPENAI_API_KEY` setada
   - Mock determinístico se nenhuma estiver definida (fallback gracioso)
-  - Persiste user msg + assistant msg em ai_messages com model_used, tokens, latency
+  - **Tool calls**: 4 ferramentas (`create_task`, `mark_task_blocked`, `update_task_priority`, `escalate_os`) propostas pelo modelo e gravadas em `ai_actions` com `status='proposed'`, `requires_approval=true`. Execução real só após Aprovar humano via UI.
+  - Injeta contexto do workspace (projetos, membros, tasks, OS) com UUIDs reais no system prompt pra modelo preencher payloads corretos
+  - Persiste user msg + assistant msg em ai_messages com model_used, tokens, latency, tool_calls_json (referências aos action_ids)
 
-### Frontend (v0.2 — todas as 11 telas reais)
+### Frontend (v0.3 — todas as 11 telas reais + automação operacional)
 
-**Auth + onboarding**
-- ✅ Login (Supabase Auth)
+**Auth + onboarding + convites**
+- ✅ Login (Supabase Auth) com link pra signup
 - ✅ Signup self-service (`/signup`) com email confirmation handling
 - ✅ Onboarding wizard (`/onboarding`) — cria workspace, escolhe plano, slug auto-gerado
 - ✅ AppShell redireciona pra `/onboarding` se user sem workspace
+- ✅ Convidar membros: dialog na página Equipe gera link `/aceitar-convite/:token` (clipboard) válido 14 dias
+- ✅ Página `/aceitar-convite/:token`: 6 estados (sem auth, validando, expirado, mismatch de email, sucesso, erro). Login/Signup respeitam token pendente em localStorage.
 
 **Páginas conectadas ao banco**
 - ✅ Dashboard executivo (KPIs + IA briefing + projetos + equipe + riscos)
 - ✅ Projetos (lista + filtros status/health + criação via dialog)
-- ✅ Projeto Detalhe (Gantt + tasks + riscos + atividade + equipe)
-- ✅ Tasks kanban (drag & drop conectado ao banco)
+- ✅ Projeto Detalhe (Gantt + tasks + riscos + atividade + equipe + TaskDrawer no clique da linha)
+- ✅ Tasks kanban (drag & drop + clique abre TaskDrawer com edição completa: título, descrição, status, prioridade, responsável, prazo, horas estim., bloqueio com motivo, concluir, soft-delete)
 - ✅ Inbox de OS (triagem + DoR + accept/refine/reject)
 - ✅ Capacity Planner (heatmap semanal + skill matrix + saturação)
 - ✅ Modo Foco (sessão ativa + métricas + fila de acionamentos)
-- ✅ Equipe (cards de membro + skills + projetos ativos + filtros)
+- ✅ Equipe (cards de membro + skills + projetos ativos + filtros + botão Convidar)
 - ✅ Clientes (CRM lite + projetos linkados + OS por cliente)
-- ✅ IA COO fullscreen (chat persistido, edge function multi-provider)
-- ✅ Relatórios (KPIs executivos + 5 breakdowns: receita por cliente, horas por projeto, carga por pessoa, bloqueios, top skills)
+- ✅ IA COO fullscreen (chat persistido + tool calls com aprovação humana)
+- ✅ Relatórios (KPIs executivos + 6 breakdowns + filtros temporais 7d/30d/90d/MTD/custom + export CSV com BOM UTF-8)
+- ✅ Configurações `/configuracoes` (rename, slug, setor, plano, seats; danger zone arquiva workspace)
 
 **Infra de produto**
 - ✅ Sistema de 3 temas com persistência em localStorage + ThemeSwitcher
 - ✅ Workspace switcher real com Zustand persist + invalidação de queries no troco
 - ✅ Notificações realtime via Supabase Realtime (canal por user_id, badge dinâmico)
-- ✅ Sidebar com nav 2 seções (Operação, Inteligência)
+- ✅ Sidebar com nav 2 seções (Operação, Inteligência) + ícones separados Settings/LogOut
+- ✅ **Time tracking**: TaskTimerButton (▶/⏹) em TaskCard e ProjectTasksList; TimerBar flutuante global mostra cronômetro live; stop cria time_entry no banco. Estado persiste via Zustand persist (sobrevive reload).
+- ✅ **Command Palette** (⌘K / Ctrl K): busca debounced em projects, tasks, clients e workspace_members. Navegação ↑↓ + Enter, ESC fecha. Botão no Topbar substitui input fake.
 
 **Build + qualidade**
 - ✅ Build com lazy load por rota + manualChunks (carga inicial ~125KB gzip, chunks de página 10–25KB)
 - ✅ ESLint flat config v9 + Prettier (lint clean, max-warnings 0)
 - ✅ Vitest + 20 testes em src/lib/utils
 - ✅ Tipos auto-gerados via Supabase MCP (`src/types/database.generated.ts`)
-- ✅ Compat layer (`src/types/database.ts`) com unions estreitas e joined shapes
+- ✅ Compat layer (`src/types/database.ts`) com unions estreitas, joined shapes e tipos de IA (AIAction, AIActionType, AIActionStatus, AIToolCallProposal)
 - ✅ TypeScript compila sem erros, build de produção OK
 
 ### Deploy
@@ -277,21 +288,21 @@ chore: <descrição>         # tarefas auxiliares
 
 | # | Item | Esforço | Por quê |
 |---|---|---|---|
-| 1 | **Convidar membros** dentro de Equipe (envia magic link via Supabase Auth) | M | Hoje só owner via signup individual; bloqueio pra demos com time grande |
-| 2 | **Tool calls reais no IA COO** (criar task, escalar OS, ajustar prioridade) com aprovação humana | L | Vetor #1 de venda; mock atual só conversa, não age |
-| 3 | **Filtros temporais + export CSV/PDF** em Relatórios | M | Pedido recorrente em demos com gerentes |
-| 4 | **Time tracking** integrado (timer + entradas em time_entries) | L | Habilita faturamento por hora, vetor de venda pra consultorias |
-| 5 | **Landing page de vendas** + captura de beta | M | Aquisição |
+| 1 | **Edição de projetos e clientes** com drawer (hoje só tasks têm) | M | Closure do ciclo CRUD pleno. Projetos/clientes ainda exigem ir no banco |
+| 2 | **Comentários em tasks** + menções `@user` (notificação) | M | Conversa intra-task evita migração pro WhatsApp/Slack |
+| 3 | **Time tracking enriquecido**: editar/excluir entries, batch sem timer ("registrar 2h ontem") | M | Hoje só entrada via timer; consultorias precisam ajustar a posteriori |
+| 4 | **Landing page de vendas** + captura de beta | M | Aquisição |
+| 5 | **Mais tool calls no IA COO** (resolve_risk, mark_os_accepted, reassign_task, focus_session_propose) | M | Hoje 4 ações; cobertura ainda parcial dos verbos do produto |
 
 ### 🟡 Operação e UX
 
 | # | Item | Esforço |
 |---|---|---|
-| 6 | **Edição inline** de projetos, tasks e clientes (hoje só create) | M |
-| 7 | **Comentários em tasks** + menções (notificação) | M |
-| 8 | **Search global** no topbar (Cmd+K) | M |
-| 9 | **Página de configurações** do workspace (rename, plano, billing) | M |
-| 10 | **Dashboard customizável** por papel (manager × dev × QA) | L |
+| 6 | **Dashboard customizável** por papel (manager × dev × QA) | L |
+| 7 | **Páginas Project / Client / Member detalhe completas** (rotas próprias com edição inline) | M |
+| 8 | **Quick-create global** no Cmd+K (criar task/projeto direto da palette) | S |
+| 9 | **Notificações: marcar individual + ver tudo** (página dedicada) | M |
+| 10 | **Audit log UI** lendo activity_log table | M |
 
 ### 🔵 Backend e governança
 
@@ -299,7 +310,7 @@ chore: <descrição>         # tarefas auxiliares
 |---|---|---|
 | 11 | **Backend Spring Boot** para rotas críticas (auditoria, billing) | XL |
 | 12 | **Webhook handler** para integrar Sankhya OS via API | L |
-| 13 | **Audit log UI** lendo activity_log table | M |
+| 13 | **Billing real** (Stripe + cobrança por seat conforme plano) | L |
 
 ### 🟣 Backlog técnico (dívida e infra)
 
@@ -308,7 +319,8 @@ chore: <descrição>         # tarefas auxiliares
 - [ ] Storybook para os componentes ui/
 - [ ] Tracking de erros (Sentry ou equivalente)
 - [ ] Generic do `Database` no `createClient` + atualizar hooks pra remover casts (refactor amplo)
-- [ ] E2E tests (Playwright) cobrindo fluxos críticos: signup → onboarding → criar projeto
+- [ ] E2E tests (Playwright) cobrindo fluxos críticos: signup → onboarding → criar projeto → propor tool call → aprovar
+- [ ] Auto-aplicar migrations a partir de `supabase/migrations/*.sql` versionadas no repo (hoje migrations vivem só no banco via MCP)
 
 ---
 
@@ -324,7 +336,7 @@ chore: <descrição>         # tarefas auxiliares
 | Plano | Free |
 | Região | São Paulo |
 
-### Migrations aplicadas (7)
+### Migrations aplicadas (11)
 
 | Versão | Nome | O que faz |
 |---|---|---|
@@ -335,6 +347,10 @@ chore: <descrição>         # tarefas auxiliares
 | 20260429224844 | 005_seeds_sankhya_abc | Cenário Sankhya ABC completo |
 | 20260429224921 | fix_project_health_view | Correção de bug na view |
 | 20260502xxx | 007_bootstrap_workspace_fn | Function `bootstrap_workspace` (security definer) para onboarding self-service |
+| 20260502xxx | 008_enrich_sankhya_seeds | Seeds enriquecidos (notifications, time_entries, OS, AI insights, member_skills) — idempotente |
+| 20260502xxx | 009_workspace_invitations | Tabela + RLS + 3 RPCs (create/accept/preview) para convites por link |
+| 20260502xxx | 010_workspace_admin_fns | RPCs update_workspace + archive_workspace + ALTER workspaces ADD archived_at |
+| 20260502xxx | 011_ai_action_rpcs | RPCs apply_ai_action + reject_ai_action (executa tool calls da IA com auditoria) |
 
 ### Cenário fictício "Sankhya ABC"
 
