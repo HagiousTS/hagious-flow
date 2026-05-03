@@ -66,7 +66,7 @@ export interface CapacityData {
   skillMatrix: SkillMatrix
 }
 
-const WEEKS_AHEAD = 4
+const DEFAULT_WEEKS_AHEAD = 4
 
 function startOfIsoWeek(date: Date): Date {
   const d = new Date(date)
@@ -77,10 +77,10 @@ function startOfIsoWeek(date: Date): Date {
   return d
 }
 
-function buildWeeks(): WeekColumn[] {
+function buildWeeks(weeksAhead: number): WeekColumn[] {
   const start = startOfIsoWeek(new Date())
   const cols: WeekColumn[] = []
-  for (let i = 0; i < WEEKS_AHEAD; i += 1) {
+  for (let i = 0; i < weeksAhead; i += 1) {
     const ws = new Date(start)
     ws.setDate(ws.getDate() + i * 7)
     const we = new Date(ws)
@@ -141,12 +141,15 @@ interface OpenTaskRow {
   } | null
 }
 
-export function useCapacity(workspaceId: string | undefined) {
+export function useCapacity(
+  workspaceId: string | undefined,
+  weeksAhead: number = DEFAULT_WEEKS_AHEAD
+) {
   return useQuery<CapacityData>({
-    queryKey: ['capacity', workspaceId],
+    queryKey: ['capacity', workspaceId, weeksAhead],
     enabled: !!workspaceId,
     queryFn: async () => {
-      const weeks = buildWeeks()
+      const weeks = buildWeeks(weeksAhead)
       const rangeEnd = weeks[weeks.length - 1].weekEnd
 
       const [

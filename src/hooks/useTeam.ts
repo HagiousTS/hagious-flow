@@ -27,6 +27,8 @@ export interface TeamMember {
   blockedTasks: number
   openHours: number
   utilizationPct: number
+  hoursLoggedInRange: number
+  billableHoursInRange: number
   skills: TeamMemberSkill[]
   activeProjects: { id: string; code: string; name: string }[]
 }
@@ -40,11 +42,20 @@ export interface TeamKpis {
   averageHourlyRate: number
   topSkill: { name: string; count: number } | null
   blockedTotal: number
+  totalHoursInRange: number
+  totalBillableInRange: number
+  totalBillableRevenueInRange: number
+}
+
+export interface TeamRange {
+  from: string // YYYY-MM-DD
+  to: string // YYYY-MM-DD
 }
 
 export interface TeamData {
   members: TeamMember[]
   kpis: TeamKpis
+  range: TeamRange
 }
 
 interface MemberRow {
@@ -78,9 +89,16 @@ interface ProjectMemberRow {
   project: { id: string; code: string; name: string; status: string } | null
 }
 
-export function useTeam(workspaceId: string | undefined) {
+interface TimeEntryRow {
+  member_id: string
+  hours: number
+  is_billable: boolean | null
+  hourly_rate: number | null
+}
+
+export function useTeam(workspaceId: string | undefined, range: TeamRange) {
   return useQuery<TeamData>({
-    queryKey: ['team', workspaceId],
+    queryKey: ['team', workspaceId, range.from, range.to],
     enabled: !!workspaceId,
     queryFn: async () => {
       const [
@@ -88,6 +106,7 @@ export function useTeam(workspaceId: string | undefined) {
         { data: workloadRaw, error: workloadErr },
         { data: skillsRaw, error: skillsErr },
         { data: projectMembersRaw, error: pmErr },
+        { data: timeRaw, error: timeErr },
       ] = await Promise.all([
         supabase
           .from('workspace_members')
@@ -110,18 +129,45 @@ export function useTeam(workspaceId: string | undefined) {
             'member_id, project:projects!inner(id, workspace_id, code, name, status)'
           )
           .eq('project.workspace_id', workspaceId!),
+        supabase
+          .from('time_entries')
+          .select('member_id, hours, is_billable, hourly_rate')
+          .eq('workspace_id', workspaceId!)
+          .gte('entry_date', range.from)
+          .lte('entry_date', range.to),
       ])
 
       if (membersErr) throw membersErr
       if (workloadErr) throw workloadErr
       if (skillsErr) throw skillsErr
       if (pmErr) throw pmErr
+      if (timeErr) throw timeErr
 
       const membersList = (membersRaw ?? []) as unknown as MemberRow[]
       const workload = (workloadRaw ?? []) as MemberWorkloadView[]
       const memberSkills = (skillsRaw ?? []) as unknown as MemberSkillRow[]
       const projectMembers = (projectMembersRaw ??
         []) as unknown as ProjectMemberRow[]
+      const timeEntries = (timeRaw ?? []) as unknown as TimeEntryRow[]
+
+      const hoursByMember = new Map<
+        string,
+        { total: number; billable: number; revenue: number }
+      >()
+      for (const e of timeEntries) {
+        const cur = hoursByMember.get(e.member_id) ?? {
+          total: 0,
+          billable: 0,
+          revenue: 0,
+        }
+        const h = Number(e.hours ?? 0)
+        cur.total += h
+        if (e.is_billable) {
+          cur.billable += h
+          cur.revenue += h * Number(e.hourly_rate ?? 0)
+        }
+        hoursByMember.set(e.member_id, cur)
+      }
 
       const skillsByMember = new Map<string, TeamMemberSkill[]>()
       for (const ms of memberSkills) {
@@ -169,6 +215,11 @@ export function useTeam(workspaceId: string | undefined) {
         const wl = workload.find((w) => w.member_id === m.id)
         const cap = m.capacity_hours_week ?? 40
         const open = Number(wl?.open_estimated_hours ?? 0)
+        const hh = hoursByMember.get(m.id) ?? {
+          total: 0,
+          billable: 0,
+          revenue: 0,
+        }
         return {
           id: m.id,
           userId: m.user_id,
@@ -182,6 +233,8 @@ export function useTeam(workspaceId: string | undefined) {
           isInFocus: !!m.is_in_focus_mode,
           focusUntil: m.focus_mode_until,
           isActive: m.is_active,
+          hoursLoggedInRange: hh.total,
+          billableHoursInRange: hh.billable,
           openTasks: Number(wl?.open_tasks_count ?? 0),
           blockedTasks: Number(wl?.blocked_tasks_count ?? 0),
           openHours: open,
@@ -207,6 +260,15 @@ export function useTeam(workspaceId: string | undefined) {
             ratesPresent.length
           : 0
 
+      let totalHoursInRange = 0
+      let totalBillableInRange = 0
+      let totalBillableRevenueInRange = 0
+      for (const v of hoursByMember.values()) {
+        totalHoursInRange += v.total
+        totalBillableInRange += v.billable
+        totalBillableRevenueInRange += v.revenue
+      }
+
       const kpis: TeamKpis = {
         totalMembers: members.length,
         activeMembers: active.length,
@@ -216,9 +278,12 @@ export function useTeam(workspaceId: string | undefined) {
         averageHourlyRate,
         topSkill,
         blockedTotal: active.reduce((acc, m) => acc + m.blockedTasks, 0),
+        totalHoursInRange,
+        totalBillableInRange,
+        totalBillableRevenueInRange,
       }
 
-      return { members, kpis }
+      return { members, kpis, range }
     },
   })
 }

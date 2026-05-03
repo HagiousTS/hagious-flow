@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Search, UserPlus } from 'lucide-react'
 import { useWorkspace } from '@/hooks/useWorkspace'
-import { useTeam } from '@/hooks/useTeam'
+import { useTeam, type TeamRange } from '@/hooks/useTeam'
+import { defaultReportRange } from '@/lib/dateRange'
+import { DateRangePicker } from '@/components/reports/DateRangePicker'
 import { TeamKpiBar } from '@/components/team/TeamKpiBar'
 import { MemberCard } from '@/components/team/MemberCard'
 import { InviteDialog } from '@/components/team/InviteDialog'
@@ -24,7 +26,8 @@ const FILTERS: { id: RoleFilter; label: string }[] = [
 
 export function TeamPage() {
   const { data: workspace, isLoading: wsLoading } = useWorkspace()
-  const { data, isLoading, isError, error } = useTeam(workspace?.id)
+  const [range, setRange] = useState<TeamRange>(() => defaultReportRange())
+  const { data, isLoading, isError, error } = useTeam(workspace?.id, range)
   const [filter, setFilter] = useState<RoleFilter>('all')
   const [search, setSearch] = useState('')
   const [inviteOpen, setInviteOpen] = useState(false)
@@ -107,12 +110,29 @@ export function TeamPage() {
           <h1 className="text-2xl font-bold tracking-tight">Equipe</h1>
           <p className="text-sm text-muted mt-1">
             Membros do workspace, papéis, capacidade, skills e projetos ativos.
+            Horas e KPIs de período refletem a janela selecionada.
+          </p>
+          <p className="text-[11px] text-muted mt-2">
+            <strong className="text-text">
+              {data.kpis.totalHoursInRange.toFixed(0)}h
+            </strong>{' '}
+            registradas no período ·{' '}
+            <strong className="text-text">
+              {data.kpis.totalBillableInRange.toFixed(0)}h
+            </strong>{' '}
+            faturáveis · receita estimada{' '}
+            <strong className="text-text">
+              R$ {data.kpis.totalBillableRevenueInRange.toLocaleString('pt-BR')}
+            </strong>
           </p>
         </div>
-        <Button onClick={() => setInviteOpen(true)}>
-          <UserPlus className="w-4 h-4" />
-          Convidar membros
-        </Button>
+        <div className="flex items-center gap-2">
+          <DateRangePicker value={range} onChange={setRange} />
+          <Button onClick={() => setInviteOpen(true)}>
+            <UserPlus className="w-4 h-4" />
+            Convidar membros
+          </Button>
+        </div>
       </div>
 
       <InviteDialog

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useWorkspace } from '@/hooks/useWorkspace'
 import { useCapacity } from '@/hooks/useCapacity'
 import { CapacityKpiBar } from '@/components/capacity/CapacityKpiBar'
@@ -6,10 +7,22 @@ import { ProjectAllocations } from '@/components/capacity/ProjectAllocations'
 import { SkillMatrixGrid } from '@/components/capacity/SkillMatrixGrid'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { cn } from '@/lib/utils'
+
+const WEEK_OPTIONS: { id: number; label: string }[] = [
+  { id: 2, label: '2 semanas' },
+  { id: 4, label: '4 semanas' },
+  { id: 8, label: '8 semanas' },
+  { id: 12, label: '12 semanas' },
+]
 
 export function CapacityPage() {
   const { data: workspace, isLoading: wsLoading } = useWorkspace()
-  const { data, isLoading, isError, error } = useCapacity(workspace?.id)
+  const [weeksAhead, setWeeksAhead] = useState(4)
+  const { data, isLoading, isError, error } = useCapacity(
+    workspace?.id,
+    weeksAhead
+  )
 
   if (wsLoading || isLoading) {
     return (
@@ -58,12 +71,25 @@ export function CapacityPage() {
           </h1>
           <p className="text-sm text-muted mt-1">
             Carga semanal por pessoa, agrupada por <em>due_date</em> das tasks
-            abertas.{' '}
-            <span className="text-brand font-semibold">
-              Bloqueio de over-allocation e Skill Matrix vão na próxima
-              iteração.
-            </span>
+            abertas. Mostrando próximas {weeksAhead} semanas.
           </p>
+        </div>
+        <div className="flex items-center gap-1 border border-border rounded-lg p-0.5 text-xs">
+          {WEEK_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => setWeeksAhead(opt.id)}
+              className={cn(
+                'px-3 py-1.5 rounded transition',
+                weeksAhead === opt.id
+                  ? 'bg-brand text-white font-semibold'
+                  : 'text-muted hover:text-text'
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
         </div>
       </div>
 
