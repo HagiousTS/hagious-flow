@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
   Folder,
@@ -8,6 +8,7 @@ import {
   Sparkles,
   BarChart3,
   Settings,
+  LogOut,
   Inbox,
   Calendar,
   Target,
@@ -106,7 +107,7 @@ export function Sidebar() {
 
       {/* User */}
       <div className="border-t p-3">
-        <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-panel2 cursor-pointer group">
+        <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-panel2 group">
           <Avatar
             name={user?.user_metadata?.full_name ?? user?.email}
             size="md"
@@ -117,12 +118,19 @@ export function Sidebar() {
             </div>
             <div className="text-[11px] text-muted truncate">{user?.email}</div>
           </div>
-          <button
-            onClick={() => signOut()}
-            className="opacity-0 group-hover:opacity-100 text-[10px] text-muted hover:text-danger"
-            title="Sair"
+          <Link
+            to="/configuracoes"
+            className="opacity-60 group-hover:opacity-100 text-muted hover:text-text transition"
+            title="Configurações"
           >
             <Settings className="w-3.5 h-3.5" />
+          </Link>
+          <button
+            onClick={() => signOut()}
+            className="opacity-60 group-hover:opacity-100 text-muted hover:text-danger transition"
+            title="Sair"
+          >
+            <LogOut className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

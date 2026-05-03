@@ -62,43 +62,46 @@ describe('formatDateShort', () => {
 })
 
 describe('relativeDays', () => {
+  // Local-day stringification: toISOString() devolve UTC, que diverge
+  // do dia local em fusos a oeste de UTC depois das 21h.
+  function localISO(d: Date): string {
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
+  }
+
   it('retorna travessão para entrada vazia', () => {
     expect(relativeDays(null)).toBe('—')
     expect(relativeDays(undefined)).toBe('—')
   })
 
   it('retorna "hoje" para a data atual', () => {
-    const today = new Date()
-    const iso = today.toISOString().slice(0, 10)
-    expect(relativeDays(iso)).toBe('hoje')
+    expect(relativeDays(localISO(new Date()))).toBe('hoje')
   })
 
   it('retorna "amanhã" para data 1 dia no futuro', () => {
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
-    const iso = tomorrow.toISOString().slice(0, 10)
-    expect(relativeDays(iso)).toBe('amanhã')
+    expect(relativeDays(localISO(tomorrow))).toBe('amanhã')
   })
 
   it('retorna "ontem" para data 1 dia no passado', () => {
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
-    const iso = yesterday.toISOString().slice(0, 10)
-    expect(relativeDays(iso)).toBe('ontem')
+    expect(relativeDays(localISO(yesterday))).toBe('ontem')
   })
 
   it('formata datas futuras com padrão "em N dias"', () => {
     const future = new Date()
     future.setDate(future.getDate() + 5)
-    const iso = future.toISOString().slice(0, 10)
-    expect(relativeDays(iso)).toMatch(/^em \d+ dias$/)
+    expect(relativeDays(localISO(future))).toMatch(/^em \d+ dias$/)
   })
 
   it('formata datas passadas com padrão "N dias atrás"', () => {
     const past = new Date()
     past.setDate(past.getDate() - 5)
-    const iso = past.toISOString().slice(0, 10)
-    expect(relativeDays(iso)).toMatch(/^\d+ dias atrás$/)
+    expect(relativeDays(localISO(past))).toMatch(/^\d+ dias atrás$/)
   })
 })
 

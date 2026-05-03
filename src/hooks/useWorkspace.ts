@@ -26,6 +26,7 @@ export function useWorkspaces() {
       const { data, error } = await supabase
         .from('workspaces')
         .select('*')
+        .is('archived_at', null)
         .order('created_at', { ascending: true })
       if (error) throw error
       return data ?? []
@@ -62,6 +63,53 @@ export interface BootstrapWorkspaceArgs {
   industry?: string | null
   plan?: string
   seats?: number
+}
+
+export interface UpdateWorkspaceArgs {
+  workspaceId: string
+  name: string
+  slug: string
+  industry: string | null
+  plan: string
+  seats: number
+}
+
+export function useUpdateWorkspace() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (args: UpdateWorkspaceArgs) => {
+      const { data, error } = await supabase.rpc('update_workspace', {
+        p_workspace_id: args.workspaceId,
+        p_name: args.name,
+        p_slug: args.slug,
+        p_industry: args.industry,
+        p_plan: args.plan,
+        p_seats: args.seats,
+      })
+      if (error) throw error
+      return data as Workspace
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['workspaces', 'list'] })
+    },
+  })
+}
+
+export function useArchiveWorkspace() {
+  const qc = useQueryClient()
+  const setActiveId = useActiveWorkspace((s) => s.setActiveId)
+  return useMutation({
+    mutationFn: async (workspaceId: string) => {
+      const { error } = await supabase.rpc('archive_workspace', {
+        p_workspace_id: workspaceId,
+      })
+      if (error) throw error
+    },
+    onSuccess: () => {
+      setActiveId(null)
+      qc.invalidateQueries()
+    },
+  })
 }
 
 export function useBootstrapWorkspace() {

@@ -2186,6 +2186,7 @@ export type Database = {
       }
       workspaces: {
         Row: {
+          archived_at: string | null
           cnpj: string | null
           created_at: string
           deleted_at: string | null
@@ -2203,6 +2204,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          archived_at?: string | null
           cnpj?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -2220,6 +2222,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          archived_at?: string | null
           cnpj?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -2292,6 +2295,7 @@ export type Database = {
       accept_workspace_invitation: {
         Args: { p_token: string }
         Returns: {
+          archived_at: string | null
           cnpj: string | null
           created_at: string
           deleted_at: string | null
@@ -2315,6 +2319,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      archive_workspace: {
+        Args: { p_workspace_id: string }
+        Returns: undefined
+      }
       bootstrap_workspace: {
         Args: {
           p_industry?: string
@@ -2324,6 +2332,7 @@ export type Database = {
           p_slug: string
         }
         Returns: {
+          archived_at: string | null
           cnpj: string | null
           created_at: string
           deleted_at: string | null
@@ -2382,6 +2391,40 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      update_workspace: {
+        Args: {
+          p_industry: string
+          p_name: string
+          p_plan: string
+          p_seats: number
+          p_slug: string
+          p_workspace_id: string
+        }
+        Returns: {
+          archived_at: string | null
+          cnpj: string | null
+          created_at: string
+          deleted_at: string | null
+          id: string
+          industry: string | null
+          logo_url: string | null
+          name: string
+          owner_user_id: string
+          plan: string
+          plan_expires_at: string | null
+          plan_renewed_at: string | null
+          plan_seats: number
+          settings_json: Json
+          slug: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "workspaces"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       [_ in never]: never
