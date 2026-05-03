@@ -1441,6 +1441,7 @@ export type Database = {
           storage_url: string
           task_id: string
           uploaded_by_member_id: string | null
+          workspace_id: string
         }
         Insert: {
           created_at?: string
@@ -1451,6 +1452,7 @@ export type Database = {
           storage_url: string
           task_id: string
           uploaded_by_member_id?: string | null
+          workspace_id: string
         }
         Update: {
           created_at?: string
@@ -1461,6 +1463,7 @@ export type Database = {
           storage_url?: string
           task_id?: string
           uploaded_by_member_id?: string | null
+          workspace_id?: string
         }
         Relationships: [
           {
@@ -1482,6 +1485,13 @@ export type Database = {
             columns: ["uploaded_by_member_id"]
             isOneToOne: false
             referencedRelation: "workspace_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_attachments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]

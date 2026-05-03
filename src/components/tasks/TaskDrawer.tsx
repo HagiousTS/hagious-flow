@@ -17,6 +17,7 @@ import {
 } from '@/hooks/useTasksBoard'
 import { TaskTimerButton } from '@/components/timer/TaskTimerButton'
 import { TaskComments } from '@/components/tasks/TaskComments'
+import { TaskAttachments } from '@/components/tasks/TaskAttachments'
 import { useCurrentMember } from '@/hooks/useCurrentMember'
 import { cn } from '@/lib/utils'
 
@@ -312,6 +313,14 @@ export function TaskDrawer({
               {task.estimated_hours != null &&
                 ` / estimadas ${Number(task.estimated_hours)}h`}
             </div>
+          )}
+
+          {workspaceId && (
+            <TaskAttachments
+              taskId={task.id}
+              workspaceId={workspaceId}
+              currentMemberId={currentMember?.id ?? null}
+            />
           )}
 
           {workspaceId && (

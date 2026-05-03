@@ -202,6 +202,10 @@ export type ProjectComment = Row<'project_comments'> & {
   author?: WorkspaceMember | null
 }
 
+export type TaskAttachment = Row<'task_attachments'> & {
+  uploader?: WorkspaceMember | null
+}
+
 export type TimeEntry = Row<'time_entries'> & {
   member?: WorkspaceMember | null
   task?: Task | null
