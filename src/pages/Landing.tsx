@@ -175,9 +175,8 @@ export function LandingPage() {
           </h1>
           <p className="text-lg text-muted max-w-2xl mx-auto">
             Pare de fragmentar entre Excel, Trello, WhatsApp e ERPs. Hagious
-            Flow centraliza projetos, OS, capacity, foco e relatórios — com
-            uma IA que detecta riscos e propõe ações antes que o problema
-            estoure.
+            Flow centraliza projetos, OS, capacity, foco e relatórios — com uma
+            IA que detecta riscos e propõe ações antes que o problema estoure.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <Link
@@ -217,10 +216,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section
-        id="features"
-        className="px-6 py-16 bg-panel/40 border-y"
-      >
+      <section id="features" className="px-6 py-16 bg-panel/40 border-y">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tight">
@@ -228,8 +224,8 @@ export function LandingPage() {
             </h2>
             <p className="text-sm text-muted mt-2 max-w-2xl mx-auto">
               13 telas reais, conectadas a um banco Postgres com RLS por
-              workspace. Sem mock decorativo: cada feature persiste,
-              audita e respeita permissões.
+              workspace. Sem mock decorativo: cada feature persiste, audita e
+              respeita permissões.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -281,10 +277,7 @@ export function LandingPage() {
               <div className="text-[11px] text-muted mt-1 mb-3">{p.seats}</div>
               <ul className="space-y-1.5 mb-4">
                 {p.features.map((f) => (
-                  <li
-                    key={f}
-                    className="text-xs flex items-start gap-1.5"
-                  >
+                  <li key={f} className="text-xs flex items-start gap-1.5">
                     <Check className="w-3 h-3 text-brand mt-0.5 shrink-0" />
                     <span>{f}</span>
                   </li>
@@ -324,8 +317,7 @@ export function LandingPage() {
             Pronto pra parar de operar fragmentado?
           </h2>
           <p className="text-sm text-muted">
-            Crie sua conta em 30 segundos. Você desenha seu workspace
-            depois.
+            Crie sua conta em 30 segundos. Você desenha seu workspace depois.
           </p>
           <Link
             to="/signup"

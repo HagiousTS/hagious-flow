@@ -242,7 +242,9 @@ export function ProjectDrawer({
             <Field label="Saúde">
               <select
                 value={health}
-                onChange={(e) => setHealth(e.target.value as ProjectHealth | '')}
+                onChange={(e) =>
+                  setHealth(e.target.value as ProjectHealth | '')
+                }
                 className="input"
               >
                 <option value="">— sem avaliação —</option>

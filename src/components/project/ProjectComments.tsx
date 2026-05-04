@@ -1,5 +1,13 @@
 import { useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
-import { Check, Loader2, MessageSquare, Pencil, Send, Trash2, X } from 'lucide-react'
+import {
+  Check,
+  Loader2,
+  MessageSquare,
+  Pencil,
+  Send,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { useAuth } from '@/hooks/useAuth'

@@ -1,10 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Check, Copy, Loader2, Mail, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import {
-  useCreateInvitation,
-  useInvitations,
-} from '@/hooks/useInvitations'
+import { useCreateInvitation, useInvitations } from '@/hooks/useInvitations'
 import type {
   WorkspaceInvitation,
   WorkspaceInvitationRole,
@@ -210,9 +207,7 @@ export function InviteDialog({
               Fechar
             </Button>
             <Button type="submit" disabled={create.isPending}>
-              {create.isPending && (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              )}
+              {create.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               {create.isPending ? 'Gerando...' : 'Gerar convite'}
             </Button>
           </div>

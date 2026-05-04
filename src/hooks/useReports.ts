@@ -215,8 +215,9 @@ export function useReports(
       const activeProjectsCount = projects.filter((p) =>
         ACTIVE_STATUSES.includes(p.status)
       ).length
-      const doneProjectsCount = projects.filter((p) => p.status === 'done')
-        .length
+      const doneProjectsCount = projects.filter(
+        (p) => p.status === 'done'
+      ).length
 
       // Tasks completadas dentro do range
       const fromTs = new Date(range.from + 'T00:00:00').getTime()
@@ -246,8 +247,7 @@ export function useReports(
         totalTasks,
         doneTasks: doneTasksInRange,
         blockedTasks,
-        throughputPct:
-          totalTasks > 0 ? (doneTasksAll / totalTasks) * 100 : 0,
+        throughputPct: totalTasks > 0 ? (doneTasksAll / totalTasks) * 100 : 0,
         totalMembers,
         averageTasksPerMember: totalMembers > 0 ? totalTasks / totalMembers : 0,
         billableHours,

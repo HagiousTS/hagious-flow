@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: '14.5'
   }
   public: {
     Tables: {
@@ -65,53 +65,53 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "acknowledgment_queue_escalated_to_member_id_fkey"
-            columns: ["escalated_to_member_id"]
+            foreignKeyName: 'acknowledgment_queue_escalated_to_member_id_fkey'
+            columns: ['escalated_to_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "acknowledgment_queue_escalated_to_member_id_fkey"
-            columns: ["escalated_to_member_id"]
+            foreignKeyName: 'acknowledgment_queue_escalated_to_member_id_fkey'
+            columns: ['escalated_to_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "acknowledgment_queue_requester_member_id_fkey"
-            columns: ["requester_member_id"]
+            foreignKeyName: 'acknowledgment_queue_requester_member_id_fkey'
+            columns: ['requester_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "acknowledgment_queue_requester_member_id_fkey"
-            columns: ["requester_member_id"]
+            foreignKeyName: 'acknowledgment_queue_requester_member_id_fkey'
+            columns: ['requester_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "acknowledgment_queue_target_member_id_fkey"
-            columns: ["target_member_id"]
+            foreignKeyName: 'acknowledgment_queue_target_member_id_fkey'
+            columns: ['target_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "acknowledgment_queue_target_member_id_fkey"
-            columns: ["target_member_id"]
+            foreignKeyName: 'acknowledgment_queue_target_member_id_fkey'
+            columns: ['target_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "acknowledgment_queue_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'acknowledgment_queue_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -154,11 +154,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "activity_log_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'activity_log_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -216,25 +216,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ai_actions_conversation_id_fkey"
-            columns: ["conversation_id"]
+            foreignKeyName: 'ai_actions_conversation_id_fkey'
+            columns: ['conversation_id']
             isOneToOne: false
-            referencedRelation: "ai_conversations"
-            referencedColumns: ["id"]
+            referencedRelation: 'ai_conversations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "ai_actions_insight_id_fkey"
-            columns: ["insight_id"]
+            foreignKeyName: 'ai_actions_insight_id_fkey'
+            columns: ['insight_id']
             isOneToOne: false
-            referencedRelation: "ai_insights"
-            referencedColumns: ["id"]
+            referencedRelation: 'ai_insights'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "ai_actions_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'ai_actions_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -274,11 +274,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ai_conversations_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'ai_conversations_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -339,11 +339,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ai_insights_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'ai_insights_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -389,11 +389,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ai_messages_conversation_id_fkey"
-            columns: ["conversation_id"]
+            foreignKeyName: 'ai_messages_conversation_id_fkey'
+            columns: ['conversation_id']
             isOneToOne: false
-            referencedRelation: "ai_conversations"
-            referencedColumns: ["id"]
+            referencedRelation: 'ai_conversations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -448,11 +448,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "clients_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'clients_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -501,32 +501,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "focus_sessions_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'focus_sessions_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "focus_sessions_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'focus_sessions_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "focus_sessions_task_id_fkey"
-            columns: ["task_id"]
+            foreignKeyName: 'focus_sessions_task_id_fkey'
+            columns: ['task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "focus_sessions_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'focus_sessions_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -551,25 +551,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "member_skills_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'member_skills_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "member_skills_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'member_skills_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "member_skills_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: 'member_skills_skill_id_fkey'
+            columns: ['skill_id']
             isOneToOne: false
-            referencedRelation: "skills"
-            referencedColumns: ["id"]
+            referencedRelation: 'skills'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -603,18 +603,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "member_unavailability_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'member_unavailability_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "member_unavailability_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'member_unavailability_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -663,11 +663,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "notifications_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'notifications_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -710,11 +710,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "os_template_fields_template_id_fkey"
-            columns: ["template_id"]
+            foreignKeyName: 'os_template_fields_template_id_fkey'
+            columns: ['template_id']
             isOneToOne: false
-            referencedRelation: "os_templates"
-            referencedColumns: ["id"]
+            referencedRelation: 'os_templates'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -775,11 +775,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "os_templates_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'os_templates_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -828,32 +828,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "priority_changes_changed_by_member_id_fkey"
-            columns: ["changed_by_member_id"]
+            foreignKeyName: 'priority_changes_changed_by_member_id_fkey'
+            columns: ['changed_by_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "priority_changes_changed_by_member_id_fkey"
-            columns: ["changed_by_member_id"]
+            foreignKeyName: 'priority_changes_changed_by_member_id_fkey'
+            columns: ['changed_by_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "priority_changes_task_id_fkey"
-            columns: ["task_id"]
+            foreignKeyName: 'priority_changes_task_id_fkey'
+            columns: ['task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "priority_changes_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'priority_changes_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -932,39 +932,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "project_comments_author_member_id_fkey"
-            columns: ["author_member_id"]
+            foreignKeyName: 'project_comments_author_member_id_fkey'
+            columns: ['author_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "project_comments_author_member_id_fkey"
-            columns: ["author_member_id"]
+            foreignKeyName: 'project_comments_author_member_id_fkey'
+            columns: ['author_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_comments_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_comments_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_comments_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_comments_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "v_project_health"
-            referencedColumns: ["project_id"]
+            referencedRelation: 'v_project_health'
+            referencedColumns: ['project_id']
           },
           {
-            foreignKeyName: "project_comments_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'project_comments_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -992,32 +992,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "project_members_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'project_members_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "project_members_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'project_members_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_members_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_members_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_members_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_members_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "v_project_health"
-            referencedColumns: ["project_id"]
+            referencedRelation: 'v_project_health'
+            referencedColumns: ['project_id']
           },
         ]
       }
@@ -1060,18 +1060,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "project_phases_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_phases_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_phases_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_phases_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "v_project_health"
-            referencedColumns: ["project_id"]
+            referencedRelation: 'v_project_health'
+            referencedColumns: ['project_id']
           },
         ]
       }
@@ -1162,32 +1162,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "projects_client_id_fkey"
-            columns: ["client_id"]
+            foreignKeyName: 'projects_client_id_fkey'
+            columns: ['client_id']
             isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
+            referencedRelation: 'clients'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "projects_owner_member_id_fkey"
-            columns: ["owner_member_id"]
+            foreignKeyName: 'projects_owner_member_id_fkey'
+            columns: ['owner_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "projects_owner_member_id_fkey"
-            columns: ["owner_member_id"]
+            foreignKeyName: 'projects_owner_member_id_fkey'
+            columns: ['owner_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "projects_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'projects_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1251,39 +1251,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "risks_owner_member_id_fkey"
-            columns: ["owner_member_id"]
+            foreignKeyName: 'risks_owner_member_id_fkey'
+            columns: ['owner_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "risks_owner_member_id_fkey"
-            columns: ["owner_member_id"]
+            foreignKeyName: 'risks_owner_member_id_fkey'
+            columns: ['owner_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "risks_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'risks_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "risks_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'risks_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "v_project_health"
-            referencedColumns: ["project_id"]
+            referencedRelation: 'v_project_health'
+            referencedColumns: ['project_id']
           },
           {
-            foreignKeyName: "risks_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'risks_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1359,46 +1359,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "service_orders_accepted_task_id_fkey"
-            columns: ["accepted_task_id"]
+            foreignKeyName: 'service_orders_accepted_task_id_fkey'
+            columns: ['accepted_task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "service_orders_client_id_fkey"
-            columns: ["client_id"]
+            foreignKeyName: 'service_orders_client_id_fkey'
+            columns: ['client_id']
             isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
+            referencedRelation: 'clients'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "service_orders_template_id_fkey"
-            columns: ["template_id"]
+            foreignKeyName: 'service_orders_template_id_fkey'
+            columns: ['template_id']
             isOneToOne: false
-            referencedRelation: "os_templates"
-            referencedColumns: ["id"]
+            referencedRelation: 'os_templates'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "service_orders_triaged_by_member_id_fkey"
-            columns: ["triaged_by_member_id"]
+            foreignKeyName: 'service_orders_triaged_by_member_id_fkey'
+            columns: ['triaged_by_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "service_orders_triaged_by_member_id_fkey"
-            columns: ["triaged_by_member_id"]
+            foreignKeyName: 'service_orders_triaged_by_member_id_fkey'
+            columns: ['triaged_by_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "service_orders_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'service_orders_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1423,11 +1423,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "skills_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'skills_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1467,32 +1467,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_attachments_task_id_fkey"
-            columns: ["task_id"]
+            foreignKeyName: 'task_attachments_task_id_fkey'
+            columns: ['task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "task_attachments_uploaded_by_member_id_fkey"
-            columns: ["uploaded_by_member_id"]
+            foreignKeyName: 'task_attachments_uploaded_by_member_id_fkey'
+            columns: ['uploaded_by_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "task_attachments_uploaded_by_member_id_fkey"
-            columns: ["uploaded_by_member_id"]
+            foreignKeyName: 'task_attachments_uploaded_by_member_id_fkey'
+            columns: ['uploaded_by_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "task_attachments_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'task_attachments_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1538,39 +1538,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_blocks_blocked_by_member_id_fkey"
-            columns: ["blocked_by_member_id"]
+            foreignKeyName: 'task_blocks_blocked_by_member_id_fkey'
+            columns: ['blocked_by_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "task_blocks_blocked_by_member_id_fkey"
-            columns: ["blocked_by_member_id"]
+            foreignKeyName: 'task_blocks_blocked_by_member_id_fkey'
+            columns: ['blocked_by_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "task_blocks_task_id_fkey"
-            columns: ["task_id"]
+            foreignKeyName: 'task_blocks_task_id_fkey'
+            columns: ['task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "task_blocks_unblock_owner_member_id_fkey"
-            columns: ["unblock_owner_member_id"]
+            foreignKeyName: 'task_blocks_unblock_owner_member_id_fkey'
+            columns: ['unblock_owner_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "task_blocks_unblock_owner_member_id_fkey"
-            columns: ["unblock_owner_member_id"]
+            foreignKeyName: 'task_blocks_unblock_owner_member_id_fkey'
+            columns: ['unblock_owner_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1607,25 +1607,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_comments_author_member_id_fkey"
-            columns: ["author_member_id"]
+            foreignKeyName: 'task_comments_author_member_id_fkey'
+            columns: ['author_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "task_comments_author_member_id_fkey"
-            columns: ["author_member_id"]
+            foreignKeyName: 'task_comments_author_member_id_fkey'
+            columns: ['author_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "task_comments_task_id_fkey"
-            columns: ["task_id"]
+            foreignKeyName: 'task_comments_task_id_fkey'
+            columns: ['task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1650,18 +1650,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_dependencies_blocked_task_id_fkey"
-            columns: ["blocked_task_id"]
+            foreignKeyName: 'task_dependencies_blocked_task_id_fkey'
+            columns: ['blocked_task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "task_dependencies_blocking_task_id_fkey"
-            columns: ["blocking_task_id"]
+            foreignKeyName: 'task_dependencies_blocking_task_id_fkey'
+            columns: ['blocking_task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1686,18 +1686,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_required_skills_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: 'task_required_skills_skill_id_fkey'
+            columns: ['skill_id']
             isOneToOne: false
-            referencedRelation: "skills"
-            referencedColumns: ["id"]
+            referencedRelation: 'skills'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "task_required_skills_task_id_fkey"
-            columns: ["task_id"]
+            foreignKeyName: 'task_required_skills_task_id_fkey'
+            columns: ['task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1737,25 +1737,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_statuses_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'task_statuses_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "task_statuses_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'task_statuses_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "v_project_health"
-            referencedColumns: ["project_id"]
+            referencedRelation: 'v_project_health'
+            referencedColumns: ['project_id']
           },
           {
-            foreignKeyName: "task_statuses_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'task_statuses_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1774,18 +1774,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_tag_assignments_tag_id_fkey"
-            columns: ["tag_id"]
+            foreignKeyName: 'task_tag_assignments_tag_id_fkey'
+            columns: ['tag_id']
             isOneToOne: false
-            referencedRelation: "task_tags"
-            referencedColumns: ["id"]
+            referencedRelation: 'task_tags'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "task_tag_assignments_task_id_fkey"
-            columns: ["task_id"]
+            foreignKeyName: 'task_tag_assignments_task_id_fkey'
+            columns: ['task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1810,11 +1810,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_tags_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'task_tags_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1908,74 +1908,74 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "tasks_assignee_member_id_fkey"
-            columns: ["assignee_member_id"]
+            foreignKeyName: 'tasks_assignee_member_id_fkey'
+            columns: ['assignee_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "tasks_assignee_member_id_fkey"
-            columns: ["assignee_member_id"]
+            foreignKeyName: 'tasks_assignee_member_id_fkey'
+            columns: ['assignee_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "tasks_parent_task_id_fkey"
-            columns: ["parent_task_id"]
+            foreignKeyName: 'tasks_parent_task_id_fkey'
+            columns: ['parent_task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "tasks_phase_id_fkey"
-            columns: ["phase_id"]
+            foreignKeyName: 'tasks_phase_id_fkey'
+            columns: ['phase_id']
             isOneToOne: false
-            referencedRelation: "project_phases"
-            referencedColumns: ["id"]
+            referencedRelation: 'project_phases'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "tasks_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'tasks_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "tasks_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'tasks_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "v_project_health"
-            referencedColumns: ["project_id"]
+            referencedRelation: 'v_project_health'
+            referencedColumns: ['project_id']
           },
           {
-            foreignKeyName: "tasks_reporter_member_id_fkey"
-            columns: ["reporter_member_id"]
+            foreignKeyName: 'tasks_reporter_member_id_fkey'
+            columns: ['reporter_member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "tasks_reporter_member_id_fkey"
-            columns: ["reporter_member_id"]
+            foreignKeyName: 'tasks_reporter_member_id_fkey'
+            columns: ['reporter_member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "tasks_status_id_fkey"
-            columns: ["status_id"]
+            foreignKeyName: 'tasks_status_id_fkey'
+            columns: ['status_id']
             isOneToOne: false
-            referencedRelation: "task_statuses"
-            referencedColumns: ["id"]
+            referencedRelation: 'task_statuses'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "tasks_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'tasks_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2000,25 +2000,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "team_members_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'team_members_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "team_members_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'team_members_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'team_members_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2055,11 +2055,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "teams_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'teams_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2108,46 +2108,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "time_entries_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'time_entries_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "v_member_workload"
-            referencedColumns: ["member_id"]
+            referencedRelation: 'v_member_workload'
+            referencedColumns: ['member_id']
           },
           {
-            foreignKeyName: "time_entries_member_id_fkey"
-            columns: ["member_id"]
+            foreignKeyName: 'time_entries_member_id_fkey'
+            columns: ['member_id']
             isOneToOne: false
-            referencedRelation: "workspace_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspace_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "time_entries_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'time_entries_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "time_entries_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'time_entries_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "v_project_health"
-            referencedColumns: ["project_id"]
+            referencedRelation: 'v_project_health'
+            referencedColumns: ['project_id']
           },
           {
-            foreignKeyName: "time_entries_task_id_fkey"
-            columns: ["task_id"]
+            foreignKeyName: 'time_entries_task_id_fkey'
+            columns: ['task_id']
             isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            referencedRelation: 'tasks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "time_entries_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'time_entries_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2190,11 +2190,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "workspace_invitations_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'workspace_invitations_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2258,11 +2258,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "workspace_members_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'workspace_members_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2338,11 +2338,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "workspace_members_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'workspace_members_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2364,11 +2364,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "projects_workspace_id_fkey"
-            columns: ["workspace_id"]
+            foreignKeyName: 'projects_workspace_id_fkey'
+            columns: ['workspace_id']
             isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'workspaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2395,8 +2395,8 @@ export type Database = {
           updated_at: string
         }
         SetofOptions: {
-          from: "*"
-          to: "workspaces"
+          from: '*'
+          to: 'workspaces'
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2421,8 +2421,8 @@ export type Database = {
           workspace_id: string
         }
         SetofOptions: {
-          from: "*"
-          to: "ai_actions"
+          from: '*'
+          to: 'ai_actions'
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2458,8 +2458,8 @@ export type Database = {
           updated_at: string
         }
         SetofOptions: {
-          from: "*"
-          to: "workspaces"
+          from: '*'
+          to: 'workspaces'
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2479,8 +2479,8 @@ export type Database = {
           workspace_id: string
         }
         SetofOptions: {
-          from: "*"
-          to: "workspace_invitations"
+          from: '*'
+          to: 'workspace_invitations'
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2517,14 +2517,14 @@ export type Database = {
           workspace_id: string
         }
         SetofOptions: {
-          from: "*"
-          to: "ai_actions"
+          from: '*'
+          to: 'ai_actions'
           isOneToOne: true
           isSetofReturn: false
         }
       }
       show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
+      show_trgm: { Args: { '': string }; Returns: string[] }
       update_workspace: {
         Args: {
           p_industry: string
@@ -2553,8 +2553,8 @@ export type Database = {
           updated_at: string
         }
         SetofOptions: {
-          from: "*"
-          to: "workspaces"
+          from: '*'
+          to: 'workspaces'
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2569,33 +2569,33 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
+        DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] &
+        DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -2604,23 +2604,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -2629,23 +2629,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -2654,36 +2654,36 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
+    | keyof DefaultSchema['Enums']
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
+    | keyof DefaultSchema['CompositeTypes']
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {

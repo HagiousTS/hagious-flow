@@ -115,9 +115,10 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   // Lista flat: ações + resultados de busca pra navegação por seta
   const flat: (SearchResult | { kind: 'action'; action: QuickAction })[] =
     useMemo(() => {
-      const acts = filteredActions.map(
-        (a) => ({ kind: 'action' as const, action: a })
-      )
+      const acts = filteredActions.map((a) => ({
+        kind: 'action' as const,
+        action: a,
+      }))
       if (!search.data || isCommandQuery) return acts
       return [
         ...acts,
@@ -157,8 +158,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
         e.preventDefault()
         const r = flat[activeIdx]
         if (!r) return
-        const href =
-          'kind' in r && r.kind === 'action' ? r.action.href : r.href
+        const href = 'kind' in r && r.kind === 'action' ? r.action.href : r.href
         navigate(href)
         onClose()
       }
@@ -170,9 +170,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   // Scroll item ativo pra dentro da viewport
   useEffect(() => {
     if (!listRef.current) return
-    const el = listRef.current.querySelector(
-      `[data-result-idx="${activeIdx}"]`
-    )
+    const el = listRef.current.querySelector(`[data-result-idx="${activeIdx}"]`)
     el?.scrollIntoView({ block: 'nearest' })
   }, [activeIdx])
 
@@ -222,7 +220,8 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             <ActionSection>
               {filteredActions.map((a) => {
                 const idx = flat.findIndex(
-                  (x) => 'kind' in x && x.kind === 'action' && x.action.id === a.id
+                  (x) =>
+                    'kind' in x && x.kind === 'action' && x.action.id === a.id
                 )
                 return (
                   <ActionRow
@@ -304,8 +303,9 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
               </div>
               <div className="text-[11px] text-muted mt-1">
                 Mínimo 2 caracteres. Use ↑ ↓ pra navegar e Enter pra abrir.
-                Comece com <kbd className="bg-panel2 border px-1 rounded">&gt;</kbd>{' '}
-                pra ver só ações.
+                Comece com{' '}
+                <kbd className="bg-panel2 border px-1 rounded">&gt;</kbd> pra
+                ver só ações.
               </div>
             </div>
           )}

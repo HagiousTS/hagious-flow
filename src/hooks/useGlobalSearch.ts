@@ -78,10 +78,9 @@ export function useGlobalSearch(
           )
           .eq('workspace_id', workspaceId!)
           .eq('is_active', true)
-          .or(
-            `full_name.ilike.${ilike},email.ilike.${ilike}`,
-            { foreignTable: 'profile' }
-          )
+          .or(`full_name.ilike.${ilike},email.ilike.${ilike}`, {
+            foreignTable: 'profile',
+          })
           .limit(6),
       ])
 
@@ -149,8 +148,7 @@ export function useGlobalSearch(
         tasks,
         clients,
         members,
-        total:
-          projects.length + tasks.length + clients.length + members.length,
+        total: projects.length + tasks.length + clients.length + members.length,
       }
     },
   })

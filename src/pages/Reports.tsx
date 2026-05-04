@@ -135,8 +135,7 @@ export function ReportsPage() {
           <h1 className="text-2xl font-bold tracking-tight">Relatórios</h1>
           <p className="text-sm text-muted mt-1">
             Visão executiva: receita, utilização, throughput e distribuição.
-            Métricas de horas e tasks concluídas refletem o período
-            selecionado.
+            Métricas de horas e tasks concluídas refletem o período selecionado.
           </p>
         </div>
         <div className="flex items-center gap-2">

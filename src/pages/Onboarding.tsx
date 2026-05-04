@@ -2,10 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Building2, Loader2, Sparkles, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
-import {
-  useBootstrapWorkspace,
-  useWorkspaces,
-} from '@/hooks/useWorkspace'
+import { useBootstrapWorkspace, useWorkspaces } from '@/hooks/useWorkspace'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 
@@ -227,11 +224,7 @@ export function OnboardingPage() {
             )}
 
             <div className="flex items-center justify-end gap-2 border-t pt-4">
-              <Button
-                type="submit"
-                size="lg"
-                disabled={bootstrap.isPending}
-              >
+              <Button type="submit" size="lg" disabled={bootstrap.isPending}>
                 {bootstrap.isPending && (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 )}

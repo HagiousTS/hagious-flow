@@ -226,7 +226,9 @@ export function ProjectTimeEntries({
                         {e.is_billable ? (
                           formatBRL(cost, { compact: true })
                         ) : (
-                          <span className="text-muted text-[10px]">não-fat</span>
+                          <span className="text-muted text-[10px]">
+                            não-fat
+                          </span>
                         )}
                       </td>
                       <td className="py-2 px-3 text-right">

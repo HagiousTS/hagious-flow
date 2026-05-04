@@ -1,5 +1,13 @@
 import { useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
-import { Check, Loader2, MessageSquare, Pencil, Send, Trash2, X } from 'lucide-react'
+import {
+  Check,
+  Loader2,
+  MessageSquare,
+  Pencil,
+  Send,
+  Trash2,
+  X,
+} from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import {
   extractMentions,
@@ -286,7 +294,10 @@ function CommentBody({
   text: string
   memberById: Map<string, string>
 }) {
-  const parts = useMemo(() => splitMentions(text, memberById), [text, memberById])
+  const parts = useMemo(
+    () => splitMentions(text, memberById),
+    [text, memberById]
+  )
   return (
     <>
       {parts.map((p, i) =>
@@ -345,7 +356,11 @@ function splitMentions(
 
 function matchHandle(fullName: string, handle: string): boolean {
   const norm = (s: string) =>
-    s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '')
+    s
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]/g, '')
   const h = norm(handle)
   const parts = fullName.split(/\s+/).map(norm)
   return parts.includes(h) || parts.join('').startsWith(h)

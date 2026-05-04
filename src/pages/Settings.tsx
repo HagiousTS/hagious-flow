@@ -23,7 +23,11 @@ import { Skeleton } from '@/components/ui/Skeleton'
 const PLANS = [
   { id: 'free', label: 'Free — R$ 0', defaultSeats: 3 },
   { id: 'starter', label: 'Starter — R$ 29/u', defaultSeats: 10 },
-  { id: 'business', label: 'Business — R$ 59/u (recomendado)', defaultSeats: 50 },
+  {
+    id: 'business',
+    label: 'Business — R$ 59/u (recomendado)',
+    defaultSeats: 50,
+  },
   { id: 'pro', label: 'Pro — R$ 119/u (IA avançada)', defaultSeats: 100 },
   { id: 'enterprise', label: 'Enterprise — sob consulta', defaultSeats: 500 },
 ]
@@ -338,7 +342,10 @@ function translate(msg: string): string {
   if (msg.includes('invalid_plan')) return 'Plano inválido.'
   if (msg.includes('invalid_seats')) return 'Seats inválido.'
   if (msg.includes('not_authenticated')) return 'Sessão expirada. Faça login.'
-  if (msg.toLowerCase().includes('duplicate') && msg.toLowerCase().includes('slug')) {
+  if (
+    msg.toLowerCase().includes('duplicate') &&
+    msg.toLowerCase().includes('slug')
+  ) {
     return 'Esse slug já está em uso por outro workspace.'
   }
   return msg

@@ -47,10 +47,7 @@ function utilizationCls(pct: number): string {
 export function MemberDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { data: workspace, isLoading: wsLoading } = useWorkspace()
-  const { data, isLoading, isError, error } = useMemberDetail(
-    workspace?.id,
-    id
-  )
+  const { data, isLoading, isError, error } = useMemberDetail(workspace?.id, id)
 
   if (wsLoading || isLoading) {
     return (
@@ -353,20 +350,13 @@ export function MemberDetailPage() {
             ) : (
               <div className="space-y-1.5">
                 {skills.map((s) => (
-                  <div
-                    key={s.id}
-                    className="flex items-center gap-2 text-xs"
-                  >
+                  <div key={s.id} className="flex items-center gap-2 text-xs">
                     <span
                       className={cn(
                         'px-1.5 py-0.5 rounded text-[10px]',
                         PROFICIENCY_CLS[s.proficiency]
                       )}
-                      title={
-                        s.isCertified
-                          ? 'Certificado'
-                          : 'Auto-declarado'
-                      }
+                      title={s.isCertified ? 'Certificado' : 'Auto-declarado'}
                     >
                       {PROFICIENCY_LABEL[s.proficiency]}
                     </span>

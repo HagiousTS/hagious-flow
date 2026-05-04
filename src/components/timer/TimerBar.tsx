@@ -86,9 +86,7 @@ export function TimerBar() {
           <div className="text-xs font-mono text-brand">
             {fmtElapsed(elapsed)}
           </div>
-          {error && (
-            <div className="text-[10px] text-danger mt-1">{error}</div>
-          )}
+          {error && <div className="text-[10px] text-danger mt-1">{error}</div>}
         </div>
         <div className="flex flex-col gap-1 shrink-0">
           <button

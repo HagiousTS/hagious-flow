@@ -123,8 +123,7 @@ export function NotificationsBell() {
                 <Bell className="w-8 h-8 mx-auto mb-2 text-muted opacity-50" />
                 <div className="text-sm font-medium">Sem notificações</div>
                 <div className="text-[11px] text-muted mt-1">
-                  Avisos de risco, OS e menções vão aparecer aqui em tempo
-                  real.
+                  Avisos de risco, OS e menções vão aparecer aqui em tempo real.
                 </div>
               </div>
             ) : (

@@ -81,7 +81,8 @@ function ActionCard({
   const [localError, setLocalError] = useState<string | null>(null)
 
   const isPending = apply.isPending || reject.isPending
-  const isFinal = status === 'applied' || status === 'rejected' || status === 'failed'
+  const isFinal =
+    status === 'applied' || status === 'rejected' || status === 'failed'
   const label = ACTION_LABEL[proposal.name] ?? proposal.name
 
   async function handleApprove() {
@@ -127,7 +128,10 @@ function ActionCard({
         </span>
       </div>
 
-      <PayloadView name={proposal.name as AIActionType} input={proposal.input} />
+      <PayloadView
+        name={proposal.name as AIActionType}
+        input={proposal.input}
+      />
 
       {(localError || (status === 'failed' && errorMessage)) && (
         <div className="text-[11px] text-danger mt-2 bg-danger/10 border border-danger/30 rounded px-2 py-1">

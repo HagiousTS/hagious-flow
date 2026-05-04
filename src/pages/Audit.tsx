@@ -293,12 +293,8 @@ function Row({
 
       {expanded && canExpand && (
         <div className="px-3 pb-3 pl-12 space-y-2">
-          {hasDiff && (
-            <JsonBlock title="Diff" data={entry.diff_json} />
-          )}
-          {hasMeta && (
-            <JsonBlock title="Metadata" data={entry.metadata_json} />
-          )}
+          {hasDiff && <JsonBlock title="Diff" data={entry.diff_json} />}
+          {hasMeta && <JsonBlock title="Metadata" data={entry.metadata_json} />}
         </div>
       )}
     </div>
@@ -317,4 +313,3 @@ function JsonBlock({ title, data }: { title: string; data: unknown }) {
     </div>
   )
 }
-

@@ -130,7 +130,12 @@ export function TaskDrawer({
 
   async function handleDelete() {
     if (!task) return
-    if (!confirm('Excluir esta task? A ação faz soft delete e pode ser revertida no banco.')) return
+    if (
+      !confirm(
+        'Excluir esta task? A ação faz soft delete e pode ser revertida no banco.'
+      )
+    )
+      return
     try {
       await del.mutateAsync(task.id)
       onClose()
@@ -327,9 +332,7 @@ export function TaskDrawer({
             <TaskComments
               taskId={task.id}
               taskTitle={task.title}
-              projectHref={
-                project ? `/projetos/${project.id}` : '/tasks'
-              }
+              projectHref={project ? `/projetos/${project.id}` : '/tasks'}
               workspaceId={workspaceId}
               currentMemberId={currentMember?.id ?? null}
               members={members}

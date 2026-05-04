@@ -85,15 +85,7 @@ export function AcceptInvitationPage() {
       .catch((err) => {
         setError(translate((err as Error).message))
       })
-  }, [
-    token,
-    authLoading,
-    user,
-    preview.data,
-    accept,
-    accepted,
-    setActive,
-  ])
+  }, [token, authLoading, user, preview.data, accept, accepted, setActive])
 
   // Após aceitar, manda pro dashboard
   useEffect(() => {
@@ -189,9 +181,7 @@ export function AcceptInvitationPage() {
         <h2 className="font-bold">Convite já aceito</h2>
         <p className="text-sm text-muted">
           Você já faz parte de{' '}
-          <span className="font-semibold text-text">
-            {data.workspace_name}
-          </span>
+          <span className="font-semibold text-text">{data.workspace_name}</span>
           . Te levo pro dashboard.
         </p>
       </div>

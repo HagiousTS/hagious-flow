@@ -220,9 +220,7 @@ export function ProjectsPage() {
       />
 
       <ProjectDrawer
-        project={
-          data.projects.find((p) => p.id === drawerProjectId) ?? null
-        }
+        project={data.projects.find((p) => p.id === drawerProjectId) ?? null}
         workspaceId={workspace.id}
         onClose={() => setDrawerProjectId(null)}
       />
