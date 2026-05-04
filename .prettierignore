@@ -8,3 +8,5 @@ package-lock.json
 .netlify
 docs
 public
+playwright-report
+test-results
