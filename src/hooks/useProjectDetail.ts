@@ -91,7 +91,7 @@ export function useProjectDetail(
         supabase
           .from('tasks')
           .select(
-            '*, status:task_statuses(id, name, category, color_hex), assignee:workspace_members(id, profile:profiles(id, full_name, avatar_url))'
+            '*, status:task_statuses(id, name, category, color_hex), assignee:workspace_members!tasks_assignee_member_id_fkey(id, profile:profiles(id, full_name, avatar_url))'
           )
           .eq('project_id', projectId!)
           .is('deleted_at', null)

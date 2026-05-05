@@ -5,12 +5,30 @@ import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 
 export function AppShell() {
-  const { data: workspaces, isLoading } = useWorkspaces()
+  const { data: workspaces, isLoading, isError, error } = useWorkspaces()
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-6 h-6 animate-spin text-brand" />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-8">
+        <div className="max-w-md text-center space-y-3">
+          <h1 className="text-lg font-semibold text-text">
+            Falha ao carregar workspaces
+          </h1>
+          <p className="text-sm text-muted">
+            {(error as Error)?.message ?? 'Erro desconhecido'}
+          </p>
+          <p className="text-xs text-muted">
+            Abra o console (F12) pra ver o erro exato e recarregue.
+          </p>
+        </div>
       </div>
     )
   }

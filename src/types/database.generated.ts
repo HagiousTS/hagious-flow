@@ -154,6 +154,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: 'activity_log_actor_user_id_profiles_fkey'
+            columns: ['actor_user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
             foreignKeyName: 'activity_log_workspace_id_fkey'
             columns: ['workspace_id']
             isOneToOne: false
@@ -2258,6 +2265,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: 'workspace_members_user_id_profiles_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
             foreignKeyName: 'workspace_members_workspace_id_fkey'
             columns: ['workspace_id']
             isOneToOne: false
@@ -2337,6 +2351,13 @@ export type Database = {
           workspace_id: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: 'workspace_members_user_id_profiles_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'workspace_members_workspace_id_fkey'
             columns: ['workspace_id']
